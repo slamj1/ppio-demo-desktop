@@ -1,0 +1,13 @@
+export const MUT_SET_USER_DATA = 'mutation_setUserData'
+export const MUT_LOGIN = 'mutation_login'
+export const MUT_LOGOUT = 'mutation_logout'
+export const MUT_SET_JOURNAL = 'mutation_setUserJournal'
+export const ACT_GET_JOURNAL = 'action_getUserJournal'
+export const ACT_REFRESH_USER = 'action_refresh'
+
+export const ACT_SET_FILE_LIST = 'action_setFileList'
+export const MUT_SET_FILE_LIST = 'mutation_setFileList'
+export const MUT_REMOVE_FILE = 'mutation_removeFile'
+export const MUT_RENAME_FILE = 'mutation_renameFile'
+export const MUT_SECURE_FILE = 'mutation_secureFile'
+export const MUT_SHARE_FILE = 'mutation_shareFile'
