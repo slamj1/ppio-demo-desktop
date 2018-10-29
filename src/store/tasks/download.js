@@ -1,7 +1,6 @@
 import Task from './Task'
-import { TASK_TYPE_DOWNLOAD } from '@/constants/store'
-
 import {
+  TASK_TYPE_DOWNLOAD,
   MUT_ADD_DL_TASK,
   MUT_RM_DL_TASK,
   MUT_SET_TASK_DATA,

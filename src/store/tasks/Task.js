@@ -1,6 +1,6 @@
 import { TASK_TYPE_DOWNLOAD, TASK_TYPE_UPLOAD } from '@/constants/store'
 import { startDownload, getProgress as getDownloadProgress } from '@/services/download'
-import { startUpload, getProgress as getUploadProgress } from '@/services/download'
+import { startUpload, getProgress as getUploadProgress } from '@/services/upload'
 
 export default class Task {
   type = ''

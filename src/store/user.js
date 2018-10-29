@@ -55,9 +55,7 @@ const store = {
     },
     [ACT_LOGOUT](context) {
       return logout().then(
-        () => {
-          return context.commit(MUT_LOGOUT)
-        },
+        () => context.commit(MUT_LOGOUT),
         err => {
           console.log('logout error')
           console.log(err)
