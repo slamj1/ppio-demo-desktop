@@ -15,6 +15,8 @@ export const MUT_SECURE_FILE = 'mutation_secureFile'
 export const MUT_SHARE_FILE = 'mutation_shareFile'
 
 export const MUT_SET_TASK_DATA = 'mutation_setTaskData'
+export const MUT_CREATE_TASK = 'mutation_createTask'
+export const MUT_REMOVE_TASK = 'mutation_removeTask'
 
 export const MUT_ADD_DL_TASK = 'mutation_addDownloadTask'
 export const MUT_RM_DL_TASK = 'mutation_removeDownloadTask'
