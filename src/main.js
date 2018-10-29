@@ -3,8 +3,12 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './plugins/element.js'
+import FilterPlugin from './utils/filter.js'
+import UtilPlugin from './utils/util.js'
 
 Vue.config.productionTip = false
+Vue.use(FilterPlugin)
+Vue.use(UtilPlugin)
 
 new Vue({
   router,
