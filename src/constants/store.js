@@ -1,6 +1,8 @@
 export const MUT_SET_USER_DATA = 'mutation_setUserData'
 export const MUT_LOGIN = 'mutation_login'
+export const ACT_LOGIN = 'action_login'
 export const MUT_LOGOUT = 'mutation_logout'
+export const ACT_LOGOUT = 'action_login'
 export const MUT_SET_JOURNAL = 'mutation_setUserJournal'
 export const ACT_GET_JOURNAL = 'action_getUserJournal'
 export const ACT_REFRESH_USER = 'action_refresh'
@@ -11,3 +13,14 @@ export const MUT_REMOVE_FILE = 'mutation_removeFile'
 export const MUT_RENAME_FILE = 'mutation_renameFile'
 export const MUT_SECURE_FILE = 'mutation_secureFile'
 export const MUT_SHARE_FILE = 'mutation_shareFile'
+
+export const MUT_SET_TASK_DATA = 'mutation_setTaskData'
+
+export const MUT_ADD_DL_TASK = 'mutation_addDownloadTask'
+export const MUT_RM_DL_TASK = 'mutation_removeDownloadTask'
+
+export const TASK_TYPE_DOWNLOAD = 'taskType_download'
+export const TASK_TYPE_GET = 'taskType_get'
+export const TASK_TYPE_RENEW = 'taskType_renew'
+export const TASK_TYPE_SHARE = 'taskType_share'
+export const TASK_TYPE_UPLOAD = 'taskType_upload'

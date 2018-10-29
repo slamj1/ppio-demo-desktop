@@ -1,9 +1,10 @@
-import getUserData from '@/services/getUserData'
-import getUserJournal from '@services/getUserJournal'
+import { login, logout, getUserData, getBillingRecords } from '@/services/user'
 
 import {
   MUT_SET_USER_DATA,
+  ACT_LOGIN,
   MUT_LOGIN,
+  ACT_LOGOUT,
   MUT_LOGOUT,
   ACT_REFRESH_USER,
   MUT_SET_JOURNAL,
@@ -16,7 +17,7 @@ const store = {
     isLogin: true,
     nickname: '',
     balance: 0,
-    journal: [],
+    billingRecords: [],
   },
   mutations: {
     [MUT_SET_USER_DATA](state, data) {
@@ -33,13 +34,36 @@ const store = {
       state.nickname = ''
       state.balance = 0
       state.uid = ''
-      state.journal = []
+      state.billingRecords = []
     },
     [MUT_SET_JOURNAL](state, journal) {
-      state.journal = journal
+      state.billingRecords = journal
     },
   },
   actions: {
+    [ACT_LOGIN](context, loginData) {
+      return login(loginData).then(
+        res => {
+          context.commit(MUT_LOGIN)
+          return context.commit(MUT_SET_USER_DATA, res)
+        },
+        err => {
+          console.log('login error')
+          console.log(err)
+        },
+      )
+    },
+    [ACT_LOGOUT](context) {
+      return logout().then(
+        () => {
+          return context.commit(MUT_LOGOUT)
+        },
+        err => {
+          console.log('logout error')
+          console.log(err)
+        },
+      )
+    },
     [ACT_REFRESH_USER](context) {
       return getUserData().then(
         res => {
@@ -54,10 +78,10 @@ const store = {
       )
     },
     [ACT_GET_JOURNAL](context) {
-      return getUserJournal().then(
+      return getBillingRecords().then(
         res => context.commit(MUT_SET_JOURNAL, res),
         err => {
-          console.log('get journal error')
+          console.log('get billing records error')
           console.log(err)
         },
       )

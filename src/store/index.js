@@ -63,11 +63,11 @@ export default new Vuex.Store({
   mutations: {
     [MUT_SET_FILE_LIST](state, list) {
       list.map(item => {
-        state.fileList[item.id] = new File(item)
+        Vue.set(state.fileList, item.id, new File(item))
       })
     },
     [MUT_REMOVE_FILE](state, id) {
-      delete state.fileList[id]
+      Vue.delete(state.fileList, id)
     },
     [MUT_RENAME_FILE](state, payload) {
       state.fileList[payload.fileId].rename(payload.name)
