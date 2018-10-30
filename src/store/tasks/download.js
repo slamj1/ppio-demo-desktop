@@ -1,26 +1,31 @@
+import Vue from 'vue'
+
 import Task from './Task'
 import {
   TASK_TYPE_DOWNLOAD,
   MUT_CREATE_TASK,
   MUT_REMOVE_TASK,
   MUT_SET_TASK_DATA,
+  MUT_ADD_DL_TASK,
 } from '@/constants/store'
 
 const store = {
   state: {
-    taskQueue: [],
-    curTask: {},
+    uploadQueue: {},
+    curTask: null,
   },
   mutations: {
-    [MUT_CREATE_TASK](mode) {
-      this.taskQueue.unshift(new Task({ type: TASK_TYPE_DOWNLOAD, mode: mode }))
-      this.curTask = this.taskQueue[0]
+    [MUT_CREATE_TASK](state, mode) {
+      state.curTask = new Task({ type: TASK_TYPE_DOWNLOAD, mode: mode })
     },
-    [MUT_REMOVE_TASK](taskId) {
-      this.taskQueue = this.taskQueue.filter(task => task.id !== taskId)
+    [MUT_ADD_DL_TASK](state, id) {
+      state.uploadQueue[id] = state.curTask
     },
-    [MUT_SET_TASK_DATA](data) {
-      this.curTask.setTaskData(data)
+    [MUT_REMOVE_TASK](state, taskId) {
+      Vue.delete(state.uploadQueue, taskId)
+    },
+    [MUT_SET_TASK_DATA](state, data) {
+      state.curTask.setTaskData(data)
     },
   },
 }

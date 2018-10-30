@@ -14,43 +14,51 @@
           </template>
         </div>
       </div>
-      <el-col class="header-btn-group" :span="12">
-        <el-row>
-          <template v-if="isSelect">
-            <el-button size="small" type="primary" :loading="preparingDl" @click="f_download"><i class="el-icon-download el-icon--left"></i> Download</el-button>
-            <el-button size="small" plain :loading="preparingShare" @click="f_share"><i class="el-icon-share el-icon--left"></i> Share</el-button>
-            <el-dropdown size="small" trigger="click" :hide-on-click="false">
-              <span class="el-dropdown-link">
-                More<i class="el-icon-arrow-down el-icon--right"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item :loading="preparingRename" @click="f_rename">Rename</el-dropdown-item>
-                <el-dropdown-item :loading="preparingRenew" @click="f_renew">Renew</el-dropdown-item>
-                <el-dropdown-item :loading="preparingDel" @click="f_delete">Delete</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </template>
-          <template v-else>
-            <el-button size="small" plain :loading="preparingUl" @click="f_upload"><i class="el-icon-upload el-icon--left"></i> Upload</el-button>
-            <el-button size="small" plain :loading="preparingGet" @click="f_get"><i class="el-icon-download el-icon--left"></i> Get</el-button>
-          </template>
-        </el-row>
-      </el-col>
+      <div class="header-btn-group">
+        <template v-if="isSelect">
+          <el-button size="small" type="primary" :loading="preparingDl" @click="f_download"><i class="el-icon-download el-icon--left"></i> Download</el-button>
+          <el-button size="small" plain :loading="preparingShare" @click="f_share"><i class="el-icon-share el-icon--left"></i> Share</el-button>
+          <el-dropdown size="small" trigger="click" :hide-on-click="false">
+            <span class="el-dropdown-link">
+              More<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item :loading="preparingRename" @click="f_rename">Rename</el-dropdown-item>
+              <el-dropdown-item :loading="preparingRenew" @click="f_renew">Renew</el-dropdown-item>
+              <el-dropdown-item :loading="preparingDel" @click="f_delete">Delete</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </template>
+        <template v-else>
+          <el-button size="small" plain :loading="preparingUl" @click="f_upload"><i class="el-icon-upload el-icon--left"></i> Upload</el-button>
+          <el-button size="small" plain :loading="preparingGet" @click="f_get"><i class="el-icon-download el-icon--left"></i> Get</el-button>
+        </template>
+      </div>
       <el-button class="refresh-btn" icon="el-icon-refresh" circle></el-button>
     </el-header>
-    <el-main></el-main>
+    <el-main>
+      <div class="file-container">
+        <FileItem
+            v-for="(file, fileId) in fileList"
+            :class="{'selected': selectedFileId === fileId}"
+            :key="fileId"
+            :file="file"
+            @click="f_selectFile(fileId)"></FileItem>
+      </div>
+    </el-main>
   </el-container>
 </template>
 
 <script>
 import { APP_MODE_COINPOOL } from '@/constants/constants'
+import FileItem from '@/components/FileItem'
 
 export default {
   name: 'home',
   data() {
     return {
       avatar: '',
-      username: 'fdsafeILHULHUIfwe235',
+      username: 'fdsafeILHULHUIfwe235feILHULfeILHUL',
       mode: APP_MODE_COINPOOL,
       APP_MODE_COINPOOL: APP_MODE_COINPOOL,
       usedStorage: '720',
@@ -63,6 +71,8 @@ export default {
       preparingDel: false,
       preparingUl: false,
       preparingGet: false,
+      fileList: [],
+      selectedFileId: 0,
     }
   },
   computed: {
@@ -70,7 +80,9 @@ export default {
       return (this.usedStorage / this.capacity) * 100
     },
   },
-  components: {},
+  components: {
+    FileItem,
+  },
   methods: {
     f_download() {},
 
@@ -90,17 +102,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/_var.scss";
+
 .app-header {
+  position: relative;
+  padding-top: $titleHeight;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: left;
   align-items: center;
   background-color: #1e1c51;
   color: #fff;
+  -webkit-app-region: drag;
 }
 .header-profile {
   flex: 0 0 240px;
   margin-right: 20px;
+  -webkit-app-region: no-drag;
 
   .header-avatar {
     float: left;
@@ -131,5 +149,22 @@ export default {
       }
     }
   }
+}
+.header-btn-group {
+  -webkit-app-region: no-drag;
+}
+.refresh-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  -webkit-app-region: no-drag;
+}
+
+.file-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 </style>

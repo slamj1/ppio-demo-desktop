@@ -2,7 +2,7 @@ class File {
   id = ''
   filename = ''
   size = 0
-  type = 0
+  type = 0 // file mimetype
   isSecure = false
   isPublic = false
 
@@ -23,6 +23,12 @@ class File {
   }
   setPublic(isPublic) {
     this.isPublic = isPublic
+  }
+  download() {
+    this.isDownloading = true
+  }
+  upload() {
+    this.isUploading = true
   }
 }
 
