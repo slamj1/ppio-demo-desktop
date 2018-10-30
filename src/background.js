@@ -15,12 +15,14 @@ function createWindow() {
   win = new BrowserWindow({
     width: 1000,
     height: 670,
+    minHeight: 670,
+    minWidth: 1000,
     titleBarStyle: 'hidden',
   })
 
   if (isDevelopment) {
-    // Load the url of the dev server if in development mode
-    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    win.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}#/account`)
+    console.log(process.env.WEBPACK_DEV_SERVER_URL)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
