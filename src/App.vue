@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <el-row class="app-titlebar">PPIO - demo</el-row>
     <router-view></router-view>
   </div>
 </template>
@@ -16,10 +15,10 @@ export default {
 
 <style lang="scss">
 @import './assets/css/_base.scss';
-
 #app {
   height: 100%;
   position: relative;
+  overflow: hidden;
 }
 .app-titlebar {
   height: $titleHeight;

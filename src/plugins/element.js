@@ -12,6 +12,8 @@ import {
   Col,
   Input,
   Alert,
+  Steps,
+  Step,
 } from 'element-ui'
 import '@/assets/css/element-theme.scss'
 import lang from 'element-ui/lib/locale/lang/en'
@@ -31,3 +33,5 @@ Vue.use(Row)
 Vue.use(Col)
 Vue.use(Input)
 Vue.use(Alert)
+Vue.use(Steps)
+Vue.use(Step)
