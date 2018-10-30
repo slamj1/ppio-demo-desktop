@@ -35,7 +35,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/assets/css/_variables.scss';
+@import '@/assets/css/_var.scss';
 #account-create {
   padding: 100px 80px 0;
   text-align: center;
