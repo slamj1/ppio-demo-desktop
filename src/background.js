@@ -12,8 +12,11 @@ let win
 // Standard scheme must be registered before the app is ready
 protocol.registerStandardSchemes(['app'], { secure: true })
 function createWindow() {
-  // Create the browser window.
-  win = new BrowserWindow({ width: 800, height: 600 })
+  win = new BrowserWindow({
+    width: 1000,
+    height: 670,
+    titleBarStyle: 'hidden',
+  })
 
   if (isDevelopment) {
     // Load the url of the dev server if in development mode
@@ -21,7 +24,6 @@ function createWindow() {
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
-    // Load the index.html when not in development
     win.loadFile('index.html')
   }
 
