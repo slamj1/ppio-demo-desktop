@@ -7,11 +7,14 @@ export default class Task {
   type = ''
   mode = APP_MODE_COINPOOL // 0 for non-Coinpool, 1 for Coinpool
   transferringData = false // downloading or uploading
+  transferProgress = 0 // transferred progress, in number
   taskData = {} // different based on task type
+  file = null
 
   constructor(initData) {
     this.type = initData.type
     this.mode = initData.mode
+    this.file = initData.file
   }
 
   setTaskData(data) {

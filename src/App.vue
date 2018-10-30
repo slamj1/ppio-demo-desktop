@@ -20,11 +20,4 @@ export default {
   position: relative;
   overflow: hidden;
 }
-.app-titlebar {
-  height: $titleHeight;
-  line-height: $titleHeight;
-  -webkit-app-region: drag;
-  text-align: center;
-  user-select: none;
-}
 </style>

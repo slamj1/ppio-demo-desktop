@@ -11,14 +11,14 @@ const store = {
     curTask: null,
   },
   mutations: {
-    [MUT_CREATE_TASK](mode) {
-      this.curTask = new Task({ type: TASK_TYPE_GET, mode: mode })
+    [MUT_CREATE_TASK](state, mode) {
+      state.curTask = new Task({ type: TASK_TYPE_GET, mode: mode })
     },
-    [MUT_REMOVE_TASK]() {
-      this.curTask = null
+    [MUT_REMOVE_TASK](state) {
+      state.curTask = null
     },
-    [MUT_SET_TASK_DATA](data) {
-      this.curTask.setTaskData(data)
+    [MUT_SET_TASK_DATA](state, data) {
+      state.curTask.setTaskData(data)
     },
   },
 }

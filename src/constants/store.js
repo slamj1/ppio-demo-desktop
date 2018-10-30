@@ -21,6 +21,9 @@ export const MUT_REMOVE_TASK = 'mutation_removeTask'
 export const MUT_ADD_DL_TASK = 'mutation_addDownloadTask'
 export const MUT_RM_DL_TASK = 'mutation_removeDownloadTask'
 
+export const MUT_ADD_UL_TASK = 'mutation_addUploadTask'
+export const MUT_RM_UL_TASK = 'mutation_removeUploadTask'
+
 export const TASK_TYPE_DOWNLOAD = 'taskType_download'
 export const TASK_TYPE_GET = 'taskType_get'
 export const TASK_TYPE_RENEW = 'taskType_renew'
