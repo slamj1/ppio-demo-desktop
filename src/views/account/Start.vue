@@ -12,7 +12,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/assets/css/_base.scss';
 .start {
   height: 100%;
   position: relative;

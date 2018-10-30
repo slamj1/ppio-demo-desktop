@@ -1,7 +1,23 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
-import Start from './views/account/Start.vue'
+import Home from './views/Home'
+import Services from './views/subviews/Service'
+import Download from './views/subviews/download/Process'
+import Payment from './views/subviews/Payment'
+import GetProcess from './views/subviews/get/Process'
+import InputCode from './views/subviews/get/InputCode'
+import GetMethod from './views/subviews/get/ChooseMethod'
+import GetSecurity from './views/subviews/get/Security'
+import RenewProcess from './views/subviews/renew/Process'
+import ShareProcess from './views/subviews/share/Process'
+import Share from './views/subviews/share/Share'
+import UploadProcess from './views/subviews/upload/Process'
+import UploadSecurity from './views/subviews/upload/Security'
+import About from './views/About.vue'
+import BillingRecords from './views/BillingRecords'
+import Start from './views/account/Start'
+import ImportAccount from './views/account/Import'
+import CreateAccount from './views/account/Create'
 
 Vue.use(Router)
 
@@ -11,6 +27,7 @@ export default new Router({
       path: '/',
       name: 'start',
       component: Start,
+      // redirect: '/home',
     },
     {
       path: '/home',
@@ -20,90 +37,90 @@ export default new Router({
         {
           path: 'services',
           name: 'services',
-          component: require('./views/subviews/Service'),
+          component: Services,
         },
         {
           path: 'download',
           name: 'download',
-          component: require('./views/subviews/download/Process'),
+          component: Download,
           children: [
             {
               path: 'payment',
               name: 'download/payment',
-              component: require('./views/subviews/Payment'),
+              component: Payment,
             },
           ],
         },
         {
           path: 'get',
           name: 'get',
-          component: require('./views/subviews/get/Process'),
+          component: GetProcess,
           children: [
             {
               path: 'inputcode',
               name: 'get/inputcode',
-              component: require('./views/subviews/get/InputCode'),
+              component: InputCode,
             },
             {
               path: 'method',
               name: 'get/method',
-              component: require('./views/subviews/get/ChooseMethod'),
+              component: GetMethod,
             },
             {
               path: 'security',
               name: 'get/security',
-              component: require('./views/subviews/get/Security'),
+              component: GetSecurity,
             },
             {
               path: 'payment',
               name: 'get/payment',
-              component: require('./views/subviews/Payment'),
+              component: Payment,
             },
           ],
         },
         {
           path: 'renew',
           name: 'renew',
-          component: require('./views/subviews/renew/Process'),
+          component: RenewProcess,
           children: [
             {
               path: 'payment',
               name: 'renew/payment',
-              component: require('./views/subviews/Payment'),
+              component: Payment,
             },
           ],
         },
         {
           path: 'share',
           name: 'share',
-          component: require('./views/subviews/share/Process'),
+          component: ShareProcess,
           children: [
             {
               path: 'share',
               name: 'share/share',
-              component: require('./views/subviews/share/Share'),
+              component: Share,
             },
             {
               path: 'payment',
               name: 'share/payment',
-              component: require('./views/subviews/Payment'),
+              component: Payment,
             },
           ],
         },
         {
           path: 'upload',
           name: 'upload',
-          component: require('./views/subviews/upload/Process'),
+          component: UploadProcess,
           children: [
             {
               path: 'security',
               name: 'upload/security',
-              component: require('./views/subviews/upload/Security'),
+              component: UploadSecurity,
             },
             {
               path: 'payment',
               name: 'upload/payment',
-              component: require('./views/subviews/Payment'),
+              component: Payment,
             },
           ],
         },
@@ -112,27 +129,27 @@ export default new Router({
     {
       path: '/about',
       name: 'about',
-      component: require('./views/About.vue'),
+      component: About,
     },
     {
       path: '/billing',
       name: 'billing',
-      component: require('./views/BillingRecords'),
+      component: BillingRecords,
     },
     {
       path: '/account',
       name: 'account',
-      component: require('./views/account/Start'),
+      component: Start,
       children: [
         {
           path: 'import',
           name: 'account/import',
-          component: require('./views/account/Import'),
+          component: ImportAccount,
         },
         {
           path: 'create',
           name: 'account/create',
-          component: require('./views/account/Create'),
+          component: CreateAccount,
         },
       ],
     },
