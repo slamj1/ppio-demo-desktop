@@ -72,6 +72,7 @@ export default {
     .attention-title {
       font-size: 16px;
       font-weight: bold;
+      margin-top: 0;
     }
     p {
       margin-top: 5px;

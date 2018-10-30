@@ -23,6 +23,9 @@ export default {
   data: () => ({
     name: 'test',
   }),
+  mounted() {
+    console.log('test', this.$remote.getGlobal('shareObject'))
+  },
   methods: {
     goPath(path) {
       this.$router.replace(path)
