@@ -1,10 +1,11 @@
 import { TASK_TYPE_DOWNLOAD, TASK_TYPE_UPLOAD } from '@/constants/store'
 import { startDownload, getProgress as getDownloadProgress } from '@/services/download'
 import { startUpload, getProgress as getUploadProgress } from '@/services/upload'
+import { APP_MODE_COINPOOL } from '@/constants/constants'
 
 export default class Task {
   type = ''
-  mode = 0 // 0 for non-Coinpool, 1 for Coinpool
+  mode = APP_MODE_COINPOOL // 0 for non-Coinpool, 1 for Coinpool
   transferringData = false // downloading or uploading
   taskData = {} // different based on task type
 
