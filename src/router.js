@@ -13,7 +13,7 @@ import ShareProcess from './views/subviews/share/Process'
 import Share from './views/subviews/share/Share'
 import UploadProcess from './views/subviews/upload/Process'
 import UploadSecurity from './views/subviews/upload/Security'
-import About from './views/About.vue'
+import About from './views/About'
 import BillingRecords from './views/BillingRecords'
 import Start from './views/account/Start'
 import ImportAccount from './views/account/Import'
@@ -25,9 +25,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'start',
-      component: Start,
-      // redirect: '/home',
+      redirect: 'home',
     },
     {
       path: '/home',
@@ -141,6 +139,10 @@ export default new Router({
       name: 'account',
       component: Start,
       children: [
+        {
+          path: '/',
+          redirect: 'import',
+        },
         {
           path: 'import',
           name: 'account/import',

@@ -10,7 +10,10 @@ import {
   Progress,
   Row,
   Col,
+  Input,
+  Alert,
 } from 'element-ui'
+import '@/assets/css/element-theme.scss'
 import lang from 'element-ui/lib/locale/lang/en'
 import locale from 'element-ui/lib/locale'
 
@@ -26,3 +29,5 @@ Vue.use(DropdownItem)
 Vue.use(Progress)
 Vue.use(Row)
 Vue.use(Col)
+Vue.use(Input)
+Vue.use(Alert)
