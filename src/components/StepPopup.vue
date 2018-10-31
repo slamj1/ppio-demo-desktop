@@ -9,7 +9,7 @@
           <slot name="header"></slot>
         </div>
         <div class="step-popup-stepper">
-          <el-steps :active="curStep" class="popup-steps" simple>
+          <el-steps :active="curStep" finish-status="success" :space="0" class="popup-steps" simple>
             <el-step v-for="(item,index) in steps" v-bind:key="index" :title="item"></el-step>
           </el-steps>
         </div>

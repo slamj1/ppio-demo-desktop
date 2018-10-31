@@ -79,7 +79,7 @@ export default {
   data: () => ({
     type: '1',
     filename: 'PPIO upload filename',
-    steps: ['upload type', 'upload setting', 'payment'],
+    steps: ['Choose Type', 'Storage Setting', 'Payment'],
     options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
     radio: 1,
     copyNumber: 5,

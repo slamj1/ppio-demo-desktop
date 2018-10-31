@@ -2,15 +2,11 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home'
 import Services from './views/subviews/Service'
-import Download from './views/subviews/download/Process'
-import Payment from './views/subviews/Payment'
-import GetProcess from './views/subviews/get/Process'
-import InputCode from './views/subviews/get/InputCode'
-import GetMethod from './views/subviews/get/ChooseMethod'
-import GetSecurity from './views/subviews/get/Security'
-import RenewProcess from './views/subviews/renew/Process'
-import Share from './views/subviews/share/Share'
-import Upload from './views/subviews/upload/Upload'
+import Download from './views/subviews/Download'
+import Get from './views/subviews/Get'
+import Renew from './views/subviews/Renew'
+import Share from './views/subviews/Share'
+import Upload from './views/subviews/Upload'
 import About from './views/About'
 import BillingRecords from './views/BillingRecords'
 import Start from './views/account/Start'
@@ -39,52 +35,16 @@ export default new Router({
           path: 'download',
           name: 'download',
           component: Download,
-          children: [
-            {
-              path: 'payment',
-              name: 'download/payment',
-              component: Payment,
-            },
-          ],
         },
         {
           path: 'get',
           name: 'get',
-          component: GetProcess,
-          children: [
-            {
-              path: 'inputcode',
-              name: 'get/inputcode',
-              component: InputCode,
-            },
-            {
-              path: 'method',
-              name: 'get/method',
-              component: GetMethod,
-            },
-            {
-              path: 'security',
-              name: 'get/security',
-              component: GetSecurity,
-            },
-            {
-              path: 'payment',
-              name: 'get/payment',
-              component: Payment,
-            },
-          ],
+          component: Get,
         },
         {
           path: 'renew',
           name: 'renew',
-          component: RenewProcess,
-          children: [
-            {
-              path: 'payment',
-              name: 'renew/payment',
-              component: Payment,
-            },
-          ],
+          component: Renew,
         },
         {
           path: 'share',
