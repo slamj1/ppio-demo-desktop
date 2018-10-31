@@ -8,6 +8,7 @@ import FilterPlugin from './utils/filter.js'
 import UtilPlugin from './utils/util.js'
 
 Vue.config.productionTip = false
+Vue.config.devtools = true
 Vue.use(FilterPlugin)
 Vue.use(UtilPlugin)
 

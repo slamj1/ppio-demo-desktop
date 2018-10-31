@@ -4,9 +4,12 @@ import {
   Main,
   Button,
   Header,
+  Aside,
   Dropdown,
   DropdownMenu,
   DropdownItem,
+  Menu,
+  MenuItem,
   Progress,
   Row,
   Col,
@@ -23,9 +26,12 @@ Vue.use(Container)
 Vue.use(Main)
 Vue.use(Button)
 Vue.use(Header)
+Vue.use(Aside)
 Vue.use(Dropdown)
 Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
+Vue.use(Menu)
+Vue.use(MenuItem)
 Vue.use(Progress)
 Vue.use(Row)
 Vue.use(Col)

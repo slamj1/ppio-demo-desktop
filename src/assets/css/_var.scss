@@ -1,3 +1,10 @@
-$titleHeight: 24px;
-$primary-color: #6F81FE;
+$title-height: 24px;
+$primary-color: #1989FA;
 $text-color: #333;
+$sidebar-color: #243243;
+
+@mixin general-bg {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
