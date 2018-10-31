@@ -1,7 +1,10 @@
 <template>
-  <transition name="slide">
+  <transition name="fade">
     <div class="popup-mask">
       <div class="popup-wrap">
+        <svg v-on:click="f_close" viewBox="0 0 1024 1024" class="popup-close" version="1.1" width="128" height="128">
+          <path d="M521.693867 449.297067L111.4112 39.0144a51.2 51.2 0 1 0-72.430933 72.362667l410.282666 410.3168-410.282666 410.3168a51.2 51.2 0 1 0 72.3968 72.3968l410.3168-410.282667 410.3168 410.282667a51.2 51.2 0 1 0 72.3968-72.362667l-410.282667-410.350933 410.282667-410.282667a51.2 51.2 0 1 0-72.3968-72.3968l-410.282667 410.282667z"></path>
+        </svg>
         <div class="popup-header">
           <slot name="header"></slot>
         </div>
@@ -9,9 +12,8 @@
           <slot name="content"></slot>
         </div>
         <div class="popup-footer">
-          <slot class="footer"></slot>
-          <el-button class="button" v-on:click="cancel" size="mini">Cancel</el-button>
-          <el-button class="button" v-on:click="confirm" size="mini" type="primary">Confirm</el-button>
+          <slot name="footer"></slot>
+          <el-button class="button" v-on:click="f_confirm" size="mini" type="primary">{{ButtonTitle?ButtonTitle:'Confirm' }}</el-button>
         </div>
       </div>
     </div>
@@ -20,14 +22,13 @@
 <script>
 export default {
   name: 'popup',
-  data: () => ({
-    popup: '',
-  }),
+  data: () => ({}),
+  props: ['ButtonTitle'],
   methods: {
-    cancel() {
-      this.$emit('cancel')
+    f_close() {
+      this.$emit('close')
     },
-    confirm() {
+    f_confirm() {
       this.$emit('confirm')
     },
   },
@@ -35,20 +36,20 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import '@/assets/css/_var.scss';
-.popup-mask.slide-enter-active {
-  transition: top 0.3s ease;
+.popup-mask.fade-enter-active {
+  transition: opacity 0.2s ease;
 }
-.popup-mask.slide-leave-active {
-  transition: top 0.5s ease;
+.popup-mask.fade-leave-active {
+  transition: opacity 0.2s ease;
 }
-.popup-mask.slide-enter,
-.popup-mask.slide-leave-to {
-  top: -100%;
+.popup-mask.fade-enter,
+.popup-mask.fade-leave-to {
+  opacity: 0;
 }
 
-.popup-mask.slide-enter-to,
-.popup-mask.slide-leave {
-  top: 0;
+.popup-mask.fade-enter-to,
+.popup-mask.fade-leave {
+  opacity: 1;
 }
 .popup-mask {
   position: fixed;
@@ -57,35 +58,48 @@ export default {
   height: 100%;
   width: 100%;
   z-index: 10;
+  background-color: rgba(0, 0, 0, 0.5);
   .popup-wrap {
-    width: 720px;
-    left: 0;
-    right: 0;
-    top: 0;
-    height: 450px;
+    left: 50%;
+    top: 50%;
+    margin: auto;
+    transform: translate(-50%, -50%);
+    width: 600px;
     padding-bottom: 36px;
-    padding-top: 36px;
-    margin-left: auto;
-    margin-right: auto;
+    padding-top: 56px;
     position: absolute;
     background-color: #fff;
     border: 1px solid #ddd;
-    border-top: none;
-    -webkit-app-region: no-drag;
-    box-shadow: rgba(39, 44, 49, 0.06) 2px 4px 8px, rgba(39, 44, 49, 0.06) -2px -4px 8px;
+    border-radius: 4px;
+  }
+  .popup-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    height: 16px;
+    width: 16px;
+    fill: #999;
+    transition: all ease 0.3s;
+    cursor: pointer;
+    &:hover {
+      fill: #333;
+    }
   }
   .popup-header {
     height: 36px;
     line-height: 36px;
-    text-align: center;
     color: $text-color;
     font-weight: bold;
-    background-color: #eee;
-    border-bottom: 1px solid #ddd;
+    text-align: left;
     position: absolute;
+    padding-left: 20px;
     top: 0;
     left: 0;
-    right: 0;
+    right: 100px;
+    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .popup-footer {
     height: 36px;
@@ -93,23 +107,19 @@ export default {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 0;
-    background-color: #eee;
-    border-top: 1px solid #ddd;
-    text-align: right;
-    padding-right: 10px;
+    bottom: 10px;
+    text-align: center;
     .button {
-      padding-top: 5px;
-      padding-bottom: 5px;
-      margin-right: 6px;
+      margin-right: 15px;
+      &:last-child {
+        margin-right: 0;
+      }
     }
   }
   .popup-content {
-    position: absolute;
-    top: 36px;
-    left: 0;
-    right: 0;
-    bottom: 36px;
+    max-height: 360px;
+    min-height: 100px;
+    overflow: hidden;
   }
 }
 </style>
