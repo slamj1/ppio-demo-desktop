@@ -24,12 +24,6 @@ class File {
   setPublic(isPublic) {
     this.isPublic = isPublic
   }
-  download() {
-    this.isDownloading = true
-  }
-  upload() {
-    this.isUploading = true
-  }
 }
 
 export default File

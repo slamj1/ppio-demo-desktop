@@ -9,9 +9,11 @@ import shareTaskStore from './tasks/share'
 import uploadTaskStore from './tasks/upload'
 import downloadTaskStore from './tasks/download'
 
+Vue.config.devtools = true
 Vue.use(Vuex)
 
 export default new Vuex.Store({
+  strict: process.env.NODE_ENV !== 'production',
   state: {
     curPage: '',
   },

@@ -9,6 +9,7 @@ import {
   MUT_SHARE_FILE,
 } from '@/constants/store'
 import getFileList from '@/services/getFileList'
+import File from './File'
 
 const store = {
   state: {
