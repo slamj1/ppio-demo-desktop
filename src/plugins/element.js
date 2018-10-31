@@ -14,6 +14,10 @@ import {
   Alert,
   Steps,
   Step,
+  Select,
+  Option,
+  RadioGroup,
+  Radio,
 } from 'element-ui'
 import '@/assets/css/element-theme.scss'
 import lang from 'element-ui/lib/locale/lang/en'
@@ -35,3 +39,7 @@ Vue.use(Input)
 Vue.use(Alert)
 Vue.use(Steps)
 Vue.use(Step)
+Vue.use(Select)
+Vue.use(Option)
+Vue.use(RadioGroup)
+Vue.use(Radio)

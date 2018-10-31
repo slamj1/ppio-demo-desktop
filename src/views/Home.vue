@@ -46,6 +46,7 @@
             @click="f_selectFile(fileId)"></FileItem>
       </div>
     </el-main>
+    <router-view></router-view>
   </el-container>
 </template>
 
@@ -75,6 +76,34 @@ export default {
       selectedFileId: 0,
     }
   },
+  mounted() {
+    // share event
+    this.$vueBus.$on('unshare', () => {
+      console.log('unshare')
+      this.$router.replace('/home')
+    })
+
+    this.$vueBus.$on('share-copy', () => {
+      console.log('share-copy')
+      this.$router.replace('/home')
+    })
+
+    this.$vueBus.$on('share-close', () => {
+      console.log('share-close')
+      this.$router.replace('/home')
+    })
+
+    // upload event
+    this.$vueBus.$on('upload-close', () => {
+      console.log('upload-close')
+      this.$router.replace('/home')
+    })
+
+    this.$vueBus.$on('upload-pay', () => {
+      console.log('upload-pay')
+      this.$router.replace('/home')
+    })
+  },
   computed: {
     usedPercent() {
       return (this.usedStorage / this.capacity) * 100
@@ -102,7 +131,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/css/_var.scss";
+@import '@/assets/css/_var.scss';
 
 .app-header {
   position: relative;

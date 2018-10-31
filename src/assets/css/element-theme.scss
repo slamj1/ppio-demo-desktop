@@ -1,7 +1,23 @@
-/* 改变主题色变量 */
+/* change the theme of element-ui */
 $--color-primary: #6F81FE;
 
-/* 改变 icon 字体路径变量，必需 */
+/* change some details of element-ui */
+.el-step__title {
+  font-size: 14px !important;
+  &.is-process {
+    color: #666 !important;
+  }
+}
+
+.el-step__head {
+  padding-right: 5px !important;
+  &.is-process {
+    color: #666 !important;
+    border-color: #666 !important;
+  }
+}
+
+/* change the path of element-ui required */
 $--font-path: '~element-ui/lib/theme-chalk/fonts';
 
 @import "~element-ui/packages/theme-chalk/src/index";
