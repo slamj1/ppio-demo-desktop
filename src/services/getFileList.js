@@ -6,13 +6,11 @@ export default params =>
     method: CONTRACT_LIST,
     params,
   })
-    .then(res => {
-      return res.result
-    })
-    .then(result => {
-      return Promise.all(
-        result.map(fileHash => {
-          return sdk({
+    .then(res => res.result)
+    .then(result =>
+      Promise.all(
+        result.map(fileHash =>
+          sdk({
             method: GET_FILE_INFO,
             params: { hash: fileHash },
           })
@@ -23,10 +21,10 @@ export default params =>
             .catch(err => {
               console.log(err)
               return Promise.resolve()
-            })
-        }),
-      )
-    })
+            }),
+        ),
+      ),
+    )
     .then(results => {
       console.log(results)
       return results.filter(result => result !== undefined)

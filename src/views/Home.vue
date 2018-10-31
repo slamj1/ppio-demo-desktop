@@ -1,5 +1,5 @@
 <template>
-  <el-container class="app-page home">
+  <el-container class="app-page home" @click.native="f_selectFile(0)">
     <el-aside class="app-aside" mode="vertical" width="200px">
       <div class="aside-profile">
         <img class="profile-avatar" :src="avatar" />
@@ -16,16 +16,16 @@
       </div>
       <el-menu default-active="0" class="aside-nav">
         <el-menu-item index="0">
-          <i class="el-icon-document"></i>
+          <i class="app-icon icon-nav-file"></i>
           <span slot="title">All files</span>
         </el-menu-item>
         <p class="nav-group-title">Transmission list</p>
         <el-menu-item index="1">
-          <i class="el-icon-download"></i>
+          <i class="app-icon icon-nav-download"></i>
           <span slot="title">Downloading</span>
         </el-menu-item>
         <el-menu-item index="2">
-          <i class="el-icon-upload"></i>
+          <i class="app-icon icon-nav-upload"></i>
           <span slot="title">Uploading</span>
         </el-menu-item>
       </el-menu>
@@ -34,8 +34,8 @@
       <el-header class="app-header">
         <div class="header-btn-group">
           <template v-if="isSelect">
-            <el-button size="small" type="primary" :loading="preparingDl" @click="f_download"><i class="el-icon-download el-icon--left"></i> Download</el-button>
-            <el-button size="small" type="primary" plain :loading="preparingShare" @click="f_share"><i class="el-icon-share el-icon--left"></i> Share</el-button>
+            <el-button size="small" type="primary" :loading="preparingDl" @click="f_download"><i class="app-icon icon-download"></i> Download</el-button>
+            <el-button size="small" type="primary" plain :loading="preparingShare" @click="f_share"><i class="app-icon icon-share"></i> Share</el-button>
             <el-dropdown size="small" trigger="click" :hide-on-click="false">
             <span class="el-dropdown-link">
               More<i class="el-icon-arrow-down el-icon--right"></i>
@@ -48,8 +48,8 @@
             </el-dropdown>
           </template>
           <template v-else>
-            <el-button size="small" type="primary" :loading="preparingUl" @click="f_upload"><i class="el-icon-upload el-icon--left"></i> Upload</el-button>
-            <el-button size="small" type="primary" plain :loading="preparingGet" @click="f_get"><i class="el-icon-download el-icon--left"></i> Get</el-button>
+            <el-button size="small" type="primary" :loading="preparingUl" @click="f_upload"><i class="app-icon icon-upload"></i> Upload</el-button>
+            <el-button size="small" type="primary" plain :loading="preparingGet" @click="f_get"><i class="app-icon icon-get"></i> Get</el-button>
           </template>
         </div>
         <el-button class="refresh-btn" icon="el-icon-refresh" circle></el-button>
@@ -58,10 +58,10 @@
         <div class="file-container">
           <FileItem
               v-for="(file, fileId) in fileList"
-              :class="{'selected': selectedFileId === fileId}"
+              :selected="selectedFileId === fileId"
               :key="fileId"
               :file="file"
-              @click="f_selectFile(fileId)"></FileItem>
+              @click.native.stop="f_selectFile(fileId)"></FileItem>
         </div>
       </el-main>
     </el-container>
@@ -149,9 +149,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/css/_var.scss";
+@import '@/assets/css/_var.scss';
 
-$nav-font-color: #C0C4CC;
+$nav-font-color: #c0c4cc;
 
 .app-page {
   height: 100%;
@@ -201,11 +201,7 @@ $nav-font-color: #C0C4CC;
 
       .usage-number {
         font-size: 12px;
-        color: #ccc;
-
-        &.with-progress {
-          align-self: flex-end;
-        }
+        color: #909399;
       }
     }
   }
@@ -229,7 +225,7 @@ $nav-font-color: #C0C4CC;
       }
 
       &.is-active {
-        color: $nav-font-color;
+        color: #fff;
         background-color: $primary-color;
       }
     }
@@ -256,7 +252,7 @@ $nav-font-color: #C0C4CC;
   color: #fff;
   -webkit-app-region: drag;
   box-sizing: content-box;
-  border-bottom: 1px solid #DCDFE6;
+  border-bottom: 1px solid #dcdfe6;
 
   .header-btn-group {
     -webkit-app-region: no-drag;
@@ -266,6 +262,7 @@ $nav-font-color: #C0C4CC;
     top: 10px;
     right: 10px;
     -webkit-app-region: no-drag;
+    border: none;
   }
 }
 
