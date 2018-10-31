@@ -34,7 +34,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/assets/css/_variables.scss';
+@import '@/assets/css/_var.scss';
 .popup-mask.slide-enter-active {
   transition: top 0.3s ease;
 }

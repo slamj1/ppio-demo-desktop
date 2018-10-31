@@ -15,9 +15,9 @@ export default {
 
 <style lang="scss">
 @import './assets/css/_base.scss';
-
 #app {
   height: 100%;
   position: relative;
+  overflow: hidden;
 }
 </style>
