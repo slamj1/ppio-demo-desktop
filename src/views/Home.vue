@@ -64,6 +64,7 @@
               @click.native.stop="f_selectFile(fileId)"></FileItem>
         </div>
       </el-main>
+      <router-view></router-view>
     </el-container>
   </el-container>
 </template>
@@ -78,7 +79,7 @@ export default {
   name: 'home',
   data() {
     return {
-      avatar: '',
+      avatar: require('@/assets/img/avatar.png'),
       username: 'fdsafeILHULHUIfwe235feILHULfeILHUL',
       mode: APP_MODE_COINPOOL,
       APP_MODE_COINPOOL: APP_MODE_COINPOOL,
@@ -114,9 +115,41 @@ export default {
     FileItem,
   },
   mounted() {
-    this.getFileList().then(() => {
-      console.log(this.fileList)
-      console.log(this.$store.state)
+    this.getFileList()
+      .then(() => {
+        console.log(this.fileList)
+        console.log(this.$store.state)
+        return ''
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+    // share event
+    this.$vueBus.$on('unshare', () => {
+      console.log('unshare')
+      this.$router.replace('/home')
+    })
+
+    this.$vueBus.$on('share-copy', () => {
+      console.log('share-copy')
+      this.$router.replace('/home')
+    })
+
+    this.$vueBus.$on('share-close', () => {
+      console.log('share-close')
+      this.$router.replace('/home')
+    })
+
+    // upload event
+    this.$vueBus.$on('upload-close', () => {
+      console.log('upload-close')
+      this.$router.replace('/home')
+    })
+
+    this.$vueBus.$on('upload-pay', () => {
+      console.log('upload-pay')
+      this.$router.replace('/home')
     })
   },
   methods: {
@@ -141,7 +174,9 @@ export default {
 
     f_delete() {},
 
-    f_upload() {},
+    f_upload() {
+      this.$router.replace('/home/upload')
+    },
 
     f_get() {},
   },

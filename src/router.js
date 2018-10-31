@@ -9,10 +9,8 @@ import InputCode from './views/subviews/get/InputCode'
 import GetMethod from './views/subviews/get/ChooseMethod'
 import GetSecurity from './views/subviews/get/Security'
 import RenewProcess from './views/subviews/renew/Process'
-import ShareProcess from './views/subviews/share/Process'
 import Share from './views/subviews/share/Share'
-import UploadProcess from './views/subviews/upload/Process'
-import UploadSecurity from './views/subviews/upload/Security'
+import Upload from './views/subviews/upload/Upload'
 import About from './views/About'
 import BillingRecords from './views/BillingRecords'
 import Start from './views/account/Start'
@@ -91,36 +89,12 @@ export default new Router({
         {
           path: 'share',
           name: 'share',
-          component: ShareProcess,
-          children: [
-            {
-              path: 'share',
-              name: 'share/share',
-              component: Share,
-            },
-            {
-              path: 'payment',
-              name: 'share/payment',
-              component: Payment,
-            },
-          ],
+          component: Share,
         },
         {
           path: 'upload',
           name: 'upload',
-          component: UploadProcess,
-          children: [
-            {
-              path: 'security',
-              name: 'upload/security',
-              component: UploadSecurity,
-            },
-            {
-              path: 'payment',
-              name: 'upload/payment',
-              component: Payment,
-            },
-          ],
+          component: Upload,
         },
       ],
     },

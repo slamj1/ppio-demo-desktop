@@ -3,26 +3,19 @@
     <p class="title">Import Account</p>
     <el-input type="textarea" :autofocus="true" :rows="4" resize="none" placeholder="enter your seed phrase" v-model="seedPhrase"> </el-input>
     <br>
-    <el-button class="confirm-button" v-on:click="goToHome">Confirm</el-button>
-    <step-popup :steps="steps"> </step-popup>
+    <el-button class="confirm-button" v-on:click="f_go_home">Confirm</el-button>
   </div>
 </template>
 <script>
-import StepPopup from '@/components/StepPopup'
-
 export default {
   name: 'AccountImport',
   data: () => ({
     seedPhrase: '',
-    steps: ['step1', 'step2', 'step3'],
   }),
   methods: {
-    goToHome() {
+    f_go_home() {
       this.$router.replace('/home')
     },
-  },
-  components: {
-    StepPopup,
   },
 }
 </script>
