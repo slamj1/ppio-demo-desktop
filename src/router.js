@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home'
+import Main from './views/Main'
+import DownloadList from './views/Download'
+import UploadList from './views/Upload'
 import Services from './views/subviews/Service'
 import Download from './views/subviews/download/Process'
 import Payment from './views/subviews/Payment'
@@ -23,7 +26,11 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: 'home',
+      redirect: 'home/main',
+    },
+    {
+      path: '/home',
+      redirect: 'home/main',
     },
     {
       path: '/home',
@@ -31,70 +38,87 @@ export default new Router({
       component: Home,
       children: [
         {
-          path: 'services',
-          name: 'services',
-          component: Services,
-        },
-        {
-          path: 'download',
-          name: 'download',
-          component: Download,
+          path: 'main',
+          name: 'main',
+          component: Main,
           children: [
             {
-              path: 'payment',
-              name: 'download/payment',
-              component: Payment,
+              path: 'services',
+              name: 'services',
+              component: Services,
+            },
+            {
+              path: 'download',
+              name: 'download',
+              component: Download,
+              children: [
+                {
+                  path: 'payment',
+                  name: 'download/payment',
+                  component: Payment,
+                },
+              ],
+            },
+            {
+              path: 'get',
+              name: 'get',
+              component: GetProcess,
+              children: [
+                {
+                  path: 'inputcode',
+                  name: 'get/inputcode',
+                  component: InputCode,
+                },
+                {
+                  path: 'method',
+                  name: 'get/method',
+                  component: GetMethod,
+                },
+                {
+                  path: 'security',
+                  name: 'get/security',
+                  component: GetSecurity,
+                },
+                {
+                  path: 'payment',
+                  name: 'get/payment',
+                  component: Payment,
+                },
+              ],
+            },
+            {
+              path: 'renew',
+              name: 'renew',
+              component: RenewProcess,
+              children: [
+                {
+                  path: 'payment',
+                  name: 'renew/payment',
+                  component: Payment,
+                },
+              ],
+            },
+            {
+              path: 'share',
+              name: 'share',
+              component: Share,
+            },
+            {
+              path: 'upload',
+              name: 'upload',
+              component: Upload,
             },
           ],
         },
         {
-          path: 'get',
-          name: 'get',
-          component: GetProcess,
-          children: [
-            {
-              path: 'inputcode',
-              name: 'get/inputcode',
-              component: InputCode,
-            },
-            {
-              path: 'method',
-              name: 'get/method',
-              component: GetMethod,
-            },
-            {
-              path: 'security',
-              name: 'get/security',
-              component: GetSecurity,
-            },
-            {
-              path: 'payment',
-              name: 'get/payment',
-              component: Payment,
-            },
-          ],
+          path: 'download-list',
+          name: 'download-list',
+          component: DownloadList,
         },
         {
-          path: 'renew',
-          name: 'renew',
-          component: RenewProcess,
-          children: [
-            {
-              path: 'payment',
-              name: 'renew/payment',
-              component: Payment,
-            },
-          ],
-        },
-        {
-          path: 'share',
-          name: 'share',
-          component: Share,
-        },
-        {
-          path: 'upload',
-          name: 'upload',
-          component: Upload,
+          path: 'upload-list',
+          name: 'upload-list',
+          component: UploadList,
         },
       ],
     },

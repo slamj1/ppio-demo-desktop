@@ -17,6 +17,7 @@ const store = {
   },
   mutations: {
     [MUT_SET_FILE_LIST](state, list) {
+      state.fileList = {}
       list.map(item => {
         Vue.set(state.fileList, item.id, new File(item))
       })

@@ -1,3 +1,4 @@
+@import "~sanitize.css";
 @import "./_var.scss";
 
 * {
@@ -22,6 +23,12 @@ html {
   line-height: 1.5;
 }
 
+div, input, button, textarea, a {
+  &:focus {
+    outline: none;
+  }
+}
+
 .app-icon {
   display: inline-block;
   width: 18px;
@@ -42,6 +49,8 @@ html {
 
   &.icon-share {
     background-image: url('~@/assets/img/icon-share.png');
+    background-size: auto 14px;
+    background-position: top center;
   }
 
   &.icon-upload {
@@ -94,6 +103,15 @@ html {
 }
 
 #app {
+  .el-button.el-button--primary {
+    &:focus,
+    &:hover {
+      color: #fff;
+      background-color: $primary-color;
+      border-color: $primary-color;
+    }
+  }
+
   .el-button--primary.is-plain:hover,
   .el-button--primary.is-plain:focus {
     color: #1989FA;
@@ -101,13 +119,21 @@ html {
     border-color: #a3d0fd;
   }
 
-  .el-button {
+  .el-button.el-button--small {
     height: 30px;
     line-height: 30px;
     padding: 0 15px;
 
     .app-icon {
       vertical-align: middle;
+    }
+  }
+
+  .el-button.is-circle {
+    &:focus,
+    &:hover {
+      background-color: transparent;
+      color: #606266;
     }
   }
 }
