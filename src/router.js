@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home'
+import Main from './views/Main'
+import DownloadList from './views/Download'
+import UploadList from './views/Upload'
 import Services from './views/subviews/Service'
 import Download from './views/subviews/Download'
 import Get from './views/subviews/Get'
@@ -19,7 +22,11 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: 'home',
+      redirect: 'home/main',
+    },
+    {
+      path: '/home',
+      redirect: 'home/main',
     },
     {
       path: '/home',
@@ -27,34 +34,51 @@ export default new Router({
       component: Home,
       children: [
         {
-          path: 'services',
-          name: 'services',
-          component: Services,
+          path: 'main',
+          name: 'main',
+          component: Main,
+          children: [
+            {
+              path: 'services',
+              name: 'services',
+              component: Services,
+            },
+            {
+              path: 'download',
+              name: 'download',
+              component: Download,
+            },
+            {
+              path: 'get',
+              name: 'get',
+              component: Get,
+            },
+            {
+              path: 'renew',
+              name: 'renew',
+              component: Renew,
+            },
+            {
+              path: 'share',
+              name: 'share',
+              component: Share,
+            },
+            {
+              path: 'upload',
+              name: 'upload',
+              component: Upload,
+            },
+          ],
         },
         {
-          path: 'download',
-          name: 'download',
-          component: Download,
+          path: 'download-list',
+          name: 'download-list',
+          component: DownloadList,
         },
         {
-          path: 'get',
-          name: 'get',
-          component: Get,
-        },
-        {
-          path: 'renew',
-          name: 'renew',
-          component: Renew,
-        },
-        {
-          path: 'share',
-          name: 'share',
-          component: Share,
-        },
-        {
-          path: 'upload',
-          name: 'upload',
-          component: Upload,
+          path: 'upload-list',
+          name: 'upload-list',
+          component: UploadList,
         },
       ],
     },
