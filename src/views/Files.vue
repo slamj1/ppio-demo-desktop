@@ -40,7 +40,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import { APP_MODE_COINPOOL } from '@/constants/constants'
-import { ACT_SET_FILE_LIST, ACT_CREATE_DL_TASK } from '@/constants/store'
+import { ACT_SET_FILE_LIST, ACT_CREATE_DL_TASK, ACT_GET_FILE } from '@/constants/store'
 import FileItem from '@/components/FileItem'
 import { remote } from 'electron'
 
@@ -83,6 +83,7 @@ export default {
   methods: {
     ...mapActions({
       getFileList: ACT_SET_FILE_LIST,
+      getFile: ACT_GET_FILE,
     }),
     f_refreshData() {
       if (this.fetchingData) {
@@ -183,12 +184,30 @@ export default {
       // upload event
       this.$vueBus.$on('upload-close', () => {
         console.log('upload-close')
-        this.$router.replace({ name: 'home' })
+        this.$router.replace({ name: 'files' })
       })
 
       this.$vueBus.$on('upload-pay', () => {
         console.log('upload-pay')
-        this.$router.replace({ name: 'home' })
+        this.$router.replace({ name: 'files' })
+      })
+
+      // get event
+      this.$vueBus.$on('get-close', () => {
+        console.log('get-close')
+        this.$router.replace({ name: 'files' })
+      })
+
+      this.$vueBus.$on('get-done', file => {
+        console.log('get-done')
+        this.getFile(file)
+          .then(() => {
+            console.log(1)
+            return this.$router.replace({ name: 'files' })
+          })
+          .catch(err => {
+            console.log(JSON.stringify(err))
+          })
       })
     },
     f_download() {
@@ -196,7 +215,6 @@ export default {
         .dispatch(ACT_CREATE_DL_TASK)
         .then(() => this.$router.push({ name: 'download-list' }))
     },
-
     f_share() {
       if (!this.operatingFile) {
         return
@@ -209,9 +227,7 @@ export default {
 
       this.$router.replace({ name: 'share' })
     },
-
     f_rename() {},
-
     f_renew() {},
 
     f_delete() {},
@@ -219,8 +235,9 @@ export default {
     f_upload() {
       this.$router.replace({ name: 'upload' })
     },
-
-    f_get() {},
+    f_get() {
+      this.$router.replace({ name: 'get' })
+    },
   },
 }
 </script>

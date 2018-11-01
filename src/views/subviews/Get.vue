@@ -1,17 +1,17 @@
 <template>
   <div class="upload-page">
-    <step-popup :steps="steps" :button-title="'Pay'" v-on:close="f_close" v-on:confirm="f_confirm" class="popup-wrap">
+    <step-popup :steps="steps" ref="step" :button-title="'Pay'" @close="f_close" @next="f_step" @confirm="f_confirm" class="popup-wrap">
       <span slot="header">Get File</span>
-
       <div class="step-content step-0" slot="step-0">
         <div class="inner-wrap">
           <el-input v-model="shareCode" class="share-code-input" placeholder="Enter the share code"></el-input>
+          <el-alert v-show="errorMsg!=''" :title="errorMsg" show-icon class="error-msg" type="error" :closable="false"> </el-alert>
         </div>
       </div>
 
       <div class="step-content step-1" slot="step-1">
-        <img src="@/assets/logo.png" class="file-icon" :alt="filename">
-        <p class="file-name">{{filename}}</p>
+        <img src="@/assets/img/file.png" class="file-icon" :alt="file && file.filename">
+        <p class="file-name">{{file && file.filename}}</p>
         <el-select v-model="type" class="select"  placeholder="Plaese Choose">
          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
          </el-option>
@@ -79,13 +79,15 @@
 </template>
 <script>
 import StepPopup from '@/components/StepPopup'
+import { getFileInfoByShareCode, getFile } from '@/services/file'
 
 export default {
   name: 'upload',
   data: () => ({
     type: '1',
     shareCode: '',
-    filename: 'PPIO upload filename',
+    errorMsg: '',
+    file: null,
     steps: ['Input Code', 'Choose Type', 'Storage Setting', 'Payment'],
     options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
     radio: 1,
@@ -96,10 +98,48 @@ export default {
   },
   methods: {
     f_close() {
-      this.$vueBus.$emit('upload-close')
+      this.$vueBus.$emit('get-close')
+    },
+    f_step(step) {
+      if (step === 0) {
+        if (this.shareCode === '') {
+          this.errorMsg = 'share code can not be empty'
+        } else {
+          this.errorMsg = ''
+          getFileInfoByShareCode(this.shareCode)
+            .then(
+              res => {
+                console.log('get fileinfo by share code', res.result)
+                this.file = res.result
+                return this.$refs.step.f_next()
+              },
+              err => {
+                this.errorMsg = JSON.stringify(err)
+                console.log(err)
+              },
+            )
+            .catch(err => {
+              console.log(JSON.stringify(err))
+            })
+        }
+        return
+      }
+      this.$refs.step.f_next()
     },
     f_confirm() {
-      this.$vueBus.$emit('upload-pay')
+      getFile(this.file.id)
+        .then(
+          res => {
+            this.$notify.success({ title: `get the ${this.file.filename} success`, duration: 2000 })
+            return this.$vueBus.$emit('get-done', this.file)
+          },
+          err => {
+            self.$notify.error({ title: JSON.stringify(err), duration: 2000 })
+          },
+        )
+        .catch(err => {
+          console.log(JSON.stringify(err))
+        })
     },
   },
 }
@@ -107,20 +147,21 @@ export default {
 <style lang="scss" scoped>
 .step-content {
   text-align: center;
-  padding: 20px 20px 0px;
+  padding-top: 30px;
+  padding-bottom: 20px;
   .inner-wrap {
     display: inline-block;
     text-align: left;
   }
   .share-code-input {
     width: 360px;
-    margin-top: 40px;
-    margin-bottom: 40px;
+  }
+  .error-msg {
+    margin-top: 10px;
   }
   &.step-1 {
     .file-icon {
-      height: 58px;
-      width: 48px;
+      width: 50px;
     }
     .file-name {
       height: 40px;

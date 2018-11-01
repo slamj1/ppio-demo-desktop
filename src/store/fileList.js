@@ -1,12 +1,18 @@
 import Vue from 'vue'
 
 import {
-  ACT_SET_FILE_LIST,
   MUT_SET_FILE_LIST,
   MUT_REMOVE_FILE,
   MUT_RENAME_FILE,
   MUT_SECURE_FILE,
   MUT_SHARE_FILE,
+  MUT_GET_FILE,
+  ACT_SET_FILE_LIST,
+  // ACT_REMOVE_FILE,
+  // ACT_RENAME_FILE,
+  // ACT_SECURE_FILE,
+  // ACT_SHARE_FILE,
+  ACT_GET_FILE,
 } from '@/constants/store'
 import getFileList from '@/services/getFileList'
 import File from './File'
@@ -34,6 +40,9 @@ const store = {
     [MUT_SHARE_FILE](state, payload) {
       state.fileList[payload.fileId].setPublic(payload.toshare)
     },
+    [MUT_GET_FILE](state, payload) {
+      Vue.set(state.fileList, payload.id, new File(payload))
+    },
   },
   actions: {
     [ACT_SET_FILE_LIST](context) {
@@ -44,6 +53,12 @@ const store = {
           console.log(err)
         },
       )
+    },
+    [ACT_GET_FILE](context, payload) {
+      return new Promise((resolve, reject) => {
+        context.commit(MUT_GET_FILE, payload)
+        resolve(payload)
+      })
     },
   },
 }
