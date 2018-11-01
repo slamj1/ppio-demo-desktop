@@ -1,5 +1,6 @@
 // some util functions
 import { Notification } from 'element-ui'
+import { remote } from 'electron'
 
 export default {
   install: (Vue, options) => {
@@ -8,7 +9,7 @@ export default {
     Vue.prototype.$testInstanceMethod = () => 'testInstanceMethod'
 
     // bind remote to vue global instance
-    Vue.prototype.$remote = require('electron').remote
+    Vue.prototype.$remote = remote
 
     // vue event bus instance
     Vue.prototype.$vueBus = new Vue()

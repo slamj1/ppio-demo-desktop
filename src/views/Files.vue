@@ -30,6 +30,7 @@
             :selected="selectedFileId === fileId"
             :key="fileId"
             :file="file"
+            @click.native.right.prevent.stop="f_rightClickFile(fileId)"
             @click.native.stop="f_selectFile(fileId)"></FileItem>
       </div>
     </el-main>
@@ -41,7 +42,9 @@ import { mapState, mapActions } from 'vuex'
 import { APP_MODE_COINPOOL } from '@/constants/constants'
 import { ACT_SET_FILE_LIST, ACT_CREATE_DL_TASK } from '@/constants/store'
 import FileItem from '@/components/FileItem'
+import { remote } from 'electron'
 
+const { Menu, MenuItem } = remote
 export default {
   name: 'main',
   data() {
@@ -58,6 +61,7 @@ export default {
       selectedFileId: 0,
       fetchingData: false,
       operatingFile: null,
+      contextMenu: new Menu(),
     }
   },
   computed: {
@@ -73,33 +77,8 @@ export default {
   },
   mounted() {
     this.f_refreshData()
-
-    // share event
-    this.$vueBus.$on('unshare', () => {
-      console.log('unshare')
-      this.$router.replace({ name: 'files' })
-    })
-
-    this.$vueBus.$on('share-copy', () => {
-      console.log('share-copy')
-      // this.$router.replace({ name: 'files' })
-    })
-
-    this.$vueBus.$on('share-close', () => {
-      console.log('share-close')
-      this.$router.replace({ name: 'files' })
-    })
-
-    // upload event
-    this.$vueBus.$on('upload-close', () => {
-      console.log('upload-close')
-      this.$router.replace({ name: 'home' })
-    })
-
-    this.$vueBus.$on('upload-pay', () => {
-      console.log('upload-pay')
-      this.$router.replace({ name: 'home' })
-    })
+    this.f_createContextMenu()
+    this.f_initBusEvent()
   },
   methods: {
     ...mapActions({
@@ -123,16 +102,95 @@ export default {
         })
     },
     f_selectFile(fileId) {
-      if (this.selectedFileId === fileId) {
-        this.selectedFileId = 0
-        this.operatingFile = null
-        return
-      }
       this.selectedFileId = fileId
       this.operatingFile = this.fileList[this.selectedFileId]
       console.log(this.operatingFile)
     },
+    f_createContextMenu() {
+      const self = this
+      this.contextMenu.append(
+        new MenuItem({
+          label: 'Download',
+          click() {
+            self.f_download()
+          },
+        }),
+      )
+      this.contextMenu.append(
+        new MenuItem({
+          label: 'Share',
+          click() {
+            self.f_share()
+          },
+        }),
+      )
+      this.contextMenu.append(
+        new MenuItem({
+          type: 'separator',
+        }),
+      )
+      this.contextMenu.append(
+        new MenuItem({
+          label: 'Renew',
+          click() {
+            self.f_renew()
+          },
+        }),
+      )
+      this.contextMenu.append(
+        new MenuItem({
+          label: 'Rename',
+          click() {
+            self.f_rename()
+          },
+        }),
+      )
+      this.contextMenu.append(
+        new MenuItem({
+          type: 'separator',
+        }),
+      )
+      this.contextMenu.append(
+        new MenuItem({
+          label: 'Delete',
+          click() {
+            self.f_delete()
+          },
+        }),
+      )
+    },
+    f_rightClickFile(fileId) {
+      this.f_selectFile(fileId)
+      this.contextMenu.popup({ window: remote.getCurrentWindow() })
+    },
+    f_initBusEvent() {
+      // share event
+      this.$vueBus.$on('unshare', () => {
+        console.log('unshare')
+        this.$router.replace({ name: 'files' })
+      })
 
+      this.$vueBus.$on('share-copy', () => {
+        console.log('share-copy')
+        // this.$router.replace({ name: 'files' })
+      })
+
+      this.$vueBus.$on('share-close', () => {
+        console.log('share-close')
+        this.$router.replace({ name: 'files' })
+      })
+
+      // upload event
+      this.$vueBus.$on('upload-close', () => {
+        console.log('upload-close')
+        this.$router.replace({ name: 'home' })
+      })
+
+      this.$vueBus.$on('upload-pay', () => {
+        console.log('upload-pay')
+        this.$router.replace({ name: 'home' })
+      })
+    },
     f_download() {
       return this.$store
         .dispatch(ACT_CREATE_DL_TASK)
