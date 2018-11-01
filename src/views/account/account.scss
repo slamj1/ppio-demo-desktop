@@ -1,0 +1,64 @@
+.account {
+  -webkit-app-region: no-drag;
+  .tip-wrap {
+    margin-bottom: 20px;
+    .title {
+      font-size: 30px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .attention-wrap {
+      margin-top: 10px;
+      text-align: left;
+      background-color: #fdf6ec;
+      border-radius: 4px;
+      padding: 10px;
+      color: #e6a23c;
+      .attention-title {
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 0;
+      }
+      p {
+        margin-top: 5px;
+      }
+    }
+  }
+  code {
+    display: block;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    min-height: 96px;
+    user-select: none;
+  }
+  .form-wrap {
+    .title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .seed-phrase-input {
+      margin-bottom: 15px;
+    }
+    .button-wrap {
+      position: relative;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      .button {
+        width: 150px;
+      }
+      .confirm-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+    }
+    .login-button {
+      width: 100%;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+  }
+}

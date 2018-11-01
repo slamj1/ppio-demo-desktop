@@ -1,89 +1,75 @@
 <template>
-  <div id="account-create">
-    <div class="step-1" v-show="step==1">
-      <p class="title">Seed Phrase</p>
-      <code>this is a phrase word</code>
+  <div class="account">
+    <div class="tip-wrap">
+      <p class="title">Sign up</p>
       <div class="attention-wrap">
-        <p class="attention-title">Attention:</p>
-        <p>1. DO NOT share this phrase to anyone! These words can be used to steal your account!</p>
-        <p>2. You need these phrase words to log in your account. So SAVE them somewhere secret and safe.</p>
+        <!-- <p class="attention-title">Attention:</p> -->
+        <p>DO NOT share this phrase to anyone! These words can be used to steal your account! You need these phrase words to log in your account. So SAVE them somewhere secret and safe.</p>
       </div>
-      <el-button type="text" class="text-button" >Refresh Phrase</el-button>
-      <el-button class="confirm-button" v-on:click="goStep(2)">Next</el-button>
     </div>
-    <div class="step-2" v-show="step==2">
-      <p class="title">Repeat Your Seed Phrase</p>
-      <el-input type="textarea" :autofocus="true" :rows="4" resize="none" placeholder="enter your seed phrase" v-model="seedPhrase"> </el-input>
-      <br>
-      <el-button type="text" class="text-button" v-on:click="goStep(1)">back</el-button>
-      <el-button class="confirm-button">Confirm</el-button>
+    <div class="form-wrap">
+      <template v-if="step==1">
+        <p class="title">Generate Your Seed Phrase!</p>
+        <code>{{seedPhrase}}</code>
+        <div class="button-wrap">
+          <el-button type="primary" class="button plain-button" plain v-on:click="f_generate_phrase_seed">Refresh Phrase</el-button>
+          <el-button type="primary" class="button confirm-button" v-on:click="f_go_step(2)">Next</el-button>
+        </div>
+      </template>
+      <template v-else>
+        <p class="title">Repeat Your Seed Phrase</p>
+        <el-input type="textarea" :autofocus="true" :rows="4" resize="none" placeholder="enter your seed phrase" v-model="repeatSeedPhrase" class="seed-phrase-input"> </el-input>
+        <el-alert v-show="errorMsg != ''" :title="errorMsg" type="error" :closable="false"></el-alert>
+        <div class="button-wrap">
+          <el-button type="primary" class="button plain-button" plain v-on:click="f_go_step(1)">Back</el-button>
+          <el-button type="primary" class="button confirm-button" v-on:click="f_confirm">Confirm</el-button>
+        </div>
+      </template>
+      <p>Don't have an account? <router-link :to="{ name: 'account/import'}">Login up</router-link> </p>
     </div>
   </div>
 </template>
 <script>
+import { generatePhraseSeed } from '@/services/user'
+
 export default {
   name: 'AccountCreate',
   data: () => ({
     seedPhrase: '',
+    repeatSeedPhrase: '',
     step: 1,
+    errorMsg: '',
   }),
+  mounted() {
+    this.f_generate_phrase_seed()
+  },
   methods: {
-    goStep(step) {
+    f_generate_phrase_seed() {
+      generatePhraseSeed()
+        .then(
+          data => {
+            console.log(data)
+            return (this.seedPhrase = data)
+          },
+          err => console.log(err),
+        )
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    f_go_step(step) {
       this.step = step
+    },
+    f_confirm() {
+      if (this.repeatSeedPhrase === this.seedPhrase) {
+        this.$router.replace('/home')
+      } else {
+        this.errorMsg = 'Repeat Error'
+      }
     },
   },
 }
 </script>
 <style lang="scss" scoped>
-@import '@/assets/css/_var.scss';
-#account-create {
-  padding: 100px 80px 0;
-  text-align: center;
-  .step-2 {
-    margin-top: 50px;
-    .confirm-button {
-      width: 150px;
-      margin-top: 40px;
-    }
-  }
-  .title {
-    font-size: 18px;
-    color: $primary-color;
-    height: 60px;
-    text-align: center;
-    font-weight: bold;
-  }
-  code {
-    display: block;
-    padding: 10px;
-    background-color: #fff;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    min-height: 96px;
-    user-select: none;
-  }
-  .attention-wrap {
-    margin-top: 10px;
-    text-align: left;
-    background-color: #fdf6ec;
-    border-radius: 4px;
-    padding: 10px;
-    color: #e6a23c;
-    .attention-title {
-      font-size: 16px;
-      font-weight: bold;
-      margin-top: 0;
-    }
-    p {
-      margin-top: 5px;
-    }
-  }
-  .text-button {
-    width: 120px;
-  }
-  .confirm-button {
-    width: 150px;
-    margin-top: 10px;
-  }
-}
+@import './account.scss';
 </style>
