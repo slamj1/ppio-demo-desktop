@@ -9,7 +9,7 @@
           <slot name="header"></slot>
         </div>
         <div class="step-popup-stepper">
-          <el-steps :active="curStep" finish-status="success" :space="0" class="popup-steps" simple>
+          <el-steps :active="curStep" class="popup-steps" simple>
             <el-step v-for="(item,index) in steps" v-bind:key="index" :title="item"></el-step>
           </el-steps>
         </div>
@@ -30,7 +30,7 @@
         <div class="step-popup-footer">
           <slot class="footer"></slot>
           <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini">Prev</el-button>
-          <el-button class="button" v-if="curStep < steps.length-1" v-on:click="f_next" size="mini" type="primary">Next</el-button>
+          <el-button class="button" v-if="curStep < steps.length-1" v-on:click="f_emitNext" size="mini" type="primary">Next</el-button>
           <el-button class="button" v-if="curStep >= steps.length-1" v-on:click="f_confirm" size="mini" type="primary">{{ButtonTitle?ButtonTitle:'Confirm'}}</el-button>
         </div>
       </div>
@@ -53,6 +53,9 @@ export default {
     },
     f_prev() {
       this.curStep--
+    },
+    f_emitNext() {
+      this.$emit('next', this.curStep)
     },
     f_next() {
       this.curStep++
