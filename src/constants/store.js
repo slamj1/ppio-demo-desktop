@@ -21,19 +21,25 @@ export const ACT_SECURE_FILE = 'action_secureFile'
 export const MUT_SHARE_FILE = 'mutation_shareFile'
 export const ACT_SHARE_FILE = 'action_shareFile'
 
-export const MUT_SET_TASK_DATA = 'mutation_setTaskData'
-export const MUT_CREATE_TASK = 'mutation_createTask'
-export const MUT_REMOVE_TASK = 'mutation_removeTask'
+export const DL_TASK = {
+  MUT_ADD_TASK: 'mutation_addDownloadTask',
+  ACT_CREATE_TASK: 'action_createDownloadTask',
+  MUT_REMOVE_TASK: 'mutation_removeDownloadTask',
+  ACT_CANCEL_TASK: 'action_cancelDownloadTask',
+  MUT_SET_STATUS: 'mutation_setDownloadStatus',
+  ACT_GET_STATUS: 'action_getDownloadStatus',
+  GET_TASK_COUNT: 'getter_downloadTaskCount',
+}
 
-export const MUT_ADD_DL_TASK = 'mutation_addDownloadTask'
-export const ACT_CREATE_DL_TASK = 'action_createDownloadTask'
-export const MUT_RM_DL_TASK = 'mutation_removeDownloadTask'
-export const ACT_CANCEL_DL_TASK = 'action_cancelDownloadTask'
-export const MUT_SET_DL_STATUS = 'mutation_setDownloadStatus'
-export const ACT_GET_DL_STATUS = 'action_getDownloadStatus'
-
-export const MUT_ADD_UL_TASK = 'mutation_addUploadTask'
-export const MUT_RM_UL_TASK = 'mutation_removeUploadTask'
+export const UL_TASK = {
+  MUT_ADD_TASK: 'mutation_addUploadTask',
+  ACT_CREATE_TASK: 'action_createUploadTask',
+  MUT_REMOVE_TASK: 'mutation_removeUploadTask',
+  ACT_CANCEL_TASK: 'action_cancelUploadTask',
+  MUT_SET_STATUS: 'mutation_setUploadStatus',
+  ACT_GET_STATUS: 'action_getUploadStatus',
+  GET_TASK_COUNT: 'getter_uploadTaskCount',
+}
 
 export const TASK_TYPE_DOWNLOAD = 'taskType_download'
 export const TASK_TYPE_UPLOAD = 'taskType_upload'

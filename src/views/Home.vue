@@ -14,7 +14,7 @@
           </template>
         </div>
       </div>
-      <el-menu :default-active="curRoutePath" :router="true" class="aside-nav" @select="handleNav">
+      <el-menu :default-active="curRoutePath" :router="true" class="aside-nav">
         <el-menu-item index="files">
           <i class="app-icon icon-nav-file"></i>
           <span slot="title">All files</span>
@@ -26,17 +26,20 @@
         </el-menu-item>
         <el-menu-item index="upload-list">
           <i class="app-icon icon-nav-upload"></i>
-          <span slot="title">Uploading</span>
+          <span slot="title">Uploading{{uploadCount > 0 ? `(${uploadCount})` : ''}}</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
-    <router-view></router-view>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </el-container>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { APP_MODE_COINPOOL } from '@/constants/constants'
+import { APP_MODE_COINPOOL } from '../constants/constants'
+import { DL_TASK, UL_TASK } from '../constants/store'
 
 export default {
   name: 'home',
@@ -58,23 +61,11 @@ export default {
       return this.$route.path.split('/').slice(-1)[0]
     },
     ...mapGetters({
-      downloadCount: 'taskCount',
+      downloadCount: DL_TASK.GET_TASK_COUNT,
+      uploadCount: UL_TASK.GET_TASK_COUNT,
     }),
   },
-  methods: {
-    handleNav(idx) {
-      console.log(idx)
-      // if (idx == 0) {
-      //   this.$router.push({ name: 'files' })
-      // }
-      // if (idx == 1) {
-      //   this.$router.push({ name: 'download-list' })
-      // }
-      // if (idx == 2) {
-      //   this.$router.push({ name: 'upload-list' })
-      // }
-    },
-  },
+  methods: {},
 }
 </script>
 

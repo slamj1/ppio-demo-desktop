@@ -1,4 +1,4 @@
-import { randomStr } from '@/utils/functions'
+import { randomStr } from '../utils/functions'
 
 export const login = seedPhrase => {
   console.log('calling login method')

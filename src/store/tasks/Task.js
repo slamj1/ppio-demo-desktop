@@ -1,6 +1,9 @@
-import { TASK_TYPE_DOWNLOAD, TASK_TYPE_UPLOAD } from '@/constants/store'
-import { startDownload, getProgress as getDownloadProgress } from '@/services/download'
-import { startUpload, getProgress as getUploadProgress } from '@/services/upload'
+import { TASK_TYPE_DOWNLOAD, TASK_TYPE_UPLOAD } from '../../constants/store'
+import {
+  startDownload,
+  getProgress as getDownloadProgress,
+} from '../../services/download'
+import { startUpload, getProgress as getUploadProgress } from '../../services/upload'
 
 export default class Task {
   type = ''
@@ -28,6 +31,9 @@ export default class Task {
   setStatus(status) {
     this.transferSpeed = status.speed
     this.transferProgress = status.progress
+    if (status.finished) {
+      this.finish()
+    }
   }
 
   start() {
@@ -35,6 +41,17 @@ export default class Task {
     this.finished = false
     this.transferProgress = 0
     return this
+  }
+
+  cancel() {
+    this.transferringData = false
+    this.finished = false
+  }
+
+  finish() {
+    this.transferringData = false
+    this.finished = true
+    this.transferProgress = 100
   }
 
   getProgress() {
@@ -45,10 +62,6 @@ export default class Task {
         this.transferProgress = res.progress
         if (res.finished) {
           this.transferringData = false
-        } else {
-          setTimeout(() => {
-            this.getProgress()
-          }, 1000)
         }
         return true
       })

@@ -1,4 +1,4 @@
-import { login, logout, getUserData, getBillingRecords } from '@/services/user'
+import { login, logout, getUserData, getBillingRecords } from '../services/user'
 
 import {
   MUT_SET_USER_DATA,
@@ -9,7 +9,7 @@ import {
   ACT_REFRESH_USER,
   MUT_SET_JOURNAL,
   ACT_GET_JOURNAL,
-} from '@/constants/store'
+} from '../constants/store'
 
 const store = {
   state: {

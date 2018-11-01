@@ -1,69 +1,62 @@
 <template>
-  <el-table :data="listData" stripe style="width: 100%">
-    <el-table-column
-        prop="name"
-        label="File"
-        width="260">
-      <template slot-scope="scope">
-        <span class="transmit-file-icon"></span>
-        <span class="transmit-filename" :show-text="false">{{scope.row.file.filename}}</span>
-      </template>
-    </el-table-column>
-    <el-table-column
-        prop="progress"
-        label="Progress">
-      <template slot-scope="scope">
-        <el-progress class="transmit-progress" :percentage="scope.row.transferProgress" :show-text="false"></el-progress>
-        <span @click="f_cancel(scope.row.id)">取消</span>
-      </template>
-    </el-table-column>
-  </el-table>
+  <TransferTable
+      :tableData="transferList"
+      @cancel="f_cancel"
+  ></TransferTable>
 </template>
 <script>
 import { mapState } from 'vuex'
-import { ACT_CANCEL_DL_TASK, ACT_GET_DL_STATUS } from '@/constants/store'
+import { DL_TASK } from '../constants/store'
+import TransferTable from '@/components/TransferTable'
 
 export default {
   name: 'download-list',
+  data: () => ({
+    getStatusTimer: null,
+  }),
   computed: {
     ...mapState({
-      listData: state => {
+      transferList: state => {
         console.log(state.file)
-        return state.downloadTask.downloadQueue
+        return state.downloadTask.taskQueue
       },
     }),
   },
-  mounted() {
-    console.log('mounted')
-    this.f_updateStatus()
+  components: {
+    TransferTable,
   },
   activated() {
     console.log('activated')
-    // this.f_updateStatus()
+    this.f_updateStatus()
+  },
+  deactivated() {
+    console.log('deactivated')
+    if (this.getStatusTimer) {
+      clearTimeout(this.getStatusTimer)
+    }
   },
   methods: {
     f_cancel(taskId) {
-      this.$store.dispatch(ACT_CANCEL_DL_TASK, taskId)
+      const toCancel = window.confirm('Are you sure to cancel the downloading?')
+      if (toCancel) {
+        this.$store.dispatch(DL_TASK.ACT_CANCEL_TASK, taskId)
+      }
     },
     f_updateStatus() {
       console.log('update dl status')
       this.$store
-        .dispatch(ACT_GET_DL_STATUS, this.listData.map(task => task.id))
-        .then(() => {
-          if (this.listData.length === 0) {
-            return
-          }
-          return setTimeout(() => {
-            this.f_updateStatus()
-          }, 1000)
-        })
+        .dispatch(DL_TASK.ACT_GET_STATUS, this.transferList.map(task => task.id))
+        .then(() => true)
         .catch(err => {
           console.error(err)
           this.f_updateStatus()
         })
+      if (this.transferList.length > 0) {
+        this.getStatusTimer = setTimeout(() => {
+          this.f_updateStatus()
+        }, 2000)
+      }
     },
   },
 }
 </script>
-<style lang="scss" scoped>
-</style>

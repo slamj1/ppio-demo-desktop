@@ -5,7 +5,7 @@ import {
   CREATE_DOWNLOAD,
   GET_DOWNLOAD_STATUS,
   CANCEL_DOWNLOAD,
-} from '@/constants/sdk-methods'
+} from '../constants/sdk-methods'
 
 export const startDownload = async fileHash => {
   console.log('start download service')

@@ -13,8 +13,8 @@ import {
   // ACT_SECURE_FILE,
   // ACT_SHARE_FILE,
   ACT_GET_FILE,
-} from '@/constants/store'
-import getFileList from '@/services/getFileList'
+} from '../constants/store'
+import getFileList from '../services/getFileList'
 import File from './File'
 
 const store = {

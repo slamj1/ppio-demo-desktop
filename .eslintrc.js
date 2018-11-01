@@ -38,7 +38,8 @@ module.exports = {
     'promise/always-return': 'error',
     'promise/catch-or-return': 'error',
     'promise/no-native': 'off',
-    'prefer-template': 2,
+    'prefer-template': 'error',
+    camelcase: 'off',
     indent: [
       2,
       2,

@@ -44,7 +44,10 @@ export default {
       this.$vueBus.$emit('share-copy')
     },
     f_unshare() {
-      this.$notify.info({ title: 'The sharing file have been canceled', duration: 2000 })
+      this.$notify.info({
+        title: 'The sharing file have been canceled',
+        duration: 2000,
+      })
       this.$vueBus.$emit('unshare')
     },
   },

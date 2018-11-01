@@ -4,7 +4,10 @@ import {
   CREATE_DOWNLOAD,
   GET_DOWNLOAD_STATUS,
   CANCEL_DOWNLOAD,
-} from '@/constants/sdk-methods'
+  CREATE_UPLOAD,
+  GET_UPLOAD_STATUS,
+  CANCEL_UPLOAD,
+} from '../constants/sdk-methods'
 import { randomStr } from './utils'
 
 function mockData(method) {
@@ -37,11 +40,13 @@ function mockData(method) {
       }
       break
     case CREATE_DOWNLOAD:
+    case CREATE_UPLOAD:
       returnData = {
         taskId: randomStr(),
       }
       break
     case GET_DOWNLOAD_STATUS:
+    case GET_UPLOAD_STATUS:
       console.log('getting download status')
       returnData = {
         finished: false,
@@ -49,6 +54,7 @@ function mockData(method) {
       }
       break
     case CANCEL_DOWNLOAD:
+    case CANCEL_UPLOAD:
       returnData = {}
       break
   }

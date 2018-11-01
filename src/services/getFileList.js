@@ -1,5 +1,5 @@
 import sdk from './sdk'
-import { CONTRACT_LIST, GET_FILE_INFO } from '@/constants/sdk-methods'
+import { CONTRACT_LIST, GET_FILE_INFO } from '../constants/sdk-methods'
 
 export default params =>
   sdk({
@@ -14,18 +14,12 @@ export default params =>
             method: GET_FILE_INFO,
             params: { hash: fileHash },
           })
-            .then(res => {
-              console.log(res)
-              return Promise.resolve(res.result)
-            })
+            .then(res => Promise.resolve(res.result))
             .catch(err => {
-              console.log(err)
+              console.error(err)
               return Promise.resolve()
             }),
         ),
       ),
     )
-    .then(results => {
-      console.log(results)
-      return results.filter(result => result !== undefined)
-    })
+    .then(results => results.filter(result => result !== undefined))

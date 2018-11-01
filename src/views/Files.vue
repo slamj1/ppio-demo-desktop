@@ -39,14 +39,14 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex'
-import { APP_MODE_COINPOOL } from '@/constants/constants'
-import { ACT_SET_FILE_LIST, ACT_CREATE_DL_TASK, ACT_GET_FILE } from '@/constants/store'
+import { APP_MODE_COINPOOL } from '../constants/constants'
+import { ACT_SET_FILE_LIST, DL_TASK, UL_TASK, ACT_GET_FILE } from '../constants/store'
 import FileItem from '@/components/FileItem'
 import { remote } from 'electron'
 
 const { Menu, MenuItem } = remote
 export default {
-  name: 'main',
+  name: 'file',
   data() {
     return {
       mode: APP_MODE_COINPOOL,
@@ -76,14 +76,20 @@ export default {
     FileItem,
   },
   mounted() {
-    this.f_refreshData()
     this.f_createContextMenu()
     this.f_initBusEvent()
   },
+
+  activated() {
+    this.f_refreshData()
+  },
+
   methods: {
     ...mapActions({
       getFileList: ACT_SET_FILE_LIST,
       getFile: ACT_GET_FILE,
+      createUpload: UL_TASK.ACT_CREATE_TASK,
+      createDownload: DL_TASK.ACT_CREATE_TASK,
     }),
     f_refreshData() {
       if (this.fetchingData) {
@@ -93,13 +99,11 @@ export default {
       this.getFileList()
         .then(() => {
           this.fetchingData = false
-          console.log(this.fileList)
-          console.log(this.$store.state)
           return ''
         })
         .catch(err => {
           this.fetchingData = false
-          console.log(err)
+          console.error(err)
         })
     },
     f_selectFile(fileId) {
@@ -189,7 +193,8 @@ export default {
 
       this.$vueBus.$on('upload-pay', () => {
         console.log('upload-pay')
-        this.$router.replace({ name: 'files' })
+        return this.createUpload().then(() => this.$router.push({ name: 'upload-list' }))
+        // this.$router.replace({ name: 'files' })
       })
 
       // get event
@@ -211,9 +216,9 @@ export default {
       })
     },
     f_download() {
-      return this.$store
-        .dispatch(ACT_CREATE_DL_TASK)
-        .then(() => this.$router.push({ name: 'download-list' }))
+      return this.createDownload().then(() =>
+        this.$router.push({ name: 'download-list' }),
+      )
     },
     f_share() {
       if (!this.operatingFile) {
@@ -221,7 +226,10 @@ export default {
       }
 
       if (this.operatingFile.isSecure) {
-        this.$notify.error({ title: 'Can not share secured file!', duration: 2000 })
+        this.$notify.error({
+          title: 'Can not share secured file!',
+          duration: 2000,
+        })
         return
       }
 
