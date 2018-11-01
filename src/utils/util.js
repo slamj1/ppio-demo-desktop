@@ -1,4 +1,6 @@
 // some util functions
+import { Notification } from 'element-ui'
+
 export default {
   install: (Vue, options) => {
     Vue.testGlobalMethod = () => 'testGlobalMethod'
@@ -10,5 +12,7 @@ export default {
 
     // vue event bus instance
     Vue.prototype.$vueBus = new Vue()
+
+    Vue.prototype.$notify = Notification
   },
 }

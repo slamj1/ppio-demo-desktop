@@ -29,6 +29,14 @@ div, input, button, textarea, a {
   }
 }
 
+a {
+  color: $primary-color;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .app-icon {
   display: inline-block;
   width: 18px;
@@ -99,41 +107,5 @@ div, input, button, textarea, a {
 
   .icon-upload {
     background-image: url('~@/assets/img/icon-upload_active.png');
-  }
-}
-
-#app {
-  .el-button.el-button--primary {
-    &:focus,
-    &:hover {
-      color: #fff;
-      background-color: $primary-color;
-      border-color: $primary-color;
-    }
-  }
-
-  .el-button--primary.is-plain:hover,
-  .el-button--primary.is-plain:focus {
-    color: #1989FA;
-    background: #e8f3ff;
-    border-color: #a3d0fd;
-  }
-
-  .el-button.el-button--small {
-    height: 30px;
-    line-height: 30px;
-    padding: 0 15px;
-
-    .app-icon {
-      vertical-align: middle;
-    }
-  }
-
-  .el-button.is-circle {
-    &:focus,
-    &:hover {
-      background-color: transparent;
-      color: #606266;
-    }
   }
 }

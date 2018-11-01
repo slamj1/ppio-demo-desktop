@@ -22,11 +22,11 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: 'home/files',
+      redirect: '/home/files',
     },
     {
       path: '/home',
-      redirect: 'home/files',
+      redirect: '/home/files',
     },
     {
       path: '/home',

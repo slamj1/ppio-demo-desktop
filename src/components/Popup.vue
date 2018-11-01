@@ -58,15 +58,15 @@ export default {
   height: 100%;
   width: 100%;
   z-index: 10;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.7);
   .popup-wrap {
     left: 50%;
     top: 50%;
     margin: auto;
     transform: translate(-50%, -50%);
-    width: 600px;
-    padding-bottom: 36px;
-    padding-top: 56px;
+    width: 700px;
+    padding-bottom: 46px;
+    padding-top: 36px;
     position: absolute;
     background-color: #fff;
     border: 1px solid #ddd;
@@ -74,7 +74,7 @@ export default {
   }
   .popup-close {
     position: absolute;
-    top: 12px;
+    top: 10px;
     right: 16px;
     height: 16px;
     width: 16px;
@@ -84,18 +84,18 @@ export default {
     &:hover {
       fill: #333;
     }
+    z-index: 2;
   }
   .popup-header {
     height: 36px;
     line-height: 36px;
     color: $text-color;
     font-weight: bold;
-    text-align: left;
+    text-align: center;
     position: absolute;
-    padding-left: 20px;
     top: 0;
     left: 0;
-    right: 100px;
+    right: 0;
     font-size: 16px;
     overflow: hidden;
     text-overflow: ellipsis;

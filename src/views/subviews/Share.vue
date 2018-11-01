@@ -1,11 +1,14 @@
 <template>
   <div class="share-page">
-    <popup class="popup" :button-title="'Copy'" v-on:close="f_close" v-on:confirm="f_confirm">
-      <span slot="header">Share File: "The name of the sharing file!he name of the sharing filehe name of the sharing filehe name of the sharing file"</span>
-
+    <popup class="popup" :button-title="'Copy Code'" v-on:close="f_close" v-on:confirm="f_confirm">
+      <span slot="header">Share File</span>
       <div class="content" slot="content">
-        <label class="share-code-label">Share Code:</label>
-        <el-input class="share-code-input" v-model="shareCode" :disabled="true"></el-input>
+        <img src="@/assets/img/file.png" class="file-icon" :alt="file && file.filename">
+        <p class="file-name">{{file && file.filename}}</p>
+        <div class="code-wrap">
+          <label class="share-code-label">Share Code:</label>
+          <el-input class="share-code-input" v-model="shareCode" :disabled="true"></el-input>
+        </div>
       </div>
 
       <el-button slot="footer" class="button" size="mini" v-on:click="f_unshare">Unshare</el-button>
@@ -15,11 +18,19 @@
 <script>
 import Popup from '@/components/Popup'
 
+const { clipboard } = require('electron')
+
 export default {
   name: 'share',
   data: () => ({
-    shareCode: 'RWERT3456I3P4I6565435MNNFDSSDF5346OI',
+    shareCode: '',
   }),
+  mounted() {
+    if (this.file) {
+      this.shareCode = this.file.filename
+    }
+  },
+  props: ['file'],
   components: {
     Popup,
   },
@@ -28,9 +39,12 @@ export default {
       this.$vueBus.$emit('share-close')
     },
     f_confirm() {
+      clipboard.writeText(this.shareCode)
+      this.$notify.success({ title: 'Copy share code success', duration: 2000 })
       this.$vueBus.$emit('share-copy')
     },
     f_unshare() {
+      this.$notify.info({ title: 'The sharing file have been canceled', duration: 2000 })
       this.$vueBus.$emit('unshare')
     },
   },
@@ -40,18 +54,28 @@ export default {
 .popup {
   text-align: left;
   .content {
-    padding-left: 120px;
-    padding-right: 20px;
-    position: relative;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    .share-code-label {
-      position: absolute;
-      top: 0;
-      height: 40px;
-      line-height: 40px;
-      left: 20px;
-      display: inline-block;
+    text-align: center;
+    padding: 40px 60px;
+    .file-icon {
+      width: 60px;
+    }
+    .file-name {
+      margin-top: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .code-wrap {
+      text-align: left;
+      padding-left: 90px;
+      position: relative;
+      .share-code-label {
+        position: absolute;
+        top: 0;
+        height: 40px;
+        line-height: 40px;
+        left: 0;
+        display: inline-block;
+      }
     }
   }
   .button {

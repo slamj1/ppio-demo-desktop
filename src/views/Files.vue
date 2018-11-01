@@ -33,7 +33,7 @@
             @click.native.stop="f_selectFile(fileId)"></FileItem>
       </div>
     </el-main>
-    <router-view></router-view>
+    <router-view :file="operatingFile" @click.native.stop=""></router-view>
   </el-container>
 </template>
 <script>
@@ -57,6 +57,7 @@ export default {
       preparingGet: false,
       selectedFileId: 0,
       fetchingData: false,
+      operatingFile: null,
     }
   },
   computed: {
@@ -76,31 +77,30 @@ export default {
     // share event
     this.$vueBus.$on('unshare', () => {
       console.log('unshare')
-      this.$router.replace('/home')
+      this.$router.replace({ name: 'files' })
     })
 
     this.$vueBus.$on('share-copy', () => {
       console.log('share-copy')
-      this.$router.replace('/home')
+      // this.$router.replace({ name: 'files' })
     })
 
     this.$vueBus.$on('share-close', () => {
       console.log('share-close')
-      this.$router.replace('/home')
+      this.$router.replace({ name: 'files' })
     })
 
     // upload event
     this.$vueBus.$on('upload-close', () => {
       console.log('upload-close')
-      this.$router.replace('/home')
+      this.$router.replace({ name: 'home' })
     })
 
     this.$vueBus.$on('upload-pay', () => {
       console.log('upload-pay')
-      this.$router.replace('/home')
+      this.$router.replace({ name: 'home' })
     })
   },
-
   methods: {
     ...mapActions({
       getFileList: ACT_SET_FILE_LIST,
@@ -125,9 +125,12 @@ export default {
     f_selectFile(fileId) {
       if (this.selectedFileId === fileId) {
         this.selectedFileId = 0
+        this.operatingFile = null
         return
       }
       this.selectedFileId = fileId
+      this.operatingFile = this.fileList[this.selectedFileId]
+      console.log(this.operatingFile)
     },
 
     f_download() {
@@ -136,7 +139,18 @@ export default {
         .then(() => this.$router.push({ name: 'download-list' }))
     },
 
-    f_share() {},
+    f_share() {
+      if (!this.operatingFile) {
+        return
+      }
+
+      if (this.operatingFile.isSecure) {
+        this.$notify.error({ title: 'Can not share secured file!', duration: 2000 })
+        return
+      }
+
+      this.$router.replace({ name: 'share' })
+    },
 
     f_rename() {},
 
@@ -145,7 +159,7 @@ export default {
     f_delete() {},
 
     f_upload() {
-      this.$router.replace('/home/upload')
+      this.$router.replace({ name: 'upload' })
     },
 
     f_get() {},
