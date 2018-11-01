@@ -1,45 +1,60 @@
 import { TASK_TYPE_DOWNLOAD, TASK_TYPE_UPLOAD } from '@/constants/store'
 import { startDownload, getProgress as getDownloadProgress } from '@/services/download'
 import { startUpload, getProgress as getUploadProgress } from '@/services/upload'
-import { APP_MODE_COINPOOL } from '@/constants/constants'
 
 export default class Task {
   type = ''
-  mode = APP_MODE_COINPOOL // 0 for non-Coinpool, 1 for Coinpool
+  id = ''
   transferringData = false // downloading or uploading
-  transferProgress = 0 // transferred progress, in number
-  taskData = {} // different based on task type
+  transferProgress = 0 // transferred percentage, in number
+  transferSpeed = '0b/s' // transfer speed, in string
+  finished = false
   file = null
 
   constructor(initData) {
     this.type = initData.type
-    this.mode = initData.mode
     this.file = initData.file
-  }
-
-  setTaskData(data) {
-    this.taskData = Object.assign({}, this.taskData, data)
-  }
-
-  startTransfer(postData) {
+    this.id = initData.id
     if (this.type === TASK_TYPE_UPLOAD) {
-      this.transferringData = true
-      return startUpload(postData)
+      this.startTransfer = startUpload
+      this.getTransferProgress = getUploadProgress
     }
     if (this.type === TASK_TYPE_DOWNLOAD) {
-      this.transferringData = true
-      return startDownload(postData)
+      this.startTransfer = startDownload
+      this.getTransferProgress = getDownloadProgress
     }
-    return Promise.reject(new Error('not a download or upload task'))
   }
 
-  getProgress(postData) {
-    if (this.type === TASK_TYPE_UPLOAD) {
-      return getUploadProgress(postData)
-    }
-    if (this.type === TASK_TYPE_DOWNLOAD) {
-      return getDownloadProgress(postData)
-    }
-    return Promise.reject(new Error('not a download or upload task'))
+  setStatus(status) {
+    this.transferSpeed = status.speed
+    this.transferProgress = status.progress
+  }
+
+  start() {
+    this.transferringData = true
+    this.finished = false
+    this.transferProgress = 0
+    return this
+  }
+
+  getProgress() {
+    console.log('getting progress')
+    this.getTransferProgress()
+      .then(res => {
+        this.finished = res.finished
+        this.transferProgress = res.progress
+        if (res.finished) {
+          this.transferringData = false
+        } else {
+          setTimeout(() => {
+            this.getProgress()
+          }, 1000)
+        }
+        return true
+      })
+      .catch(err => {
+        console.log(err)
+        return Promise.resolve()
+      })
   }
 }

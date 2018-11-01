@@ -21,6 +21,8 @@ import {
   Option,
   RadioGroup,
   Radio,
+  Table,
+  TableColumn,
 } from 'element-ui'
 import '@/assets/css/element-theme.scss'
 import lang from 'element-ui/lib/locale/lang/en'
@@ -49,3 +51,5 @@ Vue.use(Select)
 Vue.use(Option)
 Vue.use(RadioGroup)
 Vue.use(Radio)
+Vue.use(Table)
+Vue.use(TableColumn)

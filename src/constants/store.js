@@ -19,13 +19,14 @@ export const MUT_CREATE_TASK = 'mutation_createTask'
 export const MUT_REMOVE_TASK = 'mutation_removeTask'
 
 export const MUT_ADD_DL_TASK = 'mutation_addDownloadTask'
+export const ACT_CREATE_DL_TASK = 'action_createDownloadTask'
 export const MUT_RM_DL_TASK = 'mutation_removeDownloadTask'
+export const ACT_CANCEL_DL_TASK = 'action_cancelDownloadTask'
+export const MUT_SET_DL_STATUS = 'mutation_setDownloadStatus'
+export const ACT_GET_DL_STATUS = 'action_getDownloadStatus'
 
 export const MUT_ADD_UL_TASK = 'mutation_addUploadTask'
 export const MUT_RM_UL_TASK = 'mutation_removeUploadTask'
 
 export const TASK_TYPE_DOWNLOAD = 'taskType_download'
-export const TASK_TYPE_GET = 'taskType_get'
-export const TASK_TYPE_RENEW = 'taskType_renew'
-export const TASK_TYPE_SHARE = 'taskType_share'
 export const TASK_TYPE_UPLOAD = 'taskType_upload'

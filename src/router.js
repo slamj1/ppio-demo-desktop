@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home'
-import Main from './views/Main'
+import Files from './views/Files'
 import DownloadList from './views/Download'
 import UploadList from './views/Upload'
 import Services from './views/subviews/Service'
@@ -22,11 +22,11 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: 'home/main',
+      redirect: 'home/files',
     },
     {
       path: '/home',
-      redirect: 'home/main',
+      redirect: 'home/files',
     },
     {
       path: '/home',
@@ -34,9 +34,9 @@ export default new Router({
       component: Home,
       children: [
         {
-          path: 'main',
-          name: 'main',
-          component: Main,
+          path: 'files',
+          name: 'files',
+          component: Files,
           children: [
             {
               path: 'services',

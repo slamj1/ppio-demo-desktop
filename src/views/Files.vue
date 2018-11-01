@@ -39,7 +39,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import { APP_MODE_COINPOOL } from '@/constants/constants'
-import { ACT_SET_FILE_LIST } from '@/constants/store'
+import { ACT_SET_FILE_LIST, ACT_CREATE_DL_TASK } from '@/constants/store'
 import FileItem from '@/components/FileItem'
 
 export default {
@@ -130,7 +130,11 @@ export default {
       this.selectedFileId = fileId
     },
 
-    f_download() {},
+    f_download() {
+      return this.$store
+        .dispatch(ACT_CREATE_DL_TASK)
+        .then(() => this.$router.push({ name: 'download-list' }))
+    },
 
     f_share() {},
 

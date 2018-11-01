@@ -1,10 +1,11 @@
-import { CONTRACT_LIST, GET_FILE_INFO } from '@/constants/sdk-methods'
-
-function randomStr() {
-  return Math.random()
-    .toString(36)
-    .substring(7)
-}
+import {
+  CONTRACT_LIST,
+  GET_FILE_INFO,
+  CREATE_DOWNLOAD,
+  GET_DOWNLOAD_STATUS,
+  CANCEL_DOWNLOAD,
+} from '@/constants/sdk-methods'
+import { randomStr } from './utils'
 
 function mockData(method) {
   let returnData
@@ -35,6 +36,21 @@ function mockData(method) {
         },
       }
       break
+    case CREATE_DOWNLOAD:
+      returnData = {
+        taskId: randomStr(),
+      }
+      break
+    case GET_DOWNLOAD_STATUS:
+      console.log('getting download status')
+      returnData = {
+        finished: false,
+        progress: Math.random() * 100,
+      }
+      break
+    case CANCEL_DOWNLOAD:
+      returnData = {}
+      break
   }
   return returnData
 }
@@ -43,7 +59,7 @@ export default data => {
   console.log('calling sdk ', data.method)
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve(mockData(data.method))
+      resolve(mockData(data.method, data.params))
     }, 1000)
   })
 }
