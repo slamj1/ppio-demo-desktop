@@ -268,17 +268,37 @@ export default {
 
   .header-dropdown-menu {
     margin: 0 20px;
+    font-size: 0;
+    &:focus {
+      outline: none;
+    }
 
     .el-dropdown-link {
+      font-size: 14px;
       display: inline-block;
       padding: 0 15px;
       height: 30px;
-      line-height: 30px;
+      line-height: 28px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      &.focusing {
+        outline: none;
+      }
     }
   }
 
   .header-btn-group {
     -webkit-app-region: no-drag;
+  }
+
+  button:hover,
+  button:focus {
+    .icon-get.app-icon {
+      background-image: url('~@/assets/img/icon-get_active.png');
+    }
+    .icon-share.app-icon {
+      background-image: url('~@/assets/img/icon-share_active.png');
+    }
   }
   .refresh-btn {
     position: absolute;

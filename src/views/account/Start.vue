@@ -1,12 +1,6 @@
 <template>
   <div class="start">
-    <div class="left-content">
-      <!-- <img src="@/assets/img/logo_square.png" class="logo" alt="PPIO Logo">
-      <br>
-      <el-button class="button" type="text" v-on:click="goPath('/account/import')">Import Account</el-button>
-      <br>
-      <el-button class="button" type="text" v-on:click="goPath('/account/create')">Create Account</el-button> -->
-    </div>
+    <div class="left-content"></div>
     <div class="right-content">
       <router-view></router-view>
     </div>

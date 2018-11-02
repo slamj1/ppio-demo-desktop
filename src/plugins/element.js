@@ -3,6 +3,7 @@ import {
   Container,
   Main,
   Button,
+  ButtonGroup,
   Header,
   Aside,
   Dropdown,
@@ -33,6 +34,7 @@ locale.use(lang)
 Vue.use(Container)
 Vue.use(Main)
 Vue.use(Button)
+Vue.use(ButtonGroup)
 Vue.use(Header)
 Vue.use(Aside)
 Vue.use(Dropdown)
