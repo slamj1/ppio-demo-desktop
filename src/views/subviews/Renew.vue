@@ -1,11 +1,11 @@
 <template>
-  <div class="upload-page">
+  <div class="renew-page">
     <step-popup :steps="steps" :button-title="'Pay'" v-on:close="f_close" v-on:confirm="f_confirm" class="popup-wrap">
       <span slot="header">Renew File</span>
 
       <div class="step-content step-0" slot="step-0">
-        <img src="@/assets/logo.png" class="file-icon" :alt="filename">
-        <p class="file-name">{{filename}}</p>
+        <img src="@/assets/logo.png" class="file-icon" :alt="file.filename">
+        <p class="file-name">{{file.filename}}</p>
         <el-select v-model="type" class="select"  placeholder="Plaese Choose">
          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
          </el-option>
@@ -73,26 +73,34 @@
 </template>
 <script>
 import StepPopup from '@/components/StepPopup'
+import File from '../../store/File'
 
 export default {
-  name: 'upload',
+  name: 'renew',
   data: () => ({
     type: '1',
-    filename: 'PPIO upload filename',
     steps: ['Choose Type', 'Storage Setting', 'Payment'],
     options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
     radio: 1,
     copyNumber: 5,
+    file: new File({
+      id: '',
+      filename: 'PPIO renew filename',
+      size: 0,
+      type: 0,
+      isSecure: false,
+      isPublic: false,
+    }),
   }),
   components: {
     StepPopup,
   },
   methods: {
     f_close() {
-      this.$vueBus.$emit('upload-close')
+      this.$vueBus.$emit(this.$events.CLOSE_RENEW_FILE)
     },
     f_confirm() {
-      this.$vueBus.$emit('upload-pay')
+      this.$vueBus.$emit(this.$events.RENEW_FILE_DONE)
     },
   },
 }

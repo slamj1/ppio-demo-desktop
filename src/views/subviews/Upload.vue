@@ -73,6 +73,7 @@
 </template>
 <script>
 import StepPopup from '@/components/StepPopup'
+import { UL_TASK } from '../../constants/store'
 
 export default {
   name: 'upload',
@@ -89,10 +90,17 @@ export default {
   },
   methods: {
     f_close() {
-      this.$vueBus.$emit('upload-close')
+      this.$vueBus.$emit(this.$events.CLOSE_UPLOAD_FILE)
     },
     f_confirm() {
-      this.$vueBus.$emit('upload-pay')
+      console.log('upload confirm')
+      this.$store
+        .dispatch(UL_TASK.ACT_CREATE_TASK)
+        .then(() => this.$vueBus.$emit(this.$events.UPLOAD_FILE_DONE))
+        .catch(err => {
+          console.error(err)
+          this.$notify.error({ title: JSON.stringify(err), duration: 2000 })
+        })
     },
   },
 }

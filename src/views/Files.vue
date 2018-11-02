@@ -10,9 +10,9 @@
                 More<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item :loading="preparingRename" @click="f_rename">Rename</el-dropdown-item>
-              <el-dropdown-item :loading="preparingRenew" @click="f_renew">Renew</el-dropdown-item>
-              <el-dropdown-item :loading="preparingDel" @click="f_delete">Delete</el-dropdown-item>
+              <el-dropdown-item :loading="preparingRename" @click.native="f_rename">Rename</el-dropdown-item>
+              <el-dropdown-item :loading="preparingRenew" @click.native="f_renew">Renew</el-dropdown-item>
+              <el-dropdown-item :loading="preparingDel" @click.native="f_delete">Delete</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -39,10 +39,10 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex'
-import { APP_MODE_COINPOOL } from '../constants/constants'
-import { ACT_SET_FILE_LIST, DL_TASK, UL_TASK, ACT_GET_FILE } from '../constants/store'
-import FileItem from '@/components/FileItem'
 import { remote } from 'electron'
+import { APP_MODE_COINPOOL } from '../constants/constants'
+import { ACT_SET_FILE_LIST, UL_TASK, ACT_GET_FILE } from '../constants/store'
+import FileItem from '@/components/FileItem'
 
 const { Menu, MenuItem } = remote
 export default {
@@ -89,7 +89,6 @@ export default {
       getFileList: ACT_SET_FILE_LIST,
       getFile: ACT_GET_FILE,
       createUpload: UL_TASK.ACT_CREATE_TASK,
-      createDownload: DL_TASK.ACT_CREATE_TASK,
     }),
     f_refreshData() {
       if (this.fetchingData) {
@@ -175,11 +174,6 @@ export default {
         this.$router.replace({ name: 'files' })
       })
 
-      this.$vueBus.$on('share-copy', () => {
-        console.log('share-copy')
-        // this.$router.replace({ name: 'files' })
-      })
-
       this.$vueBus.$on('share-close', () => {
         console.log('share-close')
         this.$router.replace({ name: 'files' })
@@ -216,9 +210,10 @@ export default {
       })
     },
     f_download() {
-      return this.createDownload().then(() =>
-        this.$router.push({ name: 'download-list' }),
-      )
+      if (!this.operatingFile) {
+        return
+      }
+      this.$vueBus.$emit(this.$events.OPEN_DOWNLOAD_FILE, this.operatingFile)
     },
     f_share() {
       if (!this.operatingFile) {
@@ -233,18 +228,23 @@ export default {
         return
       }
 
-      this.$router.replace({ name: 'share' })
+      this.$vueBus.$emit(this.$events.OPEN_SHARE_FILE, this.operatingFile)
     },
     f_rename() {},
-    f_renew() {},
+    f_renew() {
+      if (!this.operatingFile) {
+        return
+      }
+      this.$vueBus.$emit(this.$events.OPEN_RENEW_FILE, this.operatingFile)
+    },
 
     f_delete() {},
 
     f_upload() {
-      this.$router.replace({ name: 'upload' })
+      this.$vueBus.$emit(this.$events.OPEN_UPLOAD_FILE)
     },
     f_get() {
-      this.$router.replace({ name: 'get' })
+      this.$vueBus.$emit(this.$events.OPEN_GET_FILE)
     },
   },
 }

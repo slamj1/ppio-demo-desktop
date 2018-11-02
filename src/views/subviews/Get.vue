@@ -79,7 +79,8 @@
 </template>
 <script>
 import StepPopup from '@/components/StepPopup'
-import { getFileInfoByShareCode, getFile } from '@/services/file'
+import { getFileInfoByShareCode } from '@/services/file'
+import { ACT_GET_FILE } from '../../constants/store'
 
 export default {
   name: 'upload',
@@ -98,7 +99,7 @@ export default {
   },
   methods: {
     f_close() {
-      this.$vueBus.$emit('get-close')
+      this.$vueBus.$emit(this.$events.CLOSE_GET_FILE)
     },
     f_step(step) {
       if (step === 0) {
@@ -127,18 +128,22 @@ export default {
       this.$refs.step.f_next()
     },
     f_confirm() {
-      getFile(this.file.id)
+      this.$store
+        .dispatch(ACT_GET_FILE, this.file)
         .then(
-          res => {
-            this.$notify.success({ title: `get the ${this.file.filename} success`, duration: 2000 })
-            return this.$vueBus.$emit('get-done', this.file)
+          () => {
+            this.$notify.success({
+              title: `get the ${this.file.filename} success`,
+              duration: 2000,
+            })
+            return this.$vueBus.$emit(this.$events.GET_FILE_DONE)
           },
           err => {
-            self.$notify.error({ title: JSON.stringify(err), duration: 2000 })
+            this.$notify.error({ title: JSON.stringify(err), duration: 2000 })
           },
         )
         .catch(err => {
-          console.log(JSON.stringify(err))
+          console.error(JSON.stringify(err))
         })
     },
   },

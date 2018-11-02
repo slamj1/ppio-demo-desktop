@@ -36,15 +36,29 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
+
+    <BillingRecords v-if="showPopups.billingRecords" :recordsData="userData.billingRecords"></BillingRecords>
+    <Download ref="download-file" v-if="showPopups.downloadFile" :file="downloadingFile"></Download>
+    <Get v-if="showPopups.getFile"></Get>
+    <Renew v-if="showPopups.renewFile" :file="renewingFile"></Renew>
+    <Share v-if="showPopups.shareFile" :file="sharingFile"></Share>
+    <Upload v-if="showPopups.uploadFile"></Upload>
   </el-container>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 import electron from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
-import { DL_TASK, UL_TASK, USAGE_PERCENT_GETTER } from '../constants/store'
-import Profile from '@/components/Profile'
+import { DL_TASK, UL_TASK, USAGE_PERCENT_GETTER, MUT_GET_FILE } from '../constants/store'
+
+import Profile from '../components/Profile'
+import Download from './subviews/Download'
+import Get from './subviews/Get'
+import Renew from './subviews/Renew'
+import Share from './subviews/Share'
+import Upload from './subviews/Upload'
+import BillingRecords from '../views/BillingRecords'
 
 export default {
   name: 'home',
@@ -53,32 +67,169 @@ export default {
       mode: APP_MODE_COINPOOL,
       APP_MODE_COINPOOL: APP_MODE_COINPOOL,
       showProfile: false,
+      showPopups: {
+        downloadFile: false,
+        getFile: false,
+        renewFile: false,
+        shareFile: false,
+        uploadFile: false,
+        billingRecords: false,
+      },
+      downloadingFile: null,
+      sharingFile: null,
+      renewingFile: null,
     }
   },
   computed: {
-    curRoutePath() {
-      return this.$route.path.split('/').slice(-1)[0]
-    },
+    ...mapState({
+      userData: state => state.user,
+    }),
     ...mapGetters({
       downloadCount: DL_TASK.GET_TASK_COUNT,
       uploadCount: UL_TASK.GET_TASK_COUNT,
       usagePercent: USAGE_PERCENT_GETTER,
     }),
-    ...mapState({
-      userData: state => state.user,
-    }),
+    curRoutePath() {
+      return this.$route.path.split('/').slice(-1)[0]
+    },
   },
   components: {
     Profile,
+    BillingRecords,
+    Download,
+    Get,
+    Renew,
+    Share,
+    Upload,
+  },
+  mounted() {
+    this.f_initEventBus()
   },
   methods: {
+    ...mapMutations({
+      getFile: MUT_GET_FILE,
+    }),
     f_goBilling() {
-      this.$router.push({ name: 'billing-records' })
       this.showProfile = false
+      this.$vueBus.$emit(this.$events.OPEN_BILLING_RECORDS)
     },
     f_checkUpdate() {
       this.showProfile = false
       electron.shell.openExternal('https://pp.io')
+    },
+    f_initEventBus() {
+      // get file
+      // open get file
+      this.$vueBus.$on(this.$events.OPEN_GET_FILE, () => {
+        console.log('open get file')
+        this.showPopups.getFile = true
+      })
+      // close get file
+      this.$vueBus.$on(this.$events.CLOSE_GET_FILE, () => {
+        console.log('close get file')
+        this.showPopups.getFile = false
+      })
+      // get file done
+      this.$vueBus.$on(this.$events.GET_FILE_DONE, () => {
+        console.log('get file done')
+        this.showPopups.getFile = false
+      })
+
+      // download file
+      // open download file
+      this.$vueBus.$on(this.$events.OPEN_DOWNLOAD_FILE, file => {
+        console.log('open download file ', file)
+        this.showPopups.downloadFile = true
+        this.downloadingFile = file
+      })
+      // close download file
+      this.$vueBus.$on(this.$events.CLOSE_DOWNLOAD_FILE, () => {
+        console.log('close download file')
+        this.showPopups.downloadFile = false
+        this.downloadingFile = null
+      })
+      // download file done
+      this.$vueBus.$on(this.$events.DOWNLOAD_FILE_DONE, () => {
+        console.log('download file done')
+        this.showPopups.downloadFile = false
+        this.downloadingFile = null
+        this.$router.push({ name: 'download-list' })
+      })
+
+      // share file
+      // open share file
+      this.$vueBus.$on(this.$events.OPEN_SHARE_FILE, file => {
+        console.log('open share file ', file)
+        this.showPopups.shareFile = true
+        this.sharingFile = file
+      })
+      // close download file
+      this.$vueBus.$on(this.$events.CLOSE_SHARE_FILE, () => {
+        console.log('close share file')
+        this.showPopups.shareFile = false
+        this.sharingFile = null
+      })
+      // shared file
+      this.$vueBus.$on(this.$events.SHARE_FILE_DONE, () => {
+        console.log('share file done')
+        this.showPopups.shareFile = false
+        this.sharingFile = null
+      })
+      // unshared file
+      this.$vueBus.$on(this.$events.UNSHARE_FILE_DONE, () => {
+        console.log('unshare file done')
+        this.showPopups.shareFile = false
+        this.sharingFile = null
+      })
+
+      // renew file
+      // open renew file
+      this.$vueBus.$on(this.$events.OPEN_RENEW_FILE, file => {
+        console.log('open renew file ', file)
+        this.showPopups.renewFile = true
+        this.renewingFile = file
+      })
+      // close download file
+      this.$vueBus.$on(this.$events.CLOSE_RENEW_FILE, () => {
+        console.log('close renew file')
+        this.showPopups.renewFile = false
+        this.renewingFile = null
+      })
+      // renewd file
+      this.$vueBus.$on(this.$events.RENEW_FILE_DONE, () => {
+        console.log('renew file done')
+        this.showPopups.renewFile = false
+        this.renewingFile = null
+      })
+
+      // upload file
+      // open upload file
+      this.$vueBus.$on(this.$events.OPEN_UPLOAD_FILE, () => {
+        console.log('open upload file ')
+        this.showPopups.uploadFile = true
+      })
+      // close download file
+      this.$vueBus.$on(this.$events.CLOSE_UPLOAD_FILE, () => {
+        console.log('close upload file')
+        this.showPopups.uploadFile = false
+      })
+      // uploadd file
+      this.$vueBus.$on(this.$events.UPLOAD_FILE_DONE, () => {
+        console.log('upload file done')
+        this.showPopups.uploadFile = false
+        this.$router.push({ name: 'upload-list' })
+      })
+
+      // open billing records
+      this.$vueBus.$on(this.$events.OPEN_BILLING_RECORDS, () => {
+        console.log('open billing records')
+        this.showPopups.billingRecords = true
+      })
+      // close billing records
+      this.$vueBus.$on(this.$events.CLOSE_BILLING_RECORDS, () => {
+        console.log('close billing records')
+        this.showPopups.billingRecords = false
+      })
     },
   },
 }

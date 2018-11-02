@@ -15,6 +15,7 @@ import {
   ACT_GET_FILE,
 } from '../constants/store'
 import getFileList from '../services/getFileList'
+import { getFile } from '@/services/file'
 import File from './File'
 
 const store = {
@@ -54,11 +55,17 @@ const store = {
         },
       )
     },
-    [ACT_GET_FILE](context, payload) {
-      return new Promise((resolve, reject) => {
-        context.commit(MUT_GET_FILE, payload)
-        resolve(payload)
-      })
+    [ACT_GET_FILE](context, file) {
+      return getFile(file.id).then(
+        () => {
+          context.commit(MUT_GET_FILE, file)
+          return true
+        },
+        err => {
+          console.error(err)
+          return err
+        },
+      )
     },
   },
 }

@@ -1,6 +1,6 @@
 <template>
   <transition name="slide">
-    <div class="step-popup-mask">
+    <div class="step-popup-mask" @click="f_close">
       <div class="step-popup-wrap">
         <svg v-on:click="f_close" viewBox="0 0 1024 1024" class="popup-close" version="1.1" width="128" height="128">
           <path d="M521.693867 449.297067L111.4112 39.0144a51.2 51.2 0 1 0-72.430933 72.362667l410.282666 410.3168-410.282666 410.3168a51.2 51.2 0 1 0 72.3968 72.3968l410.3168-410.282667 410.3168 410.282667a51.2 51.2 0 1 0 72.3968-72.362667l-410.282667-410.350933 410.282667-410.282667a51.2 51.2 0 1 0-72.3968-72.3968l-410.282667 410.282667z"></path>

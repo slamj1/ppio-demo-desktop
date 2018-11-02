@@ -36,19 +36,18 @@ export default {
   },
   methods: {
     f_close() {
-      this.$vueBus.$emit('share-close')
+      this.$vueBus.$emit(this.$events.CLOSE_SHARE_FILE)
     },
     f_confirm() {
       clipboard.writeText(this.shareCode)
-      this.$notify.success({ title: 'Copy share code success', duration: 2000 })
-      this.$vueBus.$emit('share-copy')
+      this.$notify.success({ title: 'Share code copied.', duration: 2000 })
     },
     f_unshare() {
       this.$notify.info({
         title: 'The sharing file have been canceled',
         duration: 2000,
       })
-      this.$vueBus.$emit('unshare')
+      this.$vueBus.$emit(this.$events.UNSHARE_FILE_DONE)
     },
   },
 }

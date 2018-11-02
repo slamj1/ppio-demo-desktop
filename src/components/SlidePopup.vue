@@ -1,7 +1,8 @@
 <template>
   <transition name="slide">
-    <div class="slide-popup-mask">
-      <div class="slide-popup-wrap">
+    <div class="slide-popup-wrapper">
+      <div class="slide-popup-mask" @click="close"></div>
+      <div class="slide-popup-container">
         <div class="slide-popup-header">
           <slot name="header"></slot>
         </div>
@@ -9,9 +10,7 @@
           <slot name="content"></slot>
         </div>
         <div class="slide-popup-footer">
-          <el-button class="button cancel-button" v-on:click="cancel" size="mini">Cancel</el-button>
-          <slot class="footer"></slot>
-          <el-button class="button" v-on:click="confirm" size="mini" type="primary">{{ButtonTitle?ButtonTitle:'Confirm' }}</el-button>
+          <slot name="footer"></slot>
         </div>
       </div>
     </div>
@@ -23,40 +22,58 @@ export default {
   data: () => ({}),
   props: ['ButtonTitle'],
   methods: {
-    cancel() {
-      this.$emit('cancel')
-    },
-    confirm() {
-      this.$emit('confirm')
+    close() {
+      this.$emit('close')
     },
   },
 }
 </script>
 <style lang="scss" scoped>
 @import '@/assets/css/_var.scss';
-.slide-popup-mask.slide-enter-active {
-  transition: top 0.3s ease;
-}
-.slide-popup-mask.slide-leave-active {
-  transition: top 0.5s ease;
-}
-.slide-popup-mask.slide-enter,
-.slide-popup-mask.slide-leave-to {
-  top: -100%;
+
+/* animation not work, don't know why */
+.slide-popup-wrapper.slide-enter-active,
+.slide-popup-wrapper.slide-leave-active {
+  .slide-popup-mask {
+    transition: opacity 1s ease;
+  }
+  .slide-popup-container {
+    transition: top 1s ease;
+  }
 }
 
-.slide-popup-mask.slide-enter-to,
-.slide-popup-mask.slide-leave {
-  top: 0;
+.slide-popup-wrapper.slide-enter,
+.slide-popup-wrapper.slide-leave-to {
+  .slide-popup-mask {
+    opacity: 0;
+  }
+  .slide-popup-container {
+    top: -100%;
+  }
 }
-.slide-popup-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  z-index: 10;
-  .slide-popup-wrap {
+
+.slide-popup-wrapper.slide-enter-to,
+.slide-popup-wrapper.slide-leave {
+  .slide-popup-mask {
+    opacity: 1;
+  }
+  .slide-popup-container {
+    top: 0;
+  }
+}
+
+.slide-popup-wrapper {
+  .slide-popup-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .slide-popup-container {
     width: 700px;
     left: 0;
     right: 0;
@@ -72,6 +89,7 @@ export default {
     border-top: none;
     -webkit-app-region: no-drag;
     box-shadow: rgba(39, 44, 49, 0.06) 2px 4px 8px, rgba(39, 44, 49, 0.06) -2px -4px 8px;
+    z-index: 10;
   }
   .slide-popup-header {
     height: 36px;
@@ -86,28 +104,28 @@ export default {
     left: 0;
     right: 0;
   }
-  .slide-popup-footer {
-    height: 36px;
-    line-height: 34px;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #eee;
-    border-top: 1px solid #ddd;
-    text-align: right;
-    padding-right: 10px;
-    .button {
-      padding-top: 5px;
-      padding-bottom: 5px;
-      margin-right: 6px;
-    }
-    .cancel-button {
-      position: absolute;
-      top: 6px;
-      left: 10px;
-    }
-  }
+  /*.slide-popup-footer {*/
+  /*height: 36px;*/
+  /*line-height: 34px;*/
+  /*position: absolute;*/
+  /*left: 0;*/
+  /*right: 0;*/
+  /*bottom: 0;*/
+  /*background-color: #eee;*/
+  /*border-top: 1px solid #ddd;*/
+  /*text-align: right;*/
+  /*padding-right: 10px;*/
+  /*.button {*/
+  /*padding-top: 5px;*/
+  /*padding-bottom: 5px;*/
+  /*margin-right: 6px;*/
+  /*}*/
+  /*.cancel-button {*/
+  /*position: absolute;*/
+  /*top: 6px;*/
+  /*left: 10px;*/
+  /*}*/
+  /*}*/
   .slide-popup-content {
     position: absolute;
     top: 36px;

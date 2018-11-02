@@ -7,8 +7,8 @@ import {
   ACT_LOGOUT,
   MUT_LOGOUT,
   ACT_REFRESH_USER,
-  MUT_SET_JOURNAL,
-  ACT_GET_JOURNAL,
+  MUT_SET_BILLING_RECORDS,
+  ACT_GET_BILLING_RECORDS,
   USAGE_PERCENT_GETTER,
 } from '../constants/store'
 
@@ -45,8 +45,8 @@ const store = {
       state.uid = ''
       state.billingRecords = []
     },
-    [MUT_SET_JOURNAL](state, journal) {
-      state.billingRecords = journal
+    [MUT_SET_BILLING_RECORDS](state, records) {
+      state.billingRecords = records
     },
   },
   actions: {
@@ -84,9 +84,9 @@ const store = {
         },
       )
     },
-    [ACT_GET_JOURNAL](context) {
+    [ACT_GET_BILLING_RECORDS](context) {
       return getBillingRecords().then(
-        res => context.commit(MUT_SET_JOURNAL, res),
+        res => context.commit(MUT_SET_BILLING_RECORDS, res),
         err => {
           console.log('get billing records error')
           console.log(err)

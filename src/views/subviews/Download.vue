@@ -4,11 +4,11 @@
       <span slot="header">Download File</span>
 
       <div class="step-content step-0" slot="step-0">
-        <img src="@/assets/logo.png" class="file-icon" :alt="filename">
-        <p class="file-name">{{filename}}</p>
+        <img src="@/assets/logo.png" class="file-icon" :alt="file.filename">
+        <p class="file-name">{{file.filename}}</p>
         <el-select v-model="type" class="select"  placeholder="Plaese Choose">
-         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-         </el-option>
+          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+        </el-option>
        </el-select>
        <el-alert title="You can not share secured file." show-icon class="alert-msg" type="warning" :closable="false"> </el-alert>
       </div>
@@ -73,26 +73,42 @@
 </template>
 <script>
 import StepPopup from '@/components/StepPopup'
+import File from '../../store/File'
+import { DL_TASK } from '../../constants/store'
 
 export default {
   name: 'upload',
   data: () => ({
     type: '1',
-    filename: 'PPIO upload filename',
     steps: ['Choose Type', 'Storage Setting', 'Payment'],
     options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
     radio: 1,
     copyNumber: 5,
+    file: new File({
+      id: '',
+      filename: 'PPIO upload filename',
+      size: 0,
+      type: 0,
+      isSecure: false,
+      isPublic: false,
+    }),
   }),
   components: {
     StepPopup,
   },
   methods: {
     f_close() {
-      this.$vueBus.$emit('upload-close')
+      this.$vueBus.$emit(this.$events.CLOSE_DOWNLOAD_FILE)
     },
     f_confirm() {
-      this.$vueBus.$emit('upload-pay')
+      console.log('download confirm')
+      this.$store
+        .dispatch(DL_TASK.ACT_CREATE_TASK)
+        .then(() => this.$vueBus.$emit(this.$events.DOWNLOAD_FILE_DONE))
+        .catch(err => {
+          console.error(err)
+          this.$notify.error({ title: JSON.stringify(err), duration: 2000 })
+        })
     },
   },
 }
