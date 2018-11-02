@@ -1,19 +1,22 @@
 <template>
   <el-container class="app-page home">
     <el-aside class="app-aside" mode="vertical" width="200px">
-      <div class="aside-profile">
-        <img class="profile-avatar" :src="avatar" />
-        <div class="profile-userinfo">
-          <span class="profile-username">{{username}}</span>
-          <template v-if="mode === APP_MODE_COINPOOL">
-            <el-progress class="usage-progress" :percentage="usedPercent" :show-text="false"></el-progress>
-            <span class="usage-number with-progress">{{usedStorage}}G/{{capacity}}G</span>
-          </template>
-          <template v-else>
-            <span class="usage-number">Used: {{usedStorage}}</span>
-          </template>
+      <el-popover class="aside-profile" v-model="showProfile">
+        <Profile :userData="userData" @check-billing="f_goBilling" @check-update="f_checkUpdate"></Profile>
+        <div class="profile-wrapper" slot="reference">
+          <img class="profile-avatar" :src="userData.avatar" />
+          <div class="profile-userinfo">
+            <span class="profile-username">{{userData.address}}</span>
+            <template v-if="mode === APP_MODE_COINPOOL">
+              <el-progress class="usage-progress" :percentage="usagePercent" :show-text="false"></el-progress>
+              <span class="usage-number with-progress">{{userData.usedStorage}}G/{{userData.capacity}}G</span>
+            </template>
+            <template v-else>
+              <span class="usage-number">Used: {{userData.usedStorage}}</span>
+            </template>
+          </div>
         </div>
-      </div>
+      </el-popover>
       <el-menu :default-active="curRoutePath" :router="true" class="aside-nav">
         <el-menu-item index="files">
           <i class="app-icon icon-nav-file"></i>
@@ -22,11 +25,11 @@
         <p class="nav-group-title">Transmission list</p>
         <el-menu-item index="download-list">
           <i class="app-icon icon-nav-download"></i>
-          <span slot="title">Downloading{{downloadCount > 0 ? `(${downloadCount})` : ''}}</span>
+          <span slot="title">Downloading <el-badge class="task-count-badge" v-show="downloadCount > 0" :value="downloadCount" /></span>
         </el-menu-item>
         <el-menu-item index="upload-list">
           <i class="app-icon icon-nav-upload"></i>
-          <span slot="title">Uploading{{uploadCount > 0 ? `(${uploadCount})` : ''}}</span>
+          <span slot="title">Uploading <el-badge class="task-count-badge" v-show="uploadCount > 0" :value="uploadCount" /></span>
         </el-menu-item>
       </el-menu>
     </el-aside>
@@ -37,35 +40,47 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
+import electron from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
-import { DL_TASK, UL_TASK } from '../constants/store'
+import { DL_TASK, UL_TASK, USAGE_PERCENT_GETTER } from '../constants/store'
+import Profile from '@/components/Profile'
 
 export default {
   name: 'home',
   data() {
     return {
-      avatar: require('@/assets/img/avatar.png'),
-      username: 'fdsafeILHULHUIfwe235feILHULfeILHUL',
       mode: APP_MODE_COINPOOL,
       APP_MODE_COINPOOL: APP_MODE_COINPOOL,
-      usedStorage: '720',
-      capacity: '1000',
+      showProfile: false,
     }
   },
   computed: {
-    usedPercent() {
-      return (this.usedStorage / this.capacity) * 100
-    },
     curRoutePath() {
       return this.$route.path.split('/').slice(-1)[0]
     },
     ...mapGetters({
       downloadCount: DL_TASK.GET_TASK_COUNT,
       uploadCount: UL_TASK.GET_TASK_COUNT,
+      usagePercent: USAGE_PERCENT_GETTER,
+    }),
+    ...mapState({
+      userData: state => state.user,
     }),
   },
-  methods: {},
+  components: {
+    Profile,
+  },
+  methods: {
+    f_goBilling() {
+      this.$router.push({ name: 'billing-records' })
+      this.showProfile = false
+    },
+    f_checkUpdate() {
+      this.showProfile = false
+      electron.shell.openExternal('https://pp.io')
+    },
+  },
 }
 </script>
 
@@ -85,15 +100,19 @@ $nav-font-color: #c0c4cc;
   -webkit-app-region: drag;
 
   .aside-profile {
-    width: 100%;
-    padding: 16px 20px;
-    display: flex;
-    flex-direction: row;
-    justify-content: left;
-    align-items: center;
+    display: block;
     -webkit-app-region: no-drag;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 
+    .profile-wrapper {
+      width: 100%;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: row;
+      justify-content: left;
+      align-items: center;
+      cursor: pointer;
+    }
     .profile-avatar {
       flex: 0 0 40px;
       margin-right: 10px;
@@ -149,6 +168,12 @@ $nav-font-color: #c0c4cc;
         color: #fff;
         background-color: $primary-color;
       }
+    }
+
+    .task-count-badge {
+      display: inline-block;
+      position: absolute;
+      right: 10px;
     }
 
     .nav-group-title {

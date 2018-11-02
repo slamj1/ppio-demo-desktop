@@ -10,7 +10,6 @@ import Get from './views/subviews/Get'
 import Renew from './views/subviews/Renew'
 import Share from './views/subviews/Share'
 import Upload from './views/subviews/Upload'
-import About from './views/About'
 import BillingRecords from './views/BillingRecords'
 import Start from './views/account/Start'
 import ImportAccount from './views/account/Import'
@@ -80,17 +79,12 @@ export default new Router({
           name: 'upload-list',
           component: UploadList,
         },
+        {
+          path: 'billing',
+          name: 'billing-records',
+          component: BillingRecords,
+        },
       ],
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: About,
-    },
-    {
-      path: '/billing',
-      name: 'billing',
-      component: BillingRecords,
     },
     {
       path: '/account',

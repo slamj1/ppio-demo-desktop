@@ -26,4 +26,30 @@ export const logout = () => {}
 
 export const getUserData = () => {}
 
-export const getBillingRecords = () => {}
+export const getBillingRecords = () =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve([
+        {
+          timestamp: 1541141825775,
+          product: 'Storage fee - 12.00G - 1000Days',
+          transaction: '-100.00PPCoin',
+        },
+        {
+          timestamp: 1541132025775,
+          product: 'Download fee - 4M',
+          transaction: '-10.00PPCoin',
+        },
+        {
+          timestamp: 1541131825775,
+          product: 'Storage fee - 100.00G - 50Days',
+          transaction: '-500.00PPCoin',
+        },
+        {
+          timestamp: 1541111525775,
+          product: 'Storage fee - 1.00G - 1000Days',
+          transaction: '-50.00PPCoin',
+        },
+      ])
+    }, 1000)
+  })

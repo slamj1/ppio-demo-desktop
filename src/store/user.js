@@ -9,6 +9,7 @@ import {
   ACT_REFRESH_USER,
   MUT_SET_JOURNAL,
   ACT_GET_JOURNAL,
+  USAGE_PERCENT_GETTER,
 } from '../constants/store'
 
 const store = {
@@ -16,8 +17,16 @@ const store = {
     uid: '',
     isLogin: true,
     nickname: '',
-    balance: 0,
+    balance: 30,
+    fund: 20,
     billingRecords: [],
+    avatar: require('@/assets/img/avatar.png'),
+    address: 'fdsafeILHULHUIfwe235feILHULfeILHUL',
+    usedStorage: 520,
+    capacity: 1000,
+  },
+  getters: {
+    [USAGE_PERCENT_GETTER]: state => (state.usedStorage / state.capacity) * 100,
   },
   mutations: {
     [MUT_SET_USER_DATA](state, data) {

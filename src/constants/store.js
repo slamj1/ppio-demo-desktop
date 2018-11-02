@@ -6,6 +6,7 @@ export const ACT_LOGOUT = 'action_login'
 export const MUT_SET_JOURNAL = 'mutation_setUserJournal'
 export const ACT_GET_JOURNAL = 'action_getUserJournal'
 export const ACT_REFRESH_USER = 'action_refresh'
+export const USAGE_PERCENT_GETTER = 'getter_usagePercent'
 
 export const MUT_SET_FILE_LIST = 'mutation_setFileList'
 export const ACT_SET_FILE_LIST = 'action_setFileList'

@@ -24,6 +24,8 @@ import {
   Radio,
   Table,
   TableColumn,
+  Badge,
+  Popover,
 } from 'element-ui'
 import '@/assets/css/element-theme.scss'
 import lang from 'element-ui/lib/locale/lang/en'
@@ -55,3 +57,5 @@ Vue.use(RadioGroup)
 Vue.use(Radio)
 Vue.use(Table)
 Vue.use(TableColumn)
+Vue.use(Badge)
+Vue.use(Popover)

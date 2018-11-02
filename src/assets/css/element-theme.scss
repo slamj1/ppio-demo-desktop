@@ -1,7 +1,14 @@
-/* 改变主题色变量 */
+/* change the primary color */
 $--color-primary: #1989FA;
 
+/* change the path of element-ui required */
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+
+@import "~element-ui/packages/theme-chalk/src/index";
+
 /* change some details of element-ui */
+
+/* step style */
 .popup-steps {
   padding-left: 20px !important;
   padding-right: 20px !important;
@@ -26,7 +33,7 @@ $--color-primary: #1989FA;
   }
 }
 
-/* change notification ui */
+/* notification style */
 .el-notification {
   border-radius: 4px !important;
   padding: 15px 26px 15px 40px !important;
@@ -51,43 +58,74 @@ $--color-primary: #1989FA;
     top: 10px;
   }
 }
-#app {
-  // .el-button.el-button--primary {
-  //   &:focus,
-  //   &:hover {
-  //     color: #fff;
-  //     background-color: $primary-color;
-  //     border-color: $primary-color;
-  //   }
-  // }
-  //
-  // .el-button--primary.is-plain:hover,
-  // .el-button--primary.is-plain:focus {
-  //   color: #1989FA;
-  //   background: #e8f3ff;
-  //   border-color: #a3d0fd;
-  // }
 
-  .el-button.el-button--small {
-    height: 30px;
-    line-height: 30px;
-    padding: 0 15px;
+/* table style */
+$stripe-color: #f5f7fa;
 
-    .app-icon {
-      vertical-align: middle;
+.ppio-list-table {
+  .el-table__header-wrapper .el-table__header {
+    th {
+      background-color: $stripe-color;
+      padding: 6px 0;
+      color: #606266;
+      font-weight: normal;
     }
   }
 
-  // .el-button.is-circle {
-  //   &:focus,
-  //   &:hover {
-  //     background-color: transparent;
-  //     color: #606266;
-  //   }
-  // }
+  .el-table__body {
+    thead td {
+      background-color: $stripe-color;
+    }
+
+    .el-table__row--striped td {
+      background-color: $stripe-color;
+    }
+  }
 }
 
-/* change the path of element-ui required */
-$--font-path: '~element-ui/lib/theme-chalk/fonts';
+/* badge style */
+.el-badge {
+  sup {
+    border: 0;
+  }
+}
 
-@import "~element-ui/packages/theme-chalk/src/index";
+/* button style */
+// .el-button.el-button--primary {
+//   &:focus,
+//   &:hover {
+//     color: #fff;
+//     background-color: $primary-color;
+//     border-color: $primary-color;
+//   }
+// }
+//
+// .el-button--primary.is-plain:hover,
+// .el-button--primary.is-plain:focus {
+//   color: #1989FA;
+//   background: #e8f3ff;
+//   border-color: #a3d0fd;
+// }
+
+.el-button.el-button--small {
+  height: 30px;
+  line-height: 30px;
+  padding: 0 15px;
+
+  .app-icon {
+    vertical-align: middle;
+  }
+}
+
+// .el-button.is-circle {
+//   &:focus,
+//   &:hover {
+//     background-color: transparent;
+//     color: #606266;
+//   }
+// }
+
+/* popover style */
+.el-popover {
+  padding: 0;
+}

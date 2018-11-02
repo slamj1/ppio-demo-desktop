@@ -14,6 +14,7 @@ export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
     curPage: '',
+    appVersion: '1.0',
   },
   modules: {
     user: userStore,

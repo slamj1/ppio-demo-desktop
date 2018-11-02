@@ -1,5 +1,5 @@
 <template>
-  <el-table class="transfer-table" :data="tableData" stripe style="width: 100%">
+  <el-table class="ppio-list-table transfer-table" :data="tableData" stripe style="width: 100%">
     <el-table-column
         prop="name"
         label="File"
@@ -43,34 +43,11 @@ export default {
 <style lang="scss">
 @import '@/assets/css/_var.scss';
 
-$stripe-color: #f5f7fa;
-
 .transfer-table {
   width: 100%;
   height: 100%;
 
-  .el-table__header-wrapper .el-table__header {
-    th {
-      background-color: $stripe-color;
-      padding: 6px 0;
-      color: #606266;
-      font-weight: normal;
-    }
-  }
-
-  .el-table__body {
-    thead td {
-      background-color: $stripe-color;
-    }
-
-    .el-table__row--striped td {
-      background-color: $stripe-color;
-    }
-  }
-
   .table-column-filename {
-    padding-left: 30px;
-
     .file-name-wrap {
       white-space: nowrap;
       text-overflow: ellipsis;
