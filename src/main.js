@@ -4,7 +4,7 @@ import router from './router'
 import store from './store/'
 import './plugins/element.js'
 import FilterPlugin from './utils/filter.js'
-import UtilPlugin from './utils/util.js'
+import UtilPlugin from './plugins/util.js'
 
 Vue.config.productionTip = false
 Vue.config.devtools = true

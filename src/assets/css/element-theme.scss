@@ -64,6 +64,7 @@ $stripe-color: #f5f7fa;
 
 .ppio-list-table {
   .el-table__header-wrapper .el-table__header {
+    -webkit-app-region: drag;
     th {
       background-color: $stripe-color;
       padding: 6px 0;
@@ -117,13 +118,16 @@ $stripe-color: #f5f7fa;
   }
 }
 
-// .el-button.is-circle {
-//   &:focus,
-//   &:hover {
-//     background-color: transparent;
-//     color: #606266;
-//   }
-// }
+ .el-button.is-circle {
+   &:hover {
+     color: #1989FA !important;
+     background-color: #e8f3ff !important;
+   }
+   &:focus {
+     background-color: transparent;
+     color: #606266;
+   }
+ }
 
 /* popover style */
 .el-popover {

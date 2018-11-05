@@ -1,5 +1,4 @@
 // some util functions
-import { Notification } from 'element-ui'
 import { remote } from 'electron'
 import EVENTS from '../constants/events'
 
@@ -15,7 +14,5 @@ export default {
     // vue event bus instance and event names
     Vue.prototype.$vueBus = new Vue()
     Vue.prototype.$events = EVENTS
-
-    Vue.prototype.$notify = Notification
   },
 }

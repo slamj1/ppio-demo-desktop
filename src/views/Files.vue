@@ -1,5 +1,5 @@
 <template>
-  <el-container @click.native="f_selectFile(0)">
+  <el-container @click.native="f_selectFile(-1)">
     <el-header class="app-header" @click.native.stop="">
       <div class="header-btn-group">
         <template v-if="selectedFileId !== 0">
@@ -19,17 +19,17 @@
           <el-button size="small" type="primary" plain :loading="preparingGet" @click="f_get"><i class="app-icon icon-get"></i> Get</el-button>
         </template>
       </div>
-      <el-button class="refresh-btn" icon="el-icon-refresh" circle @click="f_refreshData"></el-button>
+      <el-button class="refresh-btn" icon="el-icon-refresh" circle @click="f_refreshList"></el-button>
     </el-header>
     <el-main class="app-main">
-      <div class="file-container">
+      <div class="file-container" v-loading="refreshingData">
         <FileItem
-            v-for="(file, fileId) in fileList"
-            :selected="selectedFileId === fileId"
-            :key="fileId"
+            v-for="(file, idx) in fileList"
+            :selected="selectedFileId === file.id"
+            :key="file.id"
             :file="file"
-            @click.native.right.prevent.stop="f_rightClickFile(fileId)"
-            @click.native.stop="f_selectFile(fileId)"></FileItem>
+            @click.native.right.prevent.stop="f_rightClickFile(idx)"
+            @click.native.stop="f_selectFile(idx)"></FileItem>
       </div>
     </el-main>
     <router-view :file="operatingFile" @click.native.stop=""></router-view>
@@ -57,6 +57,7 @@ export default {
       preparingUl: false,
       preparingGet: false,
       selectedFileId: 0,
+      refreshingData: false,
       fetchingData: false,
       operatingFile: null,
       contextMenu: new Menu(),
@@ -79,7 +80,7 @@ export default {
   },
 
   activated() {
-    this.f_refreshData()
+    this.f_getFileList()
   },
 
   methods: {
@@ -88,12 +89,13 @@ export default {
       getFile: ACT_GET_FILE,
       createUpload: UL_TASK.ACT_CREATE_TASK,
     }),
-    f_refreshData() {
+    f_getFileList() {
       if (this.fetchingData) {
-        return
+        return Promise.resolve()
       }
+      this.selectedFileId = 0
       this.fetchingData = true
-      this.getFileList()
+      return this.getFileList()
         .then(() => {
           this.fetchingData = false
           return ''
@@ -103,9 +105,24 @@ export default {
           console.error(err)
         })
     },
-    f_selectFile(fileId) {
-      this.selectedFileId = fileId
-      this.operatingFile = this.fileList[this.selectedFileId]
+    f_refreshList() {
+      console.log('refreshing file list')
+      this.refreshingData = true
+      this.selectedFileId = 0
+      this.f_getFileList()
+        .then(() => (this.refreshingData = false))
+        .catch(err => {
+          console.error(err)
+        })
+    },
+    f_selectFile(idx) {
+      if (idx === -1) {
+        this.selectedFileId = 0
+        this.operatingFile = null
+      } else {
+        this.selectedFileId = this.fileList[idx].id
+        this.operatingFile = this.fileList[idx]
+      }
       console.log(this.operatingFile)
     },
     f_createContextMenu() {
@@ -161,8 +178,8 @@ export default {
         }),
       )
     },
-    f_rightClickFile(fileId) {
-      this.f_selectFile(fileId)
+    f_rightClickFile(idx) {
+      this.f_selectFile(idx)
       this.contextMenu.popup({ window: remote.getCurrentWindow() })
     },
     f_initBusEvent() {

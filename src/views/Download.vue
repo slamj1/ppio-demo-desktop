@@ -1,5 +1,6 @@
 <template>
   <TransferTable
+      tableName="download"
       :tableData="transferList"
       @cancel="f_cancel"
   ></TransferTable>

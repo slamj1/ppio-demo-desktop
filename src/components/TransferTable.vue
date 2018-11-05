@@ -1,5 +1,6 @@
 <template>
   <el-table class="ppio-list-table transfer-table" :data="tableData" stripe style="width: 100%">
+    <p class="empty-text" slot="empty">No {{tableName}} task</p>
     <el-table-column
         prop="name"
         label="File"
@@ -31,7 +32,7 @@
 <script>
 export default {
   name: 'download-list',
-  props: ['tableData'],
+  props: ['tableName', 'tableData'],
   methods: {
     f_cancel(taskIndex) {
       this.$emit('cancel', taskIndex)
@@ -46,6 +47,14 @@ export default {
 .transfer-table {
   width: 100%;
   height: 100%;
+
+  .empty-text {
+    padding: 50px 0;
+  }
+
+  .el-table__header-wrapper .el-table__header {
+    -webkit-app-region: drag;
+  }
 
   .table-column-filename {
     .file-name-wrap {
