@@ -1,7 +1,9 @@
 module.exports = {
-  // baseUrl: process.env.NODE_ENV === 'production' ? `${process.cwd()}/dist/` : '/',
-  // filenameHashing: false,
-  // css: {
-  //   extract: false,
-  // },
+  pluginOptions: {
+    electronBuilder: {
+      builderOptions: {
+        // options placed here will be merged with default configuration and passed to electron-builder
+      },
+    },
+  },
 }

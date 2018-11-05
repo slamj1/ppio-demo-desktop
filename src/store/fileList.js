@@ -1,5 +1,3 @@
-import Vue from 'vue'
-
 import {
   MUT_SET_FILE_LIST,
   MUT_REMOVE_FILE,
@@ -15,34 +13,32 @@ import {
   ACT_GET_FILE,
 } from '../constants/store'
 import getFileList from '../services/getFileList'
-import { getFile } from '@/services/file'
+import { getFile } from '../services/file'
 import File from './File'
 
 const store = {
   state: {
-    fileList: {},
+    fileList: [],
   },
   mutations: {
     [MUT_SET_FILE_LIST](state, list) {
-      state.fileList = {}
-      list.map(item => {
-        Vue.set(state.fileList, item.id, new File(item))
-      })
+      state.fileList = list.map(item => new File(item))
     },
-    [MUT_REMOVE_FILE](state, id) {
-      Vue.delete(state.fileList, id)
+    [MUT_REMOVE_FILE](state, idx) {
+      state.fileList.splice(idx, 1)
+      // Vue.delete(state.fileList, id)
     },
     [MUT_RENAME_FILE](state, payload) {
-      state.fileList[payload.fileId].rename(payload.name)
+      state.fileList[payload.idx].filename = payload.name
     },
     [MUT_SECURE_FILE](state, payload) {
-      state.fileList[payload.fileId].setSecure(payload.secure)
+      state.fileList[payload.idx].isSecure = payload.secure
     },
     [MUT_SHARE_FILE](state, payload) {
-      state.fileList[payload.fileId].setPublic(payload.toshare)
+      state.fileList[payload.idx].isPublic = payload.toshare
     },
     [MUT_GET_FILE](state, payload) {
-      Vue.set(state.fileList, payload.id, new File(payload))
+      state.fileList.push(new File(payload))
     },
   },
   actions: {

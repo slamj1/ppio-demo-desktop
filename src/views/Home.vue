@@ -138,9 +138,10 @@ export default {
       // download file
       // open download file
       this.$vueBus.$on(this.$events.OPEN_DOWNLOAD_FILE, file => {
-        console.log('open download file ', file)
-        this.showPopups.downloadFile = true
-        this.downloadingFile = file
+        this.$store.dispatch(DL_TASK.ACT_CREATE_TASK, file)
+        // console.log('open download file ', file)
+        // this.showPopups.downloadFile = true
+        // this.downloadingFile = file
       })
       // close download file
       this.$vueBus.$on(this.$events.CLOSE_DOWNLOAD_FILE, () => {

@@ -6,9 +6,7 @@
           <el-button size="small" type="primary" :loading="preparingDl" @click="f_download"><i class="app-icon icon-download"></i> Download</el-button>
           <el-button size="small" type="primary" plain :loading="preparingShare" @click="f_share"><i class="app-icon icon-share"></i> Share</el-button>
           <el-dropdown class="header-dropdown-menu" size="small" trigger="click">
-              <span class="el-dropdown-link">
-                More<i class="el-icon-arrow-down el-icon--right"></i>
-              </span>
+            <span class="el-dropdown-link">More <i class="el-icon-arrow-down el-icon--right"></i></span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item :loading="preparingRename" @click.native="f_rename">Rename</el-dropdown-item>
               <el-dropdown-item :loading="preparingRenew" @click.native="f_renew">Renew</el-dropdown-item>

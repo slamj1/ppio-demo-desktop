@@ -17,6 +17,27 @@ import {
 } from '../../services/download'
 import File from '../File'
 
+function setTaskStatus(task, status) {
+  task.transferSpeed = status.speed
+  task.transferProgress = status.progress
+  if (status.finished) {
+    task.transferringData = false
+    task.finished = true
+    task.transferProgress = 100
+  }
+}
+
+function startTask(task) {
+  task.transferringData = true
+  task.finished = false
+  task.transferProgress = 0
+}
+
+function cancelTask(task) {
+  task.transferringData = false
+  task.finished = false
+}
+
 export default class TaskStore {
   constructor(storeType) {
     // maintain the task queue
@@ -25,36 +46,36 @@ export default class TaskStore {
     }
 
     // assign keys and sdk methods by store type
-    let STORE_KEYS, taskType, startTask, cancelTask, getTaskProgress
+    let STORE_KEYS, taskType, serviceStartTask, serviceCancelTask, serviceGetTaskProgress
     if (storeType === 'upload') {
       STORE_KEYS = UL_TASK
       taskType = TASK_TYPE_UPLOAD
-      startTask = startUpload
-      cancelTask = cancelUpload
-      getTaskProgress = getUploadProgress
+      serviceStartTask = startUpload
+      serviceCancelTask = cancelUpload
+      serviceGetTaskProgress = getUploadProgress
     }
     if (storeType === 'download') {
       STORE_KEYS = DL_TASK
       taskType = TASK_TYPE_DOWNLOAD
-      startTask = startDownload
-      cancelTask = cancelDownload
-      getTaskProgress = getDownloadProgress
+      serviceStartTask = startDownload
+      serviceCancelTask = cancelDownload
+      serviceGetTaskProgress = getDownloadProgress
     }
 
     // mutation methods
     const m_addTask = (state, data) => {
-      state.taskQueue.unshift(
-        new Task({
-          type: taskType,
-          id: data.taskId,
-          file: data.file,
-        }).start(),
-      )
+      const newTask = new Task({
+        type: taskType,
+        id: data.taskId,
+        file: data.file,
+      })
+      startTask(newTask)
+      state.taskQueue.unshift(newTask)
     }
 
     const m_removeTask = (state, index) => {
       console.log('removing task ', index)
-      state.taskQueue[index].cancel()
+      cancelTask(state.taskQueue[index])
       state.taskQueue.splice(index, 1)
     }
 
@@ -62,7 +83,8 @@ export default class TaskStore {
       console.log(statusArr)
       statusArr.map((status, idx) => {
         if (status && state.taskQueue[idx]) {
-          state.taskQueue[idx].setStatus(status)
+          const task = state.taskQueue[idx]
+          setTaskStatus(task, status)
         }
       })
     }
@@ -70,7 +92,7 @@ export default class TaskStore {
     // action methods
     const a_createTask = (context, fileHash) => {
       console.log('create task')
-      return startTask(fileHash)
+      return serviceStartTask(fileHash)
         .then(res => {
           console.log('task started')
           return context.commit(STORE_KEYS.MUT_ADD_TASK, {
@@ -85,7 +107,7 @@ export default class TaskStore {
     }
 
     const a_cancelTask = (context, idx) =>
-      cancelTask(context.state.taskQueue[idx].id).then(() => {
+      serviceCancelTask(context.state.taskQueue[idx].id).then(() => {
         console.log('res ', idx)
         return context.commit(STORE_KEYS.MUT_REMOVE_TASK, idx)
       })
@@ -94,7 +116,7 @@ export default class TaskStore {
       Promise.all(
         taskIds.map(async taskId => {
           try {
-            const progressRes = await getTaskProgress(taskId)
+            const progressRes = await serviceGetTaskProgress(taskId)
             console.log(progressRes)
             return progressRes
           } catch (err) {
