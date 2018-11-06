@@ -6,14 +6,14 @@ import {
   MUT_SHARE_FILE,
   MUT_GET_FILE,
   ACT_SET_FILE_LIST,
-  // ACT_REMOVE_FILE,
-  // ACT_RENAME_FILE,
+  ACT_REMOVE_FILE,
+  ACT_RENAME_FILE,
   // ACT_SECURE_FILE,
   // ACT_SHARE_FILE,
   ACT_GET_FILE,
 } from '../constants/store'
 import getFileList from '../services/getFileList'
-import { getFile } from '../services/file'
+import { getFile, deleteFile, renameFile } from '../services/file'
 import File from './File'
 
 const store = {
@@ -61,6 +61,27 @@ const store = {
           console.error(err)
           return err
         },
+      )
+    },
+    [ACT_REMOVE_FILE](context, payload) {
+      return deleteFile(payload.file.id).then(
+        () => {
+          context.commit(MUT_REMOVE_FILE, payload.fileIndex)
+          return true
+        },
+        err => console.error(err),
+      )
+    },
+    [ACT_RENAME_FILE](context, payload) {
+      return renameFile(payload.file.id, payload.filename).then(
+        () => {
+          context.commit(MUT_RENAME_FILE, {
+            idx: payload.fileindex,
+            name: payload.filename,
+          })
+          return true
+        },
+        err => console.error(err),
       )
     },
   },

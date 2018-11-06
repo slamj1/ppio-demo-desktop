@@ -62,16 +62,18 @@ export default {
     },
     f_save() {
       dialog.showSaveDialog(this.$remote.getCurrentWindow(), {}, filename => {
-        fs.writeFile(filename, this.seedPhrase, err => {
-          if (err) {
-            console.log(err)
-          } else {
-            this.$notify.success({
-              title: 'Save Encryption Key success!',
-              duration: 2000,
-            })
-          }
-        })
+        if (filename !== undefined) {
+          fs.writeFile(filename, this.seedPhrase, err => {
+            if (err) {
+              console.log(err)
+            } else {
+              this.$notify.success({
+                title: 'Save Encryption Key success!',
+                duration: 2000,
+              })
+            }
+          })
+        }
       })
     },
     f_generate_phrase_seed() {

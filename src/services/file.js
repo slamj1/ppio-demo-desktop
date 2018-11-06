@@ -27,8 +27,22 @@ export const getFile = id =>
     }
   })
 
-export const renameFile = id => {}
+export const renameFile = id =>
+  new Promise((resolve, reject) => {
+    if (id === '') {
+      reject(new Error('rename file error'))
+    } else {
+      resolve('rename file success')
+    }
+  })
 
-export const deleteFile = id => {}
+export const deleteFile = id =>
+  new Promise((resolve, reject) => {
+    if (id === '') {
+      reject(new Error('delete file error'))
+    } else {
+      resolve('delete file success')
+    }
+  })
 
 export const renewFile = id => {}
