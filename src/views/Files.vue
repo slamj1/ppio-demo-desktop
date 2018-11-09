@@ -6,7 +6,9 @@
           <el-button size="small" type="primary" :loading="preparingDl" @click="f_download"><i class="app-icon icon-download"></i> Download</el-button>
           <el-button size="small" type="primary" plain :loading="preparingShare" @click="f_share"><i class="app-icon icon-share"></i> Share</el-button>
           <el-dropdown class="header-dropdown-menu" size="small" trigger="click">
-            <span class="el-dropdown-link">More <i class="el-icon-arrow-down el-icon--right"></i></span>
+              <span class="el-dropdown-link">
+                More<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item :loading="preparingRename" @click.native="f_rename">Rename</el-dropdown-item>
               <el-dropdown-item :loading="preparingRenew" @click.native="f_renew">Renew</el-dropdown-item>
@@ -39,10 +41,15 @@
 import { mapState, mapActions } from 'vuex'
 import { remote } from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
-import { ACT_SET_FILE_LIST, UL_TASK, ACT_GET_FILE } from '../constants/store'
+import {
+  ACT_SET_FILE_LIST,
+  UL_TASK,
+  ACT_GET_FILE,
+  ACT_REMOVE_FILE,
+} from '../constants/store'
 import FileItem from '@/components/FileItem'
 
-const { Menu, MenuItem } = remote
+const { Menu, MenuItem, dialog } = remote
 export default {
   name: 'file',
   data() {
@@ -57,6 +64,7 @@ export default {
       preparingUl: false,
       preparingGet: false,
       selectedFileId: 0,
+      selectedFileIndex: -1,
       refreshingData: false,
       fetchingData: false,
       operatingFile: null,
@@ -76,7 +84,6 @@ export default {
   },
   mounted() {
     this.f_createContextMenu()
-    this.f_initBusEvent()
   },
 
   activated() {
@@ -100,6 +107,9 @@ export default {
           this.fetchingData = false
           return ''
         })
+        .finally(() => {
+          this.f_selectFile(-1)
+        })
         .catch(err => {
           this.fetchingData = false
           console.error(err)
@@ -116,6 +126,7 @@ export default {
         })
     },
     f_selectFile(idx) {
+      this.selectedFileIndex = idx
       if (idx === -1) {
         this.selectedFileId = 0
         this.operatingFile = null
@@ -123,7 +134,6 @@ export default {
         this.selectedFileId = this.fileList[idx].id
         this.operatingFile = this.fileList[idx]
       }
-      console.log(this.operatingFile)
     },
     f_createContextMenu() {
       const self = this
@@ -182,48 +192,6 @@ export default {
       this.f_selectFile(idx)
       this.contextMenu.popup({ window: remote.getCurrentWindow() })
     },
-    f_initBusEvent() {
-      // share event
-      this.$vueBus.$on('unshare', () => {
-        console.log('unshare')
-        this.$router.replace({ name: 'files' })
-      })
-
-      this.$vueBus.$on('share-close', () => {
-        console.log('share-close')
-        this.$router.replace({ name: 'files' })
-      })
-
-      // upload event
-      this.$vueBus.$on('upload-close', () => {
-        console.log('upload-close')
-        this.$router.replace({ name: 'files' })
-      })
-
-      this.$vueBus.$on('upload-pay', () => {
-        console.log('upload-pay')
-        return this.createUpload().then(() => this.$router.push({ name: 'upload-list' }))
-        // this.$router.replace({ name: 'files' })
-      })
-
-      // get event
-      this.$vueBus.$on('get-close', () => {
-        console.log('get-close')
-        this.$router.replace({ name: 'files' })
-      })
-
-      this.$vueBus.$on('get-done', file => {
-        console.log('get-done')
-        this.getFile(file)
-          .then(() => {
-            console.log(1)
-            return this.$router.replace({ name: 'files' })
-          })
-          .catch(err => {
-            console.log(JSON.stringify(err))
-          })
-      })
-    },
     f_download() {
       if (!this.operatingFile) {
         return
@@ -245,16 +213,57 @@ export default {
 
       this.$vueBus.$emit(this.$events.OPEN_SHARE_FILE, this.operatingFile)
     },
-    f_rename() {},
+    f_rename() {
+      if (!this.operatingFile || this.selectedFileIndex === -1) {
+        return
+      }
+      this.$vueBus.$emit(this.$events.OPEN_RENAME_FILE, {
+        file: this.operatingFile,
+        fileindex: this.selectedFileIndex,
+      })
+    },
     f_renew() {
       if (!this.operatingFile) {
         return
       }
       this.$vueBus.$emit(this.$events.OPEN_RENEW_FILE, this.operatingFile)
     },
-
-    f_delete() {},
-
+    f_delete() {
+      if (!this.operatingFile || this.selectedFileIndex === -1) {
+        return
+      }
+      dialog.showMessageBox(
+        this.$remote.getCurrentWindow(),
+        {
+          type: 'info',
+          buttons: ['ok', 'cancel'],
+          defaultId: 0,
+          message: `Are you sure to delete "${this.operatingFile.filename}"?`,
+        },
+        index => {
+          if (index === 0) {
+            this.$store
+              .dispatch(ACT_REMOVE_FILE, {
+                file: this.operatingFile,
+                fileIndex: this.selectedFileIndex,
+              })
+              .then(
+                () => {
+                  this.$notify.success({
+                    title: `delete the file success`,
+                    duration: 2000,
+                  })
+                  return this.f_selectFile(-1)
+                },
+                err => this.$notify.error({ title: err.toString(), duration: 2000 }),
+              )
+              .catch(err => {
+                console.error(err.toString())
+              })
+          }
+        },
+      )
+    },
     f_upload() {
       this.$vueBus.$emit(this.$events.OPEN_UPLOAD_FILE)
     },

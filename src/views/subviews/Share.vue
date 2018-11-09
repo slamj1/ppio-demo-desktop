@@ -40,7 +40,10 @@ export default {
     },
     f_confirm() {
       clipboard.writeText(this.shareCode)
-      this.$notify.success({ title: 'Share code copied.', duration: 2000 })
+      this.$notify.success({
+        title: 'Share code copied.',
+        duration: 2000,
+      })
     },
     f_unshare() {
       this.$notify.info({

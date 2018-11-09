@@ -115,12 +115,12 @@ export default {
                 return this.$refs.step.f_next()
               },
               err => {
-                this.errorMsg = JSON.stringify(err)
+                this.errorMsg = err.toString()
                 console.log(err)
               },
             )
             .catch(err => {
-              console.log(JSON.stringify(err))
+              console.log(err.toString())
             })
         }
         return
@@ -139,11 +139,11 @@ export default {
             return this.$vueBus.$emit(this.$events.GET_FILE_DONE)
           },
           err => {
-            this.$notify.error({ title: JSON.stringify(err), duration: 2000 })
+            this.$notify.error({ title: err.toString(), duration: 2000 })
           },
         )
         .catch(err => {
-          console.error(JSON.stringify(err))
+          console.error(err.toString())
         })
     },
   },

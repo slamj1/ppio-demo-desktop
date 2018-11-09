@@ -41,6 +41,7 @@
     <Download ref="download-file" v-if="showPopups.downloadFile" :file="downloadingFile"></Download>
     <Get v-if="showPopups.getFile"></Get>
     <Renew v-if="showPopups.renewFile" :file="renewingFile"></Renew>
+    <Rename v-if="showPopups.renameFile" :file="renamingFile" :fileindex="renamingFileIndex"></Rename>
     <Share v-if="showPopups.shareFile" :file="sharingFile"></Share>
     <Upload v-if="showPopups.uploadFile"></Upload>
   </el-container>
@@ -56,6 +57,7 @@ import Profile from '../components/Profile'
 import Download from './subviews/Download'
 import Get from './subviews/Get'
 import Renew from './subviews/Renew'
+import Rename from './subviews/Rename'
 import Share from './subviews/Share'
 import Upload from './subviews/Upload'
 import BillingRecords from '../views/BillingRecords'
@@ -74,9 +76,12 @@ export default {
         shareFile: false,
         uploadFile: false,
         billingRecords: false,
+        renameFile: false,
       },
       downloadingFile: null,
       sharingFile: null,
+      renamingFile: null,
+      renamingFileIndex: -1,
       renewingFile: null,
     }
   },
@@ -99,6 +104,7 @@ export default {
     Download,
     Get,
     Renew,
+    Rename,
     Share,
     Upload,
   },
@@ -115,7 +121,6 @@ export default {
       electron.shell.openExternal('https://pp.io')
     },
     f_initEventBus() {
-      // get file
       // open get file
       this.$vueBus.$on(this.$events.OPEN_GET_FILE, () => {
         console.log('open get file')
@@ -187,17 +192,38 @@ export default {
         this.showPopups.renewFile = true
         this.renewingFile = file
       })
-      // close download file
+      // close renew file
       this.$vueBus.$on(this.$events.CLOSE_RENEW_FILE, () => {
         console.log('close renew file')
         this.showPopups.renewFile = false
         this.renewingFile = null
       })
-      // renewd file
+      // renew file
       this.$vueBus.$on(this.$events.RENEW_FILE_DONE, () => {
         console.log('renew file done')
         this.showPopups.renewFile = false
         this.renewingFile = null
+      })
+
+      // rename file
+      // open rename file
+      this.$vueBus.$on(this.$events.OPEN_RENAME_FILE, payload => {
+        console.log('open rename file ', payload.file)
+        this.showPopups.renameFile = true
+        this.renamingFile = payload.file
+        this.renamingFileIndex = payload.fileindex
+      })
+      // close rename file
+      this.$vueBus.$on(this.$events.CLOSE_RENAME_FILE, () => {
+        console.log('close rename file')
+        this.showPopups.renameFile = false
+        this.renamingFile = null
+      })
+      // rename file
+      this.$vueBus.$on(this.$events.RENAME_FILE_DONE, () => {
+        console.log('rename file done')
+        this.showPopups.renameFile = false
+        this.renamingFile = null
       })
 
       // upload file
