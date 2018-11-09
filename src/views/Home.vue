@@ -47,10 +47,10 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import electron from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
-import { DL_TASK, UL_TASK, USAGE_PERCENT_GETTER, MUT_GET_FILE } from '../constants/store'
+import { DL_TASK, UL_TASK, USAGE_PERCENT_GETTER } from '../constants/store'
 
 import Profile from '../components/Profile'
 import Download from './subviews/Download'
@@ -106,9 +106,6 @@ export default {
     this.f_initEventBus()
   },
   methods: {
-    ...mapMutations({
-      getFile: MUT_GET_FILE,
-    }),
     f_goBilling() {
       this.showProfile = false
       this.$vueBus.$emit(this.$events.OPEN_BILLING_RECORDS)
@@ -139,9 +136,9 @@ export default {
       // open download file
       this.$vueBus.$on(this.$events.OPEN_DOWNLOAD_FILE, file => {
         this.$store.dispatch(DL_TASK.ACT_CREATE_TASK, file)
-        // console.log('open download file ', file)
-        // this.showPopups.downloadFile = true
-        // this.downloadingFile = file
+        console.log('open download file ', file)
+        this.showPopups.downloadFile = true
+        this.downloadingFile = file
       })
       // close download file
       this.$vueBus.$on(this.$events.CLOSE_DOWNLOAD_FILE, () => {

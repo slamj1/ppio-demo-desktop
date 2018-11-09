@@ -1,7 +1,8 @@
 'use strict'
-
-import { app, protocol, BrowserWindow } from 'electron'
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+const path = require('path')
+const { app, protocol, BrowserWindow } = require('electron')
+const { createProtocol } = require('vue-cli-plugin-electron-builder/lib')
+const user = require('./sdk/user')
 
 global.shareObject = {
   test: 'Hello world!',
@@ -68,3 +69,40 @@ if (isDevelopment) {
     }
   })
 }
+
+/* -------------sdk----------- */
+console.log('ppio sdk start')
+console.log(process.cwd())
+process.env.PPIO_HOME = path.join(process.cwd(), './ppio-binary')
+console.log(process.env.PPIO_HOME)
+const params = {
+  datadir: '/Volumes/ExtCard/user6',
+  bindip: '0.0.0.0',
+}
+
+const callback = (err, data) => {
+  if (err) {
+    console.log('ppioCallback err=', err, err.stack) // an error occurred
+  } else {
+    console.log('ppioCallback data=', data) // successful response
+  }
+}
+
+user.daemonStart(params, callback)
+// user.daemonStart(params);
+
+// console.log("-----------------------------------------");
+setTimeout(() => {
+  user.walletId(params, callback)
+}, 4000)
+
+setTimeout(() => {
+  user.walletBalance(params, callback)
+}, 5000)
+
+setTimeout(() => {
+  user.configShow(params, callback)
+}, 3000)
+
+// console.log('user.AbortMultipartUpload=' + user.AbortMultipartUpload);
+// console.log('user.objectPut=' + user.objectPut);

@@ -40,11 +40,6 @@ function cancelTask(task) {
 
 export default class TaskStore {
   constructor(storeType) {
-    // maintain the task queue
-    this.state = {
-      taskQueue: [],
-    }
-
     // assign keys and sdk methods by store type
     let STORE_KEYS, taskType, serviceStartTask, serviceCancelTask, serviceGetTaskProgress
     if (storeType === 'upload') {
@@ -141,6 +136,9 @@ export default class TaskStore {
       [STORE_KEYS.ACT_GET_STATUS]: a_getTaskStatus,
     }
 
+    this.state = {
+      taskQueue: [], // maintains the task queue
+    }
     this.getters = getters
     this.mutations = mutations
     this.actions = actions

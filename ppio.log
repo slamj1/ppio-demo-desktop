@@ -1,0 +1,943 @@
+11-08 16:27:41.752 [INFO] [     log] Setup Logging done config.go:216
+11-08 16:27:41.752 [DEBU] [ ppiocmd] daemonStart datadir= /Volumes/ExtCard/user6 main.go:239
+11-08 16:27:41.753 [DEBU] [ ppiocmd] daemonStart configFile=  main.go:242
+11-08 16:27:41.753 [DEBU] [ ppiocmd] daemonStart datadir=/Volumes/ExtCard/user6 main.go:248
+11-08 16:27:41.755 [DEBU] [    ppio] json -> config config.go:241
+11-08 16:27:41.761 [DEBU] [ ppiocmd] config.StroagePath = storage main.go:286
+11-08 16:27:41.761 [DEBU] [    ppio] newPpioNode /Volumes/ExtCard/user6 {
+  "Net": {
+    "BindIP": "0.0.0.0",
+    "UDPPort": 8066,
+    "TCPPort": 8066,
+    "Debug": true,
+    "DisableTCP": false,
+    "BindIP4Test": ""
+  },
+  "RPCHost": "127.0.0.1",
+  "RPCPort": 18066,
+  "PrivateKey": "",
+  "TestNet": "",
+  "QoSServerConfig": {
+    "Enable": false,
+    "Network": "udp",
+    "Addr": "127.0.0.1:5000",
+    "Tag": "ppioqos"
+  },
+  "Bootstrap": {
+    "Name": "bootstrap",
+    "PeerIDHex": "002508021221023d5a5e5f45ebb362622ffd7a7fe90c457ee8f8f0c96c5387a2ae36a3634a43ae",
+    "PeerIDBase58": "16Uiu2HAkyZAmjRgzRgKgSwiUf4xgX6oCdXGLKbSRfp1Lvik5DGDT",
+    "IP": "192.168.50.100",
+    "UDPPort": 8020,
+    "TCPPort": 8020,
+    "HTTPPort": 0
+  },
+  "UserAccount": "",
+  "StroagePath": "storage",
+  "StorageMax": 8589934592,
+  "StorageGCThreshold": 0.8,
+  "StorageGCPeriod": 30,
+  "AddressCenter": "",
+  "P2PMaxConnection": 0,
+  "P2PGoodDelay": 0,
+  "P2PIntervalKeepAlive": 0,
+  "P2PMaxNoKeepAlive": 0,
+  "P2PNoTask": 0,
+  "P2PDelayLeave": 0,
+  "RetryObjectPut": 3,
+  "RetryObjectGet": 3,
+  "RetryObjectDelete": 3,
+  "RetryHandshake": 3,
+  "RetryMetadataPut": 3,
+  "RetryMetadataGet": 3,
+  "OverlayConfig": {
+    "NeighborNodeMaxNum": 10,
+    "BackupNodeMaxNum": 10,
+    "OtherNodeMaxNum": 1024,
+    "LastRTTExpireTime": 86400,
+    "FloodingInterval": 600,
+    "RTTDetectInterval": 120,
+    "MaxConnection": 50,
+    "OverlayPersistencePath": "/Users/Jason/.ppio/overlay.db"
+  },
+  "HotfileConfig": {
+    "DLFreqBeginCopy": 10,
+    "DLFreqBeginClean": 10,
+    "FreqCalcInterval": 600,
+    "BroadcastWidth": 2,
+    "BroadcastTTL": 5,
+    "OverlayHotfilePersistencePath": "/Users/Jason/.ppio/hotfile.db"
+  },
+  "ConfigVersion": 1
+} ppio.go:167
+11-08 16:27:41.761 [DEBU] [    ppio] newPpioNode key:  ppio.go:169
+11-08 16:27:41.761 [WARN] [ service] LoadPrivateKey no private key service.go:203
+11-08 16:27:41.761 [DEBU] [ service] GenerateKey use tcp port as random seed 8066 service.go:184
+11-08 16:27:41.762 [DEBU] [ service] prvkey be8700342c67badd5939f6d876aca199ee16cbc840f937a2469c6623fb495db5 service.go:196
+11-08 16:27:41.762 [DEBU] [ service] pubkey 04416bc64849b47a4ce3689a4b8da2273794a287c50189cd58753cfc767b3149c9c75ee634cb6bb594b25a9792bab246141ce137dd76a6e4905747612ff71de3d2 service.go:197
+11-08 16:27:41.762 [WARN] [     kcp] open json failed kcp.conf &PathError{Op=open,Path=kcp.conf,Err=no such file or directory} kcp.go:64
+11-08 16:27:41.762 [INFO] [net.PHos] LocalPeerID: base58= 16Uiu2HAkyq3oANVJPmyDikFbr7KgvPK7HzHEHoYLNwH6B37m7viU hex= 00250802122102416bc64849b47a4ce3689a4b8da2273794a287c50189cd58753cfc767b3149c9 simplep2p.go:61
+11-08 16:27:41.763 [INFO] [net.PHos] listen tcp &Config{BindIP=0.0.0.0,UDPPort=8066,TCPPort=8066,Debug=true,DisableTCP=false,BindIP4Test=} simplep2p.go:86
+11-08 16:27:41.786 [DEBU] [   kcpgo] ServeConn 0xc0002da120 sess.go:1017
+11-08 16:27:41.786 [DEBU] [     kcp] initListener SetDSCP: &SyscallError{Syscall=setsockopt,Err=invalid argument} kcp.go:141
+11-08 16:27:41.786 [DEBU] [net.PHos] listen kcp &Config{BindIP=0.0.0.0,UDPPort=8066,TCPPort=8066,Debug=true,DisableTCP=false,BindIP4Test=} &kcpt.Listener{log:log.Logger{logger:(*log.eventLogger)(0xc0002b7200), wlogger:(*logging.Logger)(0xc0002a3e30), object:(*kcpt.Listener)(0xc00015b700)}, udpConn:(*net.UDPConn)(0xc00000e878), listener:(*kcp.Listener)(0xc0002da120), config:(*kcpt.Config)(0xc00028cfa0), chConns:(chan net.Conn)(0xc0002be420), sessions:[]*hsmux.Session(nil), sessionsLock:(*sync.Mutex)(0xc0002d0a30), ticker:(*util.Ticker)(nil), die:(chan struct {})(nil)} simplep2p.go:93
+11-08 16:27:41.786 [DEBU] [net.Host] createP2PHost ph= &net.simpleP2PHost{log:log.Logger{logger:(*log.eventLogger)(0xc0002b7120), wlogger:(*logging.Logger)(0xc0002a3bc0), object:(*net.simpleP2PHost)(0xc00016bb00)}, privateKey:(*crypto.Secp256k1PrivateKey)(0xc0002a3980), tcpListener:(*net.TCPListener)(0xc00000e870), kcpListener:(*kcpt.Listener)(0xc00015b700), peerID:protocol.PeerId{ID:"\x00%\b\x02\x12!\x02Ak\xc6HI\xb4zL\xe3h\x9aK\x8d\xa2'7\x94\xa2\x87\xc5\x01\x89\xcdXu<\xfcv{1I\xc9"}, transport:(*secio.Transport)(0xc0002b7100), kcpConfig:(*kcpt.Config)(0xc00028cfa0), callback:(func(net.SecureConn))(0x45353d0), pendingConnsLock:sync.Mutex{state:0, sema:0x0}, pendingConns:map[net.Conn]struct {}{}} host.go:365
+11-08 16:27:41.787 [DEBU] [net.Host] createP2PHost config= &Config{BindIP=0.0.0.0,UDPPort=8066,TCPPort=8066,Debug=true,DisableTCP=false,BindIP4Test=} host.go:366
+11-08 16:27:41.787 [INFO] [ service] NewService: PeerID, Account, svc.Host, config.Net 00250802122102416bc64849b47a4ce3689a4b8da2273794a287c50189cd58753cfc767b3149c9 00250802122102416bc64849b47a4ce3689a4b8da2273794a287c50189cd58753cfc767b3149c9 00250802122102416bc64849b47a4ce3689a4b8da2273794a287c50189cd58753cfc767b3149c9 &Config{BindIP=0.0.0.0,UDPPort=8066,TCPPort=8066,Debug=true,DisableTCP=false,BindIP4Test=} service.go:294
+11-08 16:27:41.787 [INFO] [ service] NewService: svc.ServerInfo [name=ppio, addr=[IP=<nil>, tpcport=8066, tpcport=8066]] service.go:295
+11-08 16:27:41.788 [DEBU] [net.PHos] serveListener udp simplep2p.go:99
+11-08 16:27:41.788 [DEBU] [net.PHos] serveListener tcp simplep2p.go:99
+11-08 16:27:41.787 [INFO] [     qos] QoS not configured or enable is false, not log log.go:78
+11-08 16:27:41.851 [DEBU] [     net] Mux.bindMethod add auto function OnUDP_PP_DetectRTT 14 Method{Name=OnUDP_PP_DetectRTT,PkgPath=,Type=func(*pp.connManager, net.Addr, *protocol.PP_DetectRTTMsg, *protocol.Header),Func=<func(*pp.connManager, net.Addr, *protocol.PP_DetectRTTMsg, *protocol.Header) Value>,Index=12} &net.decodeMessageHandler{msgtype:(*reflect.rtype)(0x498b3a0), handlerfunc:reflect.Value{typ:(*reflect.rtype)(0x48c9fe0), ptr:(unsafe.Pointer)(0xc0002cecc0), flag:0x13}} true mux.go:223
+11-08 16:27:41.851 [DEBU] [     net] Mux.bindMethod add auto function OnUDP_PP_Error 4 Method{Name=OnUDP_PP_Error,PkgPath=,Type=func(*pp.connManager, net.Addr, *protocol.PP_ErrorMsg, *protocol.Header),Func=<func(*pp.connManager, net.Addr, *protocol.PP_ErrorMsg, *protocol.Header) Value>,Index=13} &net.decodeMessageHandler{msgtype:(*reflect.rtype)(0x49468a0), handlerfunc:reflect.Value{typ:(*reflect.rtype)(0x48ca040), ptr:(unsafe.Pointer)(0xc0002ced80), flag:0x13}} true mux.go:223
+11-08 16:27:41.851 [DEBU] [     net] Mux.bindMethod add auto function OnUDP_PP_Handshake 1 Method{Name=OnUDP_PP_Handshake,PkgPath=,Type=func(*pp.connManager, net.Addr, *protocol.PP_HandshakeMsg, *protocol.Header),Func=<func(*pp.connManager, net.Addr, *protocol.PP_HandshakeMsg, *protocol.Header) Value>,Index=14} &net.decodeMessageHandler{msgtype:(*reflect.rtype)(0x499a3c0), handlerfunc:reflect.Value{typ:(*reflect.rtype)(0x48ca100), ptr:(unsafe.Pointer)(0xc0002cee40), flag:0x13}} true mux.go:223
+11-08 16:27:41.851 [DEBU] [     net] Mux.bindMethod add auto function OnUDP_PP_HandshakeAck 19 Method{Name=OnUDP_PP_HandshakeAck,PkgPath=,Type=func(*pp.connManager, net.Addr, *protocol.PP_HandshakeAckMsg, *protocol.Header),Func=<func(*pp.connManager, net.Addr, *protocol.PP_HandshakeAckMsg, *protocol.Header) Value>,Index=15} &net.decodeMessageHandler{msgtype:(*reflect.rtype)(0x4925560), handlerfunc:reflect.Value{typ:(*reflect.rtype)(0x48ca0a0), ptr:(unsafe.Pointer)(0xc0002cef00), flag:0x13}} true mux.go:223
+11-08 16:27:41.851 [DEBU] [     net] Mux.bindMethod add auto function OnUDP_PP_RelayHandshake 18 Method{Name=OnUDP_PP_RelayHandshake,PkgPath=,Type=func(*pp.connManager, net.Addr, *protocol.PP_RelayHandshakeMsg, *protocol.Header),Func=<func(*pp.connManager, net.Addr, *protocol.PP_RelayHandshakeMsg, *protocol.Header) Value>,Index=16} &net.decodeMessageHandler{msgtype:(*reflect.rtype)(0x497a1a0), handlerfunc:reflect.Value{typ:(*reflect.rtype)(0x48ca160), ptr:(unsafe.Pointer)(0xc0002cefc0), flag:0x13}} true mux.go:223
+11-08 16:27:41.955 [DEBU] [     net] Mux.Bind ok <*pp.connManager Value> *pp.connManager  25 5 &net.udpMessageMux{handlers:map[int]func(net.Addr, []uint8, *protocol.Header){14:(func(net.Addr, []uint8, *protocol.Header))(0x45355a0), 4:(func(net.Addr, []uint8, *protocol.Header))(0x45355a0), 1:(func(net.Addr, []uint8, *protocol.Header))(0x45355a0), 19:(func(net.Addr, []uint8, *protocol.Header))(0x45355a0), 18:(func(net.Addr, []uint8, *protocol.Header))(0x45355a0)}, defaultHandler:(func(net.Addr, []uint8, *protocol.Header))(0x4535520)} 0xc0002bd490 mux.go:240
+11-08 16:27:41.960 [ERRO] [Requeste] Close <nil> client.go:150
+11-08 16:27:41.961 [DEBU] [    ppio] newPpioNode storage load start: /Volumes/ExtCard/user6/storage ppio.go:245
+11-08 16:27:41.961 [INFO] [ storage] Load all objects from dir= /Volumes/ExtCard/user6/storage storage.go:464
+11-08 16:27:41.964 [DEBU] [ storage] loadObject path /Volumes/ExtCard/user6/storage/09D700F451C8CCE7D510E7C7CB3B21F2C91D7AA5191E30DC88E5CD3C5C5F9E39/09D700F451C8CCE7D510E7C7CB3B21F2C91D7AA5191E30DC88E5CD3C5C5F9E39.desc  hash= 09D700F451C8CCE7D510E7C7CB3B21F2C91D7AA5191E30DC88E5CD3C5C5F9E39 storage.go:511
+11-08 16:27:41.964 [DEBU] [ storage] readObjectDesc() descFilePath= /Volumes/ExtCard/user6/storage/09D700F451C8CCE7D510E7C7CB3B21F2C91D7AA5191E30DC88E5CD3C5C5F9E39/09D700F451C8CCE7D510E7C7CB3B21F2C91D7AA5191E30DC88E5CD3C5C5F9E39.desc storage.go:802
+11-08 16:27:41.965 [DEBU] [ storage] line:  1 len:  5 storage.go:837
+11-08 16:27:41.965 [DEBU] [ storage] line:  2 len:  5 storage.go:837
+11-08 16:27:41.965 [DEBU] [ storage] segment length e0f4b3cc442d672ccc7022045540167150903f10ad3cca31174d3594574d53f8 29 storage.go:885
+11-08 16:27:41.971 [DEBU] [ storage] ReadSegment segId, len(desc.pieceMap)= e0f4b3cc442d672ccc7022045540167150903f10ad3cca31174d3594574d53f8 1 storage.go:709
+11-08 16:27:41.975 [DEBU] [ storage] ReadSegment return segId, len(desc.pieceMap)= E0F4B3CC 1 storage.go:795
+11-08 16:27:41.975 [DEBU] [ storage] ReadSegment close /Volumes/ExtCard/user6/storage/09D700F451C8CCE7D510E7C7CB3B21F2C91D7AA5191E30DC88E5CD3C5C5F9E39/09D700F451C8CCE7D510E7C7CB3B21F2C91D7AA5191E30DC88E5CD3C5C5F9E39.dat storage.go:728
+11-08 16:27:41.975 [DEBU] [ storage] segStr: SegmentDesc(09D700F4 E0F4B3CC 29) storage.go:914
+11-08 16:27:41.975 [DEBU] [ storage] readObjectDesc() close /Volumes/ExtCard/user6/storage/09D700F451C8CCE7D510E7C7CB3B21F2C91D7AA5191E30DC88E5CD3C5C5F9E39/09D700F451C8CCE7D510E7C7CB3B21F2C91D7AA5191E30DC88E5CD3C5C5F9E39.desc storage.go:810
+11-08 16:27:41.976 [DEBU] [ storage] Load add object 09d700f451c8cce7d510e7c7cb3b21f2c91d7aa5191e30dc88e5cd3c5c5f9e39 29 1 storage.go:488
+11-08 16:27:41.977 [DEBU] [ storage] loadObject path /Volumes/ExtCard/user6/storage/6FFB8495E1E8F9585356894BBF793BD4C0EC5819C682076039981272CC1BCCA9/6FFB8495E1E8F9585356894BBF793BD4C0EC5819C682076039981272CC1BCCA9.desc  hash= 6FFB8495E1E8F9585356894BBF793BD4C0EC5819C682076039981272CC1BCCA9 storage.go:511
+11-08 16:27:41.977 [DEBU] [ storage] readObjectDesc() descFilePath= /Volumes/ExtCard/user6/storage/6FFB8495E1E8F9585356894BBF793BD4C0EC5819C682076039981272CC1BCCA9/6FFB8495E1E8F9585356894BBF793BD4C0EC5819C682076039981272CC1BCCA9.desc storage.go:802
+11-08 16:27:41.978 [DEBU] [ storage] line:  1 len:  5 storage.go:837
+11-08 16:27:41.979 [DEBU] [ storage] line:  2 len:  5 storage.go:837
+11-08 16:27:41.979 [DEBU] [ storage] segment length 6716064e1edacf64248be114cbb86df01553f54953c12affcc9679ed2e09a12d 16777216 storage.go:885
+11-08 16:27:41.979 [DEBU] [ storage] ReadSegment segId, len(desc.pieceMap)= 6716064e1edacf64248be114cbb86df01553f54953c12affcc9679ed2e09a12d 128 storage.go:709
+11-08 16:27:42.263 [DEBU] [ storage] ReadSegment [125]  237 122 234 1 240 247 98 51 storage.go:767
+11-08 16:27:42.268 [DEBU] [ storage] ReadSegment pieceDesc.checkSum 2711715409 storage.go:770
+11-08 16:27:42.268 [DEBU] [ storage] ReadSegment h2                 517EA1A1 storage.go:771
+11-08 16:27:42.276 [DEBU] [ storage] ReadSegment return segId, len(desc.pieceMap)= 6716064E 128 storage.go:795
+11-08 16:27:42.277 [DEBU] [ storage] ReadSegment close /Volumes/ExtCard/user6/storage/6FFB8495E1E8F9585356894BBF793BD4C0EC5819C682076039981272CC1BCCA9/444E5CE9FFBC6BD9497D7A1DA152DB4DFCFB5D74F55735F814DAEB00E23EAC2E.dat storage.go:728
+11-08 16:27:42.279 [DEBU] [ storage] segStr: SegmentDesc(444E5CE9 6716064E 16777216) storage.go:914
+11-08 16:27:42.279 [DEBU] [ storage] line:  3 len:  5 storage.go:837
+11-08 16:27:42.279 [DEBU] [ storage] segment length fed314fb5c022a144103fc4cfda1a4e996443e0161567115049b2431af1f42b1 15866368 storage.go:885
+11-08 16:27:42.279 [DEBU] [ storage] ReadSegment segId, len(desc.pieceMap)= fed314fb5c022a144103fc4cfda1a4e996443e0161567115049b2431af1f42b1 122 storage.go:709
+11-08 16:27:42.631 [DEBU] [ storage] ReadSegment return segId, len(desc.pieceMap)= FED314FB 122 storage.go:795
+11-08 16:27:42.639 [DEBU] [ storage] ReadSegment close /Volumes/ExtCard/user6/storage/6FFB8495E1E8F9585356894BBF793BD4C0EC5819C682076039981272CC1BCCA9/6A93FEC3880DEECB8EB53055BB4450DEEC8A93C20F4E02D3B1145E7045FE8993.dat storage.go:728
+11-08 16:27:42.645 [DEBU] [ storage] segStr: SegmentDesc(6A93FEC3 FED314FB 15866368) storage.go:914
+11-08 16:27:42.646 [DEBU] [ storage] readObjectDesc() close /Volumes/ExtCard/user6/storage/6FFB8495E1E8F9585356894BBF793BD4C0EC5819C682076039981272CC1BCCA9/6FFB8495E1E8F9585356894BBF793BD4C0EC5819C682076039981272CC1BCCA9.desc storage.go:810
+11-08 16:27:42.647 [DEBU] [ storage] Load add object 6ffb8495e1e8f9585356894bbf793bd4c0ec5819c682076039981272cc1bcca9 32643584 2 storage.go:488
+11-08 16:27:42.647 [DEBU] [    ppio] newPpioNode data cache load stop <nil> ppio.go:249
+11-08 16:27:42.647 [DEBU] [    ppio] NewPpioNode node != nil ppio.go:129
+11-08 16:27:42.647 [DEBU] [ ppiocmd] node= &ppio.PpioNode{log:log.Logger{logger:(*log.eventLogger)(0xc0002b6d60), wlogger:(*logging.Logger)(0xc0002a3650), object:(*ppio.PpioNode)(0xc00014b680)}, datadir:"/Volumes/ExtCard/user6", config:(*ppio.Config)(0xc0002c4410), key:crypto.PrivateKey(nil), service:(*service.Service)(0xc0000ef080), serversInfo:(*common.ServersInfo)(nil), pm:(*pp.connManager)(0xc00028d0e0), overlayMgr:(*pp.OverlayManager)(0xc000288840), overlayHotfileMgr:(*pp.OverlayHotfileManager)(0xc00031ed20), ticker:(*util.Ticker)(nil), bootstrap:(*bootstrap.AsyncClient)(0xc00000eeb0), indexer:indexer.AsyncIndexer(nil), verifier:verifier.AsyncVerifier(nil), schedFactory:sched.Factory{}, dm:(*job.DownloadManager)(0xc0002abcc0), storage:(*ppio.Storage)(0xc0002cf000), dataCache:(*cache.userDataCache)(0xc00037d230), jobmgr:(*peer.jobManager)(0xc00039a420), objectService:(*ppio.objectService)(0xc0002abae0), peerInfo:(*protocol.PeerInfo)(0xc0002b7ae0), stats:(*qos.UserStats)(0xc0002be240)} main.go:313
+11-08 16:27:42.648 [INFO] [    ppio] Start ppio Server ppio.go:297
+11-08 16:27:42.648 [DEBU] [    ppio] Start loadNodeTask ppio.go:299
+11-08 16:27:42.648 [INFO] [    ppio] Start node service ppio.go:302
+11-08 16:27:42.648 [INFO] [ service] Start BindIP=0.0.0.0
+TCPPort=8066
+UDPPort=8066
+RPCHost=127.0.0.1
+RPCPort=18066
+ service.go:316
+11-08 16:27:42.648 [DEBU] [TaskQueu] Start task.go:25
+11-08 16:27:42.648 [DEBU] [net.Host] Start &net.simpleP2PHost{log:log.Logger{logger:(*log.eventLogger)(0xc0002b7120), wlogger:(*logging.Logger)(0xc0002a3bc0), object:(*net.simpleP2PHost)(0xc00016bb00)}, privateKey:(*crypto.Secp256k1PrivateKey)(0xc0002a3980), tcpListener:(*net.TCPListener)(0xc00000e870), kcpListener:(*kcpt.Listener)(0xc00015b700), peerID:protocol.PeerId{ID:"\x00%\b\x02\x12!\x02Ak\xc6HI\xb4zL\xe3h\x9aK\x8d\xa2'7\x94\xa2\x87\xc5\x01\x89\xcdXu<\xfcv{1I\xc9"}, transport:(*secio.Transport)(0xc0002b7100), kcpConfig:(*kcpt.Config)(0xc00028cfa0), callback:(func(net.SecureConn))(0x45353d0), pendingConnsLock:sync.Mutex{state:0, sema:0x0}, pendingConns:map[net.Conn]struct {}{}} host.go:373
+11-08 16:27:42.648 [INFO] [ service] start rpc on: 127.0.0.1:18066 service.go:319
+11-08 16:27:42.648 [INFO] [    ppio] Start node ticker ppio.go:307
+11-08 16:27:42.648 [DEBU] [    ppio] Node Ticker &util.Ticker{ticker:(*time.Ticker)(0xc000030140), done:(*util.OnceEvent)(0xc00000e008)} ppio.go:309
+11-08 16:27:42.649 [DEBU] [    ppio] Start end ppio.go:318
+11-08 16:27:42.649 [DEBU] [  bs.cli] ListServers 192.168.50.100 client.go:65
+11-08 16:27:42.649 [DEBU] [     rpc] RunHTTP 127.0.0.1:18066 rpc.go:164
+11-08 16:27:42.649 [DEBU] [net.Host] doDialOne 192.168.50.100:8020 002508021221023d5a5e5f45ebb362622ffd7a7fe90c457ee8f8f0c96c5387a2ae36a3634a43ae false 0xc000216150 host.go:101
+11-08 16:27:42.649 [DEBU] [net.PHos] Dial 192.168.50.100:8020 simplep2p.go:223
+11-08 16:27:42.649 [INFO] [net.Host] readUDPMessageLoop host.go:210
+11-08 16:27:42.661 [DEBU] [   kcpgo] ReuseConn 192.168.50.100:8020 d67c9cd4 [::]:8066 0xc00000e878 sess.go:1093
+11-08 16:27:42.661 [DEBU] [   kcpgo] newUDPSession 0xc0000d4000 0xc0002da120 0xc00000e878 sess.go:138
+11-08 16:27:42.661 [DEBU] [   kcpgo] kcp: Add session kcp.sessionKey{addr:"192.168.50.100:8020", convID:0xd67c9cd4} 1 [::]:8066 sess.go:828
+11-08 16:27:42.661 [DEBU] [     kcp] kcp.Dial ok 0xc0003b00c0 0xc0003b6000 0xc0000d4000 kcp.go:326
+11-08 16:27:42.661 [DEBU] [net.PHos] Dial ok 192.168.50.100:8020 simplep2p.go:236
+11-08 16:27:42.661 [DEBU] [net.PHos] Dial SecureOutbound 192.168.50.100:8020 simplep2p.go:239
+11-08 16:27:43.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:44.649 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:45.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:46.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:47.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:48.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:49.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:50.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:51.649 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:52.651 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:52.668 [DEBU] [     kcp] kcpStream.Close 0xc0003b00c0 0xc0003b6000 0xc0003b00c0 kcp.go:167
+11-08 16:27:52.668 [DEBU] [kcp.List] addSession 0 0xc0003b6000 kcp.go:373
+11-08 16:27:52.669 [DEBU] [     net] simpleP2PHost.Dial SecureOutbound err 0xc0001ac1c0 0x0 context.deadlineExceededError{} simplep2p.go:242
+11-08 16:27:52.669 [WARN] [net.Host] doDialOne failed context.deadlineExceededError{} context deadline exceeded host.go:104
+11-08 16:27:52.669 [WARN] [net.Host] hostDialer.doDail failed context.deadlineExceededError{} 192.168.50.100:8020 002508021221023d5a5e5f45ebb362622ffd7a7fe90c457ee8f8f0c96c5387a2ae36a3634a43ae host.go:124
+11-08 16:27:52.669 [DEBU] [net.Host] doDialOne 192.168.50.100:8020 002508021221023d5a5e5f45ebb362622ffd7a7fe90c457ee8f8f0c96c5387a2ae36a3634a43ae false 0xc000216150 host.go:101
+11-08 16:27:52.669 [DEBU] [net.PHos] Dial 192.168.50.100:8020 simplep2p.go:223
+11-08 16:27:53.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:54.163 [WARN] [net.Host] doDialOne failed &OpError{Op=dial,Net=tcp,Source=<nil>,Addr=192.168.50.100:8020,Err=connect: connection refused} dial tcp 192.168.50.100:8020: connect: connection refused host.go:104
+11-08 16:27:54.163 [WARN] [net.Host] hostDialer.doDail failed &OpError{Op=dial,Net=tcp,Source=<nil>,Addr=192.168.50.100:8020,Err=connect: connection refused} 192.168.50.100:8020 002508021221023d5a5e5f45ebb362622ffd7a7fe90c457ee8f8f0c96c5387a2ae36a3634a43ae host.go:124
+11-08 16:27:54.164 [DEBU] [net.Host] Dial Signal 0xc000216150 host.go:113
+11-08 16:27:54.164 [DEBU] [net.Host] Dial Signal ok 0xc000216150 host.go:115
+11-08 16:27:54.164 [DEBU] [net.Host] removeDialer 1 0xc000216150 host.go:417
+11-08 16:27:54.164 [WARN] [ service] service.Dial failed 002508021221023d5a5e5f45ebb362622ffd7a7fe90c457ee8f8f0c96c5387a2ae36a3634a43ae &OpError{Op=dial,Net=tcp,Source=<nil>,Addr=192.168.50.100:8020,Err=connect: connection refused} client.go:30
+11-08 16:27:54.172 [ERRO] [Requeste] Dial failed Name:"default-bootstrap" PeerID:<"002508021221023d5a5e5f45ebb362622ffd7a7fe90c457ee8f8f0c96c5387a2ae36a3634a43ae"> Address:<IP:<192.168.50.100> UDPPort:8020 TCPPort:8020 >  client.go:142
+11-08 16:27:54.172 [WARN] [  bs.cli] ListServers request failed 192.168.50.100 &OpError{Op=dial,Net=tcp,Source=<nil>,Addr=192.168.50.100:8020,Err=connect: connection refused} client.go:71
+11-08 16:27:54.173 [DEBU] [    ppio] ListServers callback ppio.go:471
+11-08 16:27:54.173 [DEBU] [    ppio] ListServers task ppio.go:473
+11-08 16:27:54.173 [WARN] [    ppio] ListServers failed: [err, servers]= &OpError{Op=dial,Net=tcp,Source=<nil>,Addr=192.168.50.100:8020,Err=connect: connection refused} <nil> ppio.go:475
+11-08 16:27:54.649 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:55.649 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:56.649 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:57.649 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:58.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:27:59.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:00.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:01.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:02.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:03.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:04.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:05.651 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:06.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:07.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:08.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:09.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:10.651 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:11.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:12.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:12.664 [DEBU] [   kcpgo] UDPSession.Close 192.168.50.100:8020 0xc0000d4000 0xc0002da120 0xc00000e878 sess.go:324
+11-08 16:28:12.664 [DEBU] [   kcpgo] updateHeap.removeSession 192.168.50.100:8020 0xc0000d4000 0xc0002da120 updater.go:65
+11-08 16:28:12.664 [DEBU] [   kcpgo] kcp: Delete session kcp.sessionKey{addr:"192.168.50.100:8020", convID:0xd67c9cd4} 0 [::]:8066 sess.go:834
+11-08 16:28:13.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:14.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:15.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:16.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:17.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:18.651 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:19.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:20.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:21.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:22.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:23.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:24.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:25.651 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:26.650 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:27.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:28.651 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:29.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:30.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:31.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:32.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:33.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:34.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:35.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:36.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:37.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:38.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:39.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:40.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:41.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:42.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:43.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:44.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:45.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:46.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:47.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:48.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:49.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:50.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:51.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:52.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:53.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:54.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:55.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:56.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:57.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:58.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:28:59.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:00.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:01.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:02.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:03.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:04.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:05.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:06.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:07.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:08.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:09.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:10.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:11.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:12.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:13.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:14.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:15.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:16.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:17.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:18.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:19.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:20.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:21.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:22.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:23.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:24.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:25.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:26.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:27.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:28.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:29.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:30.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:31.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:32.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:33.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:34.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:35.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:36.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:37.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:38.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:39.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:40.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:41.652 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:42.665 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:43.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:44.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:45.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:46.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:47.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:48.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:49.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:50.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:51.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:52.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:53.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:54.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:55.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:56.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:57.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:58.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:29:59.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:00.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:01.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:02.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:03.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:04.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:05.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:06.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:07.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:08.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:09.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:10.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:11.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:12.653 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:13.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:14.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:15.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:16.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:17.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:18.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:19.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:20.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:21.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:22.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:23.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:24.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:25.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:26.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:27.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:28.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:29.659 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:30.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:31.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:32.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:33.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:34.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:35.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:36.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:37.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:38.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:39.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:40.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:41.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:42.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:43.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:44.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:45.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:46.659 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:47.659 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:48.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:49.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:50.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:51.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:52.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:53.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:54.659 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:55.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:56.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:57.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:58.654 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:30:59.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:00.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:01.659 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:02.659 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:03.659 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:04.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:05.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:06.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:07.660 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:08.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:09.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:10.659 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:11.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:12.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:13.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:14.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:15.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:16.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:17.660 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:18.659 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:19.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:20.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:21.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:22.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:23.655 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:24.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:25.660 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:26.658 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:27.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:28.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:29.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:30.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:31.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:32.660 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:33.660 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:34.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:35.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:36.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:37.656 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:38.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:39.657 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:40.663 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:41.663 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:42.663 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:43.664 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:44.668 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:45.671 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:46.673 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:47.674 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:48.674 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:49.675 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:50.673 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:51.677 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:52.679 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:53.676 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:54.680 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:55.681 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:56.680 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:57.680 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:58.682 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:31:59.682 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:00.680 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:01.683 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:02.686 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:03.685 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:04.684 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:05.683 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:06.683 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:07.688 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:08.686 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:09.689 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:10.689 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:11.687 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:12.686 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:13.685 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:14.685 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:15.685 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:16.686 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:17.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:18.690 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:19.689 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:20.688 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:21.687 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:22.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:23.688 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:24.688 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:25.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:26.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:27.688 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:28.687 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:29.688 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:30.689 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:31.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:32.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:33.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:34.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:35.689 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:36.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:37.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:38.689 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:39.690 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:40.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:41.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:42.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:43.689 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:44.689 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:45.690 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:46.690 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:47.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:48.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:49.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:50.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:51.690 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:52.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:53.689 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:54.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:55.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:56.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:57.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:58.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:32:59.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:00.690 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:01.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:02.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:03.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:04.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:05.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:06.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:07.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:08.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:09.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:10.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:11.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:12.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:13.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:14.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:15.690 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:16.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:17.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:18.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:19.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:20.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:21.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:22.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:23.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:24.690 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:25.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:26.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:27.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:28.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:29.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:30.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:31.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:32.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:33.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:34.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:35.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:36.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:37.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:38.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:39.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:40.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:41.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:42.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:43.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:44.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:45.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:46.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:47.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:48.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:49.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:50.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:51.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:52.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:53.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:54.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:55.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:56.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:57.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:58.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:33:59.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:00.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:01.691 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:02.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:03.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:04.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:05.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:06.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:07.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:08.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:09.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:10.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:11.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:12.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:13.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:14.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:15.692 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:16.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:17.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:18.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:19.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:20.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:21.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:22.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:23.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:24.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:25.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:26.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:27.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:28.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:29.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:30.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:31.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:32.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:33.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:34.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:35.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:36.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:37.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:38.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:39.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:40.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:41.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:42.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:43.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:44.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:45.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:46.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:47.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:48.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:49.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:50.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:51.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:52.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:53.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:54.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:55.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:56.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:57.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:58.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:34:59.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:00.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:01.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:02.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:03.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:04.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:05.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:06.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:07.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:08.693 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:09.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:10.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:11.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:12.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:13.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:14.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:15.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:16.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:17.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:18.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:19.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:20.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:21.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:22.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:23.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:24.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:25.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:26.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:27.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:28.694 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:29.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:30.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:31.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:32.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:33.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:34.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:35.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:36.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:37.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:38.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:39.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:40.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:41.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:42.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:43.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:44.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:45.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:46.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:47.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:48.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:49.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:50.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:51.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:52.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:53.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:54.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:55.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:56.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:57.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:58.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:35:59.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:00.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:01.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:02.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:03.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:04.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:05.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:06.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:07.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:08.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:09.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:10.695 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:11.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:12.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:13.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:14.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:15.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:16.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:17.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:18.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:19.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:20.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:21.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:22.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:23.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:24.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:25.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:26.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:27.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:28.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:29.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:30.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:31.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:32.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:33.696 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:34.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:35.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:36.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:37.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:38.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:39.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:40.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:41.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:42.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:43.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:44.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:45.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:46.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:47.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:48.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:49.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:50.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:51.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:52.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:53.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:54.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:55.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:56.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:57.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:58.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:36:59.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:00.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:01.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:02.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:03.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:04.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:05.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:06.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:07.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:08.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:09.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:10.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:11.697 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:12.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:13.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:14.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:15.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:16.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:17.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:18.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:19.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:20.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:21.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:22.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:23.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:24.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:25.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:26.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:27.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:28.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:29.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:30.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:31.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:32.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:33.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:34.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:35.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:36.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:37.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:38.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:39.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:40.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:41.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:42.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:43.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:44.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:45.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:46.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:47.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:48.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:49.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:50.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:51.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:52.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:53.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:54.698 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:55.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:56.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:57.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:58.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:37:59.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:00.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:01.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:02.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:03.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:04.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:05.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:06.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:07.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:08.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:09.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:10.699 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:11.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:12.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:13.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:14.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:15.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:16.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:17.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:18.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:19.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:20.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:21.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:22.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:23.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:24.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:25.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:26.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:27.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:28.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:29.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:30.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:31.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:32.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:33.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:34.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:35.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:36.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:37.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:38.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:39.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:40.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:41.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:42.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:43.711 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:44.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:45.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:46.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:47.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:48.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:49.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:50.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:51.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:52.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:53.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:54.700 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:55.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:56.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:57.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:58.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:38:59.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:00.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:01.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:02.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:03.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:04.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:05.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:06.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:07.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:08.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:09.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:10.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:11.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:12.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:13.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:14.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:15.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:16.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:17.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:18.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:19.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:20.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:21.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:22.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:23.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:24.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:25.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:26.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:27.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:28.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:29.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:30.701 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:31.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:32.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:33.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:34.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:35.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:36.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:37.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:38.707 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:39.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:40.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:41.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:42.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:43.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:44.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:45.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:46.707 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:47.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:48.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:49.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:50.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:51.702 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:52.707 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:53.707 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:54.707 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:55.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:56.707 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:57.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:58.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:39:59.707 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:00.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:01.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:02.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:03.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:04.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:05.707 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:06.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:07.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:08.708 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:09.707 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:10.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:11.707 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:12.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:13.705 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:14.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:15.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:16.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:17.708 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:18.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:19.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:20.706 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:21.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:22.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:23.704 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:24.703 [DEBU] [OverlayM] Tick 0 overlay.go:248
+11-08 16:40:25.703 [
