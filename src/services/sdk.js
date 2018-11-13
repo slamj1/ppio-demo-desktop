@@ -9,6 +9,9 @@ import {
   CANCEL_UPLOAD,
 } from '../constants/sdk-methods'
 import { randomStr } from './utils'
+// import { remote } from 'electron'
+
+// const ppioUser = remote.getGlobal('ppioUser').ppioExe
 
 function mockData(method) {
   let returnData

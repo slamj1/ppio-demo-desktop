@@ -32,6 +32,7 @@
           <span slot="title">Uploading <el-badge class="task-count-badge" v-show="uploadCount > 0" :value="uploadCount" /></span>
         </el-menu-item>
       </el-menu>
+      <p>{{ppioSdkPath}}</p>
     </el-aside>
     <keep-alive>
       <router-view></router-view>
@@ -66,6 +67,7 @@ export default {
   name: 'home',
   data() {
     return {
+      ppioSdkPath: '',
       mode: APP_MODE_COINPOOL,
       APP_MODE_COINPOOL: APP_MODE_COINPOOL,
       showProfile: false,
@@ -110,6 +112,19 @@ export default {
   },
   mounted() {
     this.f_initEventBus()
+    this.ppioSdkPath = this.$remote.getGlobal('ppioUser').ppioExe
+    setTimeout(() => {
+      this.$remote
+        .getGlobal('ppioUser')
+        .netId()
+        .then(data => {
+          alert(`user net id ${JSON.stringify(data)}`)
+          return data
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }, 3000)
   },
   methods: {
     f_goBilling() {

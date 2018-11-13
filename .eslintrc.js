@@ -18,7 +18,7 @@ module.exports = {
   extends: ['plugin:vue/essential', '@vue/standard', 'prettier'],
   plugins: ['prettier', 'import', 'promise'],
   rules: {
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-console': 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'prettier/prettier': ['error', prettierOptions],
     'arrow-body-style': ['warn', 'as-needed'],

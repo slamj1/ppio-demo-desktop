@@ -1,12 +1,23 @@
 'use strict'
-const path = require('path')
 const { app, protocol, BrowserWindow } = require('electron')
 const { createProtocol } = require('vue-cli-plugin-electron-builder/lib')
-const user = require('./sdk/user')
 
 global.shareObject = {
   test: 'Hello world!',
 }
+
+global.ppioUser = require('./ppiosdk')
+
+global.ppioUser
+  .daemonStart()
+  .then(res => {
+    console.log('daemon started ')
+    console.log(res)
+    return true
+  })
+  .catch(err => {
+    console.error(err)
+  })
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -16,6 +27,7 @@ let win
 
 // Standard scheme must be registered before the app is ready
 protocol.registerStandardSchemes(['app'], { secure: true })
+
 function createWindow() {
   win = new BrowserWindow({
     width: 1000,
@@ -69,40 +81,3 @@ if (isDevelopment) {
     }
   })
 }
-
-/* -------------sdk----------- */
-console.log('ppio sdk start')
-console.log(process.cwd())
-process.env.PPIO_HOME = path.join(process.cwd(), './ppio-binary')
-console.log(process.env.PPIO_HOME)
-const params = {
-  datadir: '/Volumes/ExtCard/user6',
-  bindip: '0.0.0.0',
-}
-
-const callback = (err, data) => {
-  if (err) {
-    console.log('ppioCallback err=', err, err.stack) // an error occurred
-  } else {
-    console.log('ppioCallback data=', data) // successful response
-  }
-}
-
-user.daemonStart(params, callback)
-// user.daemonStart(params);
-
-// console.log("-----------------------------------------");
-setTimeout(() => {
-  user.walletId(params, callback)
-}, 4000)
-
-setTimeout(() => {
-  user.walletBalance(params, callback)
-}, 5000)
-
-setTimeout(() => {
-  user.configShow(params, callback)
-}, 3000)
-
-// console.log('user.AbortMultipartUpload=' + user.AbortMultipartUpload);
-// console.log('user.objectPut=' + user.objectPut);

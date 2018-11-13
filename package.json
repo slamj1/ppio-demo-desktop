@@ -13,13 +13,26 @@
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve"
   },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "vue-cli-service lint",
+      "git add"
+    ],
+    "*.vue": [
+      "vue-cli-service lint",
+      "git add"
+    ]
+  },
+  "main": "background.js",
   "dependencies": {
     "electron-updater": "^3.1.6",
     "element-ui": "^2.4.5",
-    "jayson": "^2.1.0",
     "localforage": "^1.7.3",
-    "localstorage": "^1.0.1",
     "moment": "^2.22.2",
+    "ppio_sdk_npm": "^1.0.1-alpha.4",
     "sanitize.css": "^8.0.0",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",
@@ -52,19 +65,5 @@
     "vue-cli-plugin-electron-builder": "^1.0.0-rc.4",
     "vue-cli-plugin-element": "^1.0.0",
     "vue-template-compiler": "^2.5.17"
-  },
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.js": [
-      "vue-cli-service lint",
-      "git add"
-    ],
-    "*.vue": [
-      "vue-cli-service lint",
-      "git add"
-    ]
-  },
-  "main": "background.js"
+  }
 }
