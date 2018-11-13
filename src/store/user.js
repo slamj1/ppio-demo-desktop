@@ -24,6 +24,7 @@ const store = {
     address: 'fdsafeILHULHUIfwe235feILHULfeILHUL',
     usedStorage: 520,
     capacity: 1000,
+    metadata: {},
   },
   getters: {
     [USAGE_PERCENT_GETTER]: state => (state.usedStorage / state.capacity) * 100,

@@ -36,18 +36,16 @@ export const startUpload = async fileHash => {
   }
 }
 
-export const getProgress = taskId =>
-  sdk({
-    method: GET_UPLOAD_STATUS,
-    params: {
-      taskId,
-    },
-  })
+export const getProgress = taskId => ({
+  method: GET_UPLOAD_STATUS,
+  params: {
+    taskId,
+  },
+})
 
-export const cancelUpload = taskId =>
-  sdk({
-    method: CANCEL_UPLOAD,
-    params: {
-      taskId,
-    },
-  })
+export const cancelUpload = taskId => ({
+  method: CANCEL_UPLOAD,
+  params: {
+    taskId,
+  },
+})

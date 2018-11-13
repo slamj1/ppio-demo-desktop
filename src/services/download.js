@@ -36,18 +36,16 @@ export const startDownload = async fileHash => {
   }
 }
 
-export const getProgress = taskId =>
-  sdk({
-    method: GET_DOWNLOAD_STATUS,
-    params: {
-      taskId,
-    },
-  })
+export const getProgress = taskId => ({
+  method: GET_DOWNLOAD_STATUS,
+  params: {
+    taskId,
+  },
+})
 
-export const cancelDownload = taskId =>
-  sdk({
-    method: CANCEL_DOWNLOAD,
-    params: {
-      taskId,
-    },
-  })
+export const cancelDownload = taskId => ({
+  method: CANCEL_DOWNLOAD,
+  params: {
+    taskId,
+  },
+})

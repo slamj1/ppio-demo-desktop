@@ -22,5 +22,7 @@ yarn-error.log*
 *.sln
 *.sw*
 
+ppio.log
+
 #Electron-builder output
 /dist_electron

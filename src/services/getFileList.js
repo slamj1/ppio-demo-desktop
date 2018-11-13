@@ -1,25 +1,28 @@
-import sdk from './sdk'
-import { CONTRACT_LIST, GET_FILE_INFO } from '../constants/sdk-methods'
+import { remote } from 'electron'
+
+const ppioUser = remote.getGlobal('ppioUser')
 
 export default params =>
-  sdk({
-    method: CONTRACT_LIST,
-    params,
-  })
-    .then(res => res.result)
-    .then(result =>
-      Promise.all(
-        result.map(fileHash =>
-          sdk({
-            method: GET_FILE_INFO,
-            params: { hash: fileHash },
-          })
-            .then(res => Promise.resolve(res.result))
-            .catch(err => {
-              console.error(err)
-              return Promise.resolve()
-            }),
-        ),
-      ),
-    )
-    .then(results => results.filter(result => result !== undefined))
+  ppioUser
+    .objectList()
+    .then(res => {
+      console.log('get file list')
+      console.log(res)
+      if (res) {
+        return res.map(file => {
+          const fileInfo = file.ObjectBasicInfo
+          return {
+            id: fileInfo.ObjectHash,
+            filename: '111',
+            size: fileInfo.ObjectLength,
+            type: 'file',
+            isSecure: false,
+            isPublic: fileInfo.ObjectAclType === 'Public',
+          }
+        })
+      }
+      return []
+    })
+    .catch(err => {
+      console.error(err)
+    })

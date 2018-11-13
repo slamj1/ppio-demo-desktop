@@ -8,14 +8,17 @@ global.shareObject = {
 
 global.ppioUser = require('./ppiosdk')
 
+global.daemonStarted = false
 global.ppioUser
   .daemonStart()
   .then(res => {
     console.log('daemon started ')
     console.log(res)
+    global.daemonStarted = true
     return true
   })
   .catch(err => {
+    global.daemonStarted = false
     console.error(err)
   })
 

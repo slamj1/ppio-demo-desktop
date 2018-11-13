@@ -87,7 +87,9 @@ export default {
   },
 
   activated() {
-    this.f_getFileList()
+    setTimeout(() => {
+      this.f_getFileList()
+    }, 3000)
   },
 
   methods: {

@@ -118,7 +118,7 @@ export default {
         .getGlobal('ppioUser')
         .netId()
         .then(data => {
-          alert(`user net id ${JSON.stringify(data)}`)
+          console.log(`user net id ${JSON.stringify(data)}`)
           return data
         })
         .catch(err => {

@@ -19,6 +19,7 @@ console.log(user.ppioExe)
 const baseParams = {
   datadir: '/Volumes/ExtCard/user6',
   bindip: '0.0.0.0',
+  gatewayrpchost: '192.168.50.100',
 }
 
 const proxyUser = {}
@@ -27,12 +28,17 @@ for (let key in user) {
     if (typeof user[key] === 'function') {
       proxyUser[key] = params =>
         new Promise((resolve, reject) => {
-          user[key](Object.assign({}, params, baseParams), (err, data) => {
+          const completeParams = Object.assign({}, params, baseParams)
+          if (key === 'daemonStart' || key === 'daemonStop') {
+            delete completeParams.gatewayrpchost
+          }
+          user[key](completeParams, (err, data) => {
             if (err) {
               console.log('ppioCallback err=', err, err.stack) // an error occurred
               reject(err)
             } else {
-              console.log('ppioCallback data=', data) // successful response
+              console.log('ppio sdk call success!')
+              console.log(JSON.stringify(data)) // successful response
               resolve(data)
             }
           })

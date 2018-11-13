@@ -32,7 +32,7 @@
     "element-ui": "^2.4.5",
     "localforage": "^1.7.3",
     "moment": "^2.22.2",
-    "ppio_sdk_npm": "^1.0.1-alpha.4",
+    "ppio_sdk_npm": "^1.0.1-alpha.6",
     "sanitize.css": "^8.0.0",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",

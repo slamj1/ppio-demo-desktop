@@ -8146,8 +8146,8 @@ postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.5:
     supports-color "^5.5.0"
 
 ppio_sdk_npm@^1.0.1-alpha.4:
-  version "1.0.1-alpha.5"
-  resolved "https://registry.npmjs.org/ppio_sdk_npm/-/ppio_sdk_npm-1.0.1-alpha.5.tgz#1fd2df5208931f7525a6cf9429a5dd05ec5669bb"
+  version "1.0.1-alpha.6"
+  resolved "https://registry.npmjs.org/ppio_sdk_npm/-/ppio_sdk_npm-1.0.1-alpha.6.tgz#de74af6395d7682f31b3a890384af57fbe2bad02"
   dependencies:
     jayson "^2.1.0"
 
