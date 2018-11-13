@@ -1,6 +1,9 @@
 <template>
   <div class="start">
-    <div class="left-content"></div>
+    <div class="left-content">
+      <img src="@/assets/img/back.png" class="logo-img" alt="logo">
+      <p class="name">PPDISK-demo</p>
+    </div>
     <div class="right-content">
       <router-view></router-view>
     </div>
@@ -23,7 +26,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/assets/css/_var.scss';
 .start {
   height: 100%;
   position: relative;
@@ -33,14 +35,17 @@ export default {
   .left-content {
     width: 60%;
     text-align: center;
-    background-color: $sidebar-color;
-    .logo {
-      width: 150px;
+    padding-top: 100px;
+    background: url('../../assets/img/background.png') no-repeat no-repeat;
+    background-size: cover;
+    .logo-img {
+      width: 350px;
     }
-    .button {
-      margin-top: 20px;
-      width: 150px;
-      margin-right: 5px;
+    .name {
+      margin-top: 60px;
+      font-size: 18px;
+      color: #c0c4cc;
+      text-align: center;
     }
   }
   .right-content {
