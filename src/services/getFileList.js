@@ -2,7 +2,7 @@ import { remote } from 'electron'
 
 const ppioUser = remote.getGlobal('ppioUser')
 
-export default params =>
+export default () =>
   ppioUser
     .objectList()
     .then(res => {

@@ -19,7 +19,7 @@ console.log(user.ppioExe)
 const baseParams = {
   datadir: '/Volumes/ExtCard/user6',
   bindip: '0.0.0.0',
-  gatewayrpchost: '192.168.50.100',
+  gatewayrpchost: '192.168.50.220',
 }
 
 const proxyUser = {}
@@ -28,7 +28,7 @@ for (let key in user) {
     if (typeof user[key] === 'function') {
       proxyUser[key] = params =>
         new Promise((resolve, reject) => {
-          const completeParams = Object.assign({}, params, baseParams)
+          const completeParams = Object.assign({}, baseParams, params)
           if (key === 'daemonStart' || key === 'daemonStop') {
             delete completeParams.gatewayrpchost
           }
@@ -47,6 +47,10 @@ for (let key in user) {
       proxyUser[key] = user[key]
     }
   }
+}
+
+proxyUser.setDataDir = dataDir => {
+  baseParams.datadir = dataDir
 }
 
 module.exports = proxyUser

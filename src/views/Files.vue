@@ -18,6 +18,7 @@
         </template>
         <template v-else>
           <el-button size="small" type="primary" :loading="preparingUl" @click="f_upload"><i class="app-icon icon-upload"></i> Upload</el-button>
+          <input type="file" class="file-upload-input" name="file-upload">
           <el-button size="small" type="primary" plain :loading="preparingGet" @click="f_get"><i class="app-icon icon-get"></i> Get</el-button>
         </template>
       </div>
@@ -42,7 +43,7 @@ import { mapState, mapActions } from 'vuex'
 import { remote } from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
 import {
-  ACT_SET_FILE_LIST,
+  ACT_GET_FILE_LIST,
   UL_TASK,
   ACT_GET_FILE,
   ACT_REMOVE_FILE,
@@ -87,14 +88,12 @@ export default {
   },
 
   activated() {
-    setTimeout(() => {
-      this.f_getFileList()
-    }, 3000)
+    this.f_getFileList()
   },
 
   methods: {
     ...mapActions({
-      getFileList: ACT_SET_FILE_LIST,
+      getFileList: ACT_GET_FILE_LIST,
       getFile: ACT_GET_FILE,
       createUpload: UL_TASK.ACT_CREATE_TASK,
     }),

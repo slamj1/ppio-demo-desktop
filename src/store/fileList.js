@@ -5,7 +5,7 @@ import {
   MUT_SECURE_FILE,
   MUT_SHARE_FILE,
   MUT_GET_FILE,
-  ACT_SET_FILE_LIST,
+  ACT_GET_FILE_LIST,
   ACT_REMOVE_FILE,
   ACT_RENAME_FILE,
   // ACT_SECURE_FILE,
@@ -26,7 +26,6 @@ const store = {
     },
     [MUT_REMOVE_FILE](state, idx) {
       state.fileList.splice(idx, 1)
-      // Vue.delete(state.fileList, id)
     },
     [MUT_RENAME_FILE](state, payload) {
       state.fileList[payload.idx].filename = payload.name
@@ -42,7 +41,7 @@ const store = {
     },
   },
   actions: {
-    [ACT_SET_FILE_LIST](context) {
+    [ACT_GET_FILE_LIST](context) {
       return getFileList().then(
         res => context.commit(MUT_SET_FILE_LIST, res),
         err => {

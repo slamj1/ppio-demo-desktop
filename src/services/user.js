@@ -1,4 +1,7 @@
+import { remote } from 'electron'
 import { randomStr } from '../utils/functions'
+
+const ppioUser = remote.getGlobal('ppioUser')
 
 export const login = seedPhrase => {
   console.log('calling login method')
@@ -25,6 +28,34 @@ export const generatePhraseSeed = () => {
 export const logout = () => {}
 
 export const getUserData = () => {}
+
+export const getWalletAddress = () =>
+  ppioUser
+    .walletId()
+    .then(res => {
+      console.log(res)
+      return res
+    })
+    .catch(err => {
+      console.error(err)
+      return Promise.resolve(err)
+    })
+
+export const getBalance = () =>
+  ppioUser
+    .walletBalance()
+    .then(res => {
+      console.log(res)
+      return res
+    })
+    .catch(err => {
+      console.error(err)
+      return Promise.resolve(err)
+    })
+
+export const getFund = () => {}
+
+export const getUsage = () => {}
 
 export const getBillingRecords = () =>
   new Promise((resolve, reject) => {
