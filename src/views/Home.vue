@@ -44,7 +44,7 @@
     <Renew v-if="showPopups.renewFile" :file="renewingFile"></Renew>
     <Rename v-if="showPopups.renameFile" :file="renamingFile" :fileindex="renamingFileIndex"></Rename>
     <Share v-if="showPopups.shareFile" :file="sharingFile"></Share>
-    <Upload v-if="showPopups.uploadFile"></Upload>
+    <Upload v-if="showPopups.uploadFile" :file="uploadingFile"></Upload>
   </el-container>
 </template>
 
@@ -85,6 +85,7 @@ export default {
       renamingFile: null,
       renamingFileIndex: -1,
       renewingFile: null,
+      uploadingFile: null,
     }
   },
   computed: {
@@ -243,19 +244,22 @@ export default {
 
       // upload file
       // open upload file
-      this.$vueBus.$on(this.$events.OPEN_UPLOAD_FILE, () => {
-        console.log('open upload file ')
+      this.$vueBus.$on(this.$events.OPEN_UPLOAD_FILE, file => {
+        console.log('open upload file')
+        this.uploadingFile = file
         this.showPopups.uploadFile = true
       })
       // close download file
       this.$vueBus.$on(this.$events.CLOSE_UPLOAD_FILE, () => {
         console.log('close upload file')
         this.showPopups.uploadFile = false
+        this.uploadingFile = null
       })
-      // uploadd file
+      // upload file
       this.$vueBus.$on(this.$events.UPLOAD_FILE_DONE, () => {
         console.log('upload file done')
         this.showPopups.uploadFile = false
+        this.uploadingFile = null
         this.$router.push({ name: 'upload-list' })
       })
 

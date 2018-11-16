@@ -626,8 +626,8 @@
   resolved "http://registry.npm.taobao.org/@types/node/download/@types/node-10.12.2.tgz#d77f9faa027cadad9c912cd47f4f8b07b0fb0864"
 
 "@types/node@^10.3.5":
-  version "10.12.8"
-  resolved "https://registry.npmjs.org/@types/node/-/node-10.12.8.tgz#d0a3ab5a6e61458c492304e2776ac136b81db927"
+  version "10.12.9"
+  resolved "https://registry.npmjs.org/@types/node/-/node-10.12.9.tgz#a07bfa74331471e1dc22a47eb72026843f7b95c8"
 
 "@types/node@^8.0.24":
   version "8.10.37"
@@ -4151,7 +4151,7 @@ fileset@^2.0.2:
 
 filesize@^3.6.1:
   version "3.6.1"
-  resolved "http://registry.npm.taobao.org/filesize/download/filesize-3.6.1.tgz#090bb3ee01b6f801a8a8be99d31710b3422bb317"
+  resolved "https://registry.npmjs.org/filesize/-/filesize-3.6.1.tgz#090bb3ee01b6f801a8a8be99d31710b3422bb317"
 
 fill-range@^2.1.0:
   version "2.2.4"
@@ -8146,8 +8146,8 @@ postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.5:
     supports-color "^5.5.0"
 
 ppio_sdk_npm@^1.0.1-alpha.6:
-  version "1.0.1-alpha.8"
-  resolved "https://registry.npmjs.org/ppio_sdk_npm/-/ppio_sdk_npm-1.0.1-alpha.8.tgz#3d824a83e9ec37c538ec30fb82cf83406801c26b"
+  version "1.0.1-alpha.9"
+  resolved "https://registry.npmjs.org/ppio_sdk_npm/-/ppio_sdk_npm-1.0.1-alpha.9.tgz#4181f5ea619d3cf1b0329d37118296ec283b18dc"
   dependencies:
     jayson "^2.1.0"
 

@@ -1,16 +1,15 @@
 <template>
   <div class="upload-page">
-    <step-popup :steps="steps" :button-title="'Pay'" v-on:close="f_close" v-on:confirm="f_confirm" class="popup-wrap">
+    <step-popup ref="step" :steps="steps" :button-title="'Pay'" @close="f_close" @confirm="f_confirm" @next="f_next" class="popup-wrap">
       <span slot="header">Upload File</span>
 
       <div class="step-content step-0" slot="step-0">
-        <img src="@/assets/logo.png" class="file-icon" :alt="filename">
-        <p class="file-name">{{filename}}</p>
+        <img src="@/assets/img/file.png" class="file-icon" :alt="filename">
+        <el-input v-model="filename" class="file-name-input"></el-input>
         <el-select v-model="type" class="select"  placeholder="Plaese Choose">
-         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-         </el-option>
-       </el-select>
-       <el-alert title="You can not share secured file." show-icon class="alert-msg" type="warning" :closable="false"> </el-alert>
+          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        </el-select>
+        <el-alert v-show="type === options[1].value" title="You can not share secured file." show-icon class="alert-msg" type="warning" :closable="false"> </el-alert>
       </div>
 
       <div class="step-content step-1" slot="step-1">
@@ -20,27 +19,27 @@
             <el-radio-group class="radio-group" v-model="radio">
               <el-radio :label="1">1 Year(365 days)</el-radio> <br>
               <el-radio :label="2">1 Month(30 days)</el-radio> <br>
-              <el-radio :label="3">
-                <el-input class="storage-day-input" size="mini"></el-input>  <span>Days</span>
+              <el-radio :label="3" @change="$refs.customStorageDaysInput.focus()">
+                <el-input class="storage-day-input" ref="customStorageDaysInput" type="number" size="mini" v-model="customStorageDays" @focus="radio = 3"></el-input>  <span>Days</span>
               </el-radio>
             </el-radio-group>
           </div>
           <div class="line-wrap">
             <label class="line-label">Number of copies:</label>
-            <el-input class="copy-input" v-model="copyNumber" size="mini"></el-input>
+            <el-input class="copy-input" type="number" v-model="copyCount" size="mini"></el-input>
           </div>
           <div class="line-wrap">
-            <label class="line-label">Gas Price:</label>
-            <el-input class="price-input" size="mini"></el-input>
+            <label class="line-label">Chi Price:</label>
+            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input>
             <span>chi</span>
           </div>
           <div class="line-wrap">
-            <label class="line-label">Gas Limit:</label>
-            <span>34543543</span>
+            <label class="line-label">Chi Limit:</label>
+            <span>{{chiLimit}}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Expected Cost:</label>
-            <span>34543543 PPCOIN</span>
+            <span>{{estimatedCost}} PPCOIN</span>
           </div>
         </div>
       </div>
@@ -53,12 +52,12 @@
           </div>
           <div class="line-wrap">
             <label class="line-label">Upload:</label>
-            <span class="text-1">3.1G</span>
-            <span class="text-2">34.12 PPCoin</span>
+            <span class="text-1">{{fileSizeStr}}</span>
+            <span class="text-2">{{estimatedCost}} PPCoin</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Storage:</label>
-            <span class="text-1">3.1G/12Days</span>
+            <span class="text-1">{{fileSizeStr}}/{{storageTimeStr}}</span>
             <span class="text-2">234.122 PPCoin(Fund)</span>
           </div>
           <div class="line"></div>
@@ -72,35 +71,115 @@
   </div>
 </template>
 <script>
+import filesize from 'filesize'
 import StepPopup from '@/components/StepPopup'
 import { UL_TASK } from '../../constants/store'
+import { importObject } from '../../services/upload'
 
 export default {
   name: 'upload',
   data: () => ({
     type: '1',
     filename: 'PPIO upload filename',
+    customStorageDays: '1',
+    chiPrice: 100,
     steps: ['Choose Type', 'Storage Setting', 'Payment'],
     options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
     radio: 1,
-    copyNumber: 5,
+    copyCount: 1,
+    chiLimit: 12332,
+    estimatedCost: 12,
   }),
+  props: ['file'],
+  computed: {
+    fileSizeStr() {
+      return filesize(this.file.size)
+    },
+    storageDays() {
+      let days = 0
+      switch (this.radio) {
+        case 1:
+          days = 365
+          break
+        case 2:
+          days = 30
+          break
+        case 3:
+          days = parseInt(this.customStorageDays)
+          break
+      }
+      return days
+    },
+    storageTimeStr() {
+      if (this.storageDays === 365) {
+        return '1 Year'
+      } else if (this.storageDays === 30) {
+        return '1 Month'
+      } else {
+        return `${this.storageDays} Days`
+      }
+    },
+    taskOptions() {
+      console.log('computing task options')
+      return {
+        localPath: this.file ? this.file.path : '',
+        isSecure: this.type === this.options[1].value,
+        storageTime: this.storageDays * 24 * 3600,
+        copyCount: parseInt(this.copyCount),
+        chiPrice: parseInt(this.chiPrice),
+      }
+    },
+  },
   components: {
     StepPopup,
   },
+  mounted() {
+    if (this.file) {
+      this.filename = this.file.name
+    }
+  },
   methods: {
+    async f_next(step) {
+      if (step === 0) {
+        if (this.filename.length > 0) {
+          this.$refs.step.f_next()
+        }
+      } else if (step === 1) {
+        const options = this.taskOptions
+        if (options.storageTime > 0 && options.chiPrice > 0 && options.copyCount > 0) {
+          this.$refs.step.f_next()
+        }
+      }
+    },
     f_close() {
       this.$vueBus.$emit(this.$events.CLOSE_UPLOAD_FILE)
     },
-    f_confirm() {
+    async f_confirm() {
       console.log('upload confirm')
-      this.$store
-        .dispatch(UL_TASK.ACT_CREATE_TASK)
-        .then(() => this.$vueBus.$emit(this.$events.UPLOAD_FILE_DONE))
-        .catch(err => {
-          console.error(err)
-          this.$notify.error({ title: JSON.stringify(err), duration: 2000 })
-        })
+      const options = this.taskOptions
+      console.log(options)
+      try {
+        const objectHash = await importObject(options)
+        const putParams = {
+          file: {
+            id: objectHash,
+            filename: this.filename,
+            size: this.file.size,
+            isSecure: options.isSecure,
+            isPublic: false,
+          },
+          objectHash,
+          ...options,
+        }
+        await this.$store.dispatch(UL_TASK.ACT_CREATE_TASK, putParams)
+        this.$vueBus.$emit(this.$events.UPLOAD_FILE_DONE)
+      } catch (err) {
+        console.error(err)
+        if (parseInt(err.code) === 2017) {
+          return this.$message.error('Object existed')
+        }
+        return this.$message.error('Object import failed!')
+      }
     },
   },
 }
@@ -117,10 +196,20 @@ export default {
     .file-icon {
       height: 58px;
       width: 48px;
+      margin-bottom: 10px;
     }
-    .file-name {
+    .file-name-input {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 10px;
       height: 40px;
       line-height: 40px;
+      width: 300px;
+
+      .el-input__inner {
+        text-align: center;
+      }
     }
     .select {
       width: 120px;

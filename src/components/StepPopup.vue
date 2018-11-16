@@ -1,6 +1,6 @@
 <template>
   <transition name="slide">
-    <div class="step-popup-mask" @click="f_close">
+    <div class="step-popup-mask">
       <div class="step-popup-wrap" @click.stop="">
         <svg v-on:click="f_close" viewBox="0 0 1024 1024" class="popup-close" version="1.1" width="128" height="128">
           <path d="M521.693867 449.297067L111.4112 39.0144a51.2 51.2 0 1 0-72.430933 72.362667l410.282666 410.3168-410.282666 410.3168a51.2 51.2 0 1 0 72.3968 72.3968l410.3168-410.282667 410.3168 410.282667a51.2 51.2 0 1 0 72.3968-72.362667l-410.282667-410.350933 410.282667-410.282667a51.2 51.2 0 1 0-72.3968-72.3968l-410.282667 410.282667z"></path>
@@ -14,24 +14,24 @@
           </el-steps>
         </div>
         <div class="step-popup-content">
-          <div v-if="curStep==0" class="step-slot-wrap">
+          <div v-if="curStep == 0" class="step-slot-wrap">
             <slot name="step-0"></slot>
           </div>
-          <div v-if="curStep==1" class="step-slot-wrap">
+          <div v-if="curStep == 1" class="step-slot-wrap">
             <slot name="step-1"></slot>
           </div>
-          <div v-if="curStep==2" class="step-slot-wrap">
+          <div v-if="curStep == 2" class="step-slot-wrap">
             <slot name="step-2"></slot>
           </div>
-          <div v-if="curStep==3" class="step-slot-wrap">
+          <div v-if="curStep == 3" class="step-slot-wrap">
             <slot name="step-3"></slot>
           </div>
         </div>
         <div class="step-popup-footer">
           <slot class="footer"></slot>
           <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini">Prev</el-button>
-          <el-button class="button" v-if="curStep < steps.length-1" v-on:click="f_emitNext" size="mini" type="primary">Next</el-button>
-          <el-button class="button" v-if="curStep >= steps.length-1" v-on:click="f_confirm" size="mini" type="primary">{{ButtonTitle?ButtonTitle:'Confirm'}}</el-button>
+          <el-button class="button" v-if="curStep < steps.length - 1" v-on:click="f_emitNext" size="mini" type="primary">Next</el-button>
+          <el-button class="button" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">{{ButtonTitle ? ButtonTitle : 'Confirm'}}</el-button>
         </div>
       </div>
     </div>

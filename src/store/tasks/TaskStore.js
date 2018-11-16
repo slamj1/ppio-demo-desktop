@@ -18,12 +18,13 @@ import {
 import File from '../File'
 
 function setTaskStatus(task, status) {
-  task.transferSpeed = status.speed
-  task.transferProgress = status.progress
   if (status.finished) {
     task.transferringData = false
     task.finished = true
     task.transferProgress = 100
+  } else {
+    task.transferSpeed = status.speed
+    task.transferProgress = status.progress
   }
 }
 
@@ -85,9 +86,9 @@ export default class TaskStore {
     }
 
     // action methods
-    const a_createTask = (context, fileHash) => {
+    const a_createTask = (context, payload) => {
       console.log('create task')
-      return serviceStartTask(fileHash)
+      return serviceStartTask(payload)
         .then(res => {
           console.log('task started')
           return context.commit(STORE_KEYS.MUT_ADD_TASK, {
@@ -112,14 +113,26 @@ export default class TaskStore {
         taskIds.map(async taskId => {
           try {
             const progressRes = await serviceGetTaskProgress(taskId)
-            console.log(progressRes)
             return progressRes
           } catch (err) {
             console.error(err)
             return Promise.resolve()
           }
         }),
-      ).then(statusArr => context.commit(STORE_KEYS.MUT_SET_STATUS, statusArr))
+      ).then(resArr => {
+        const statusArr = resArr.map(res => {
+          console.log(res)
+          let status = {
+            finished: false,
+            speed: 0,
+            progress: 0,
+          }
+          if (res[0].ContractStatus === 'US_DEAL') {
+            status.finished = true
+          }
+        })
+        return context.commit(STORE_KEYS.MUT_SET_STATUS, statusArr)
+      })
 
     // define store data
     const getters = {

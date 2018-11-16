@@ -17,8 +17,8 @@
           </el-dropdown>
         </template>
         <template v-else>
-          <el-button size="small" type="primary" :loading="preparingUl" @click="f_upload"><i class="app-icon icon-upload"></i> Upload</el-button>
-          <input type="file" class="file-upload-input" name="file-upload">
+          <input type="file" ref="fileUploadInput" class="file-upload-input" name="file-upload" @change="f_upload">
+          <el-button size="small" type="primary" :loading="preparingUl" @click="f_chooseUploadFile"><i class="app-icon icon-upload"></i> Upload</el-button>
           <el-button size="small" type="primary" plain :loading="preparingGet" @click="f_get"><i class="app-icon icon-get"></i> Get</el-button>
         </template>
       </div>
@@ -65,7 +65,6 @@ export default {
       preparingUl: false,
       preparingGet: false,
       selectedFileId: 0,
-      selectedFileIndex: -1,
       refreshingData: false,
       fetchingData: false,
       operatingFile: null,
@@ -101,7 +100,9 @@ export default {
       if (this.fetchingData) {
         return Promise.resolve()
       }
-      this.selectedFileId = 0
+      if (this.fileList.map(file => file.id).indexOf(this.selectedFileId) === -1) {
+        this.selectedFileId = 0
+      }
       this.fetchingData = true
       return this.getFileList()
         .then(() => {
@@ -127,7 +128,6 @@ export default {
         })
     },
     f_selectFile(idx) {
-      this.selectedFileIndex = idx
       if (idx === -1) {
         this.selectedFileId = 0
         this.operatingFile = null
@@ -215,12 +215,12 @@ export default {
       this.$vueBus.$emit(this.$events.OPEN_SHARE_FILE, this.operatingFile)
     },
     f_rename() {
-      if (!this.operatingFile || this.selectedFileIndex === -1) {
+      if (!this.operatingFile) {
         return
       }
       this.$vueBus.$emit(this.$events.OPEN_RENAME_FILE, {
         file: this.operatingFile,
-        fileindex: this.selectedFileIndex,
+        fileindex: this.fileList.indexOf(this.operatingFile),
       })
     },
     f_renew() {
@@ -230,7 +230,7 @@ export default {
       this.$vueBus.$emit(this.$events.OPEN_RENEW_FILE, this.operatingFile)
     },
     f_delete() {
-      if (!this.operatingFile || this.selectedFileIndex === -1) {
+      if (!this.operatingFile) {
         return
       }
       dialog.showMessageBox(
@@ -246,7 +246,7 @@ export default {
             this.$store
               .dispatch(ACT_REMOVE_FILE, {
                 file: this.operatingFile,
-                fileIndex: this.selectedFileIndex,
+                fileIndex: this.fileList.indexOf(this.operatingFile),
               })
               .then(
                 () => {
@@ -265,8 +265,15 @@ export default {
         },
       )
     },
+    f_chooseUploadFile() {
+      this.$refs.fileUploadInput.click()
+    },
     f_upload() {
-      this.$vueBus.$emit(this.$events.OPEN_UPLOAD_FILE)
+      const file = this.$refs.fileUploadInput.files[0]
+      console.log(file)
+      if (file) {
+        this.$vueBus.$emit(this.$events.OPEN_UPLOAD_FILE, file)
+      }
     },
     f_get() {
       this.$vueBus.$emit(this.$events.OPEN_GET_FILE)
@@ -290,6 +297,10 @@ export default {
   -webkit-app-region: drag;
   box-sizing: content-box;
   border-bottom: 1px solid #dcdfe6;
+
+  .file-upload-input {
+    display: none;
+  }
 
   .header-dropdown-menu {
     margin: 0 20px;

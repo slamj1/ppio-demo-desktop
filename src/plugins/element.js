@@ -28,6 +28,7 @@ import {
   Popover,
   Notification,
   Loading,
+  Message,
 } from 'element-ui'
 import '@/assets/css/element-theme.scss'
 import lang from 'element-ui/lib/locale/lang/en'
@@ -62,6 +63,8 @@ Vue.use(TableColumn)
 Vue.use(Badge)
 Vue.use(Popover)
 Vue.use(Loading)
+Vue.use(Message)
 
 Vue.prototype.$notify = Notification
+Vue.prototype.$message = Message
 Vue.prototype.$loading = Loading.service
