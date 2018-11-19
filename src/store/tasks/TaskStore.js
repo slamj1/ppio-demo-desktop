@@ -1,5 +1,6 @@
 import Task from './Task'
 import {
+  ACT_METADATA_ADD_FILE,
   TASK_TYPE_UPLOAD,
   TASK_TYPE_DOWNLOAD,
   DL_TASK,
@@ -22,6 +23,10 @@ function setTaskStatus(task, status) {
     task.transferringData = false
     task.finished = true
     task.transferProgress = 100
+  } else if (status.transferEnded) {
+    task.transferringData = false
+    task.transferProgress = 100
+    task.copying = true
   } else {
     task.transferSpeed = status.speed
     task.transferProgress = status.progress
@@ -108,32 +113,45 @@ export default class TaskStore {
         return context.commit(STORE_KEYS.MUT_REMOVE_TASK, idx)
       })
 
-    const a_getTaskStatus = (context, taskIds) =>
-      Promise.all(
-        taskIds.map(async taskId => {
-          try {
-            const progressRes = await serviceGetTaskProgress(taskId)
-            return progressRes
-          } catch (err) {
-            console.error(err)
-            return Promise.resolve()
-          }
-        }),
-      ).then(resArr => {
-        const statusArr = resArr.map(res => {
+    const a_getTaskStatus = context => {
+      const statusGetters = context.state.taskQueue.map(async task => {
+        // if finished, resolve empty
+        if (task.finished) {
+          return Promise.resolve()
+        }
+        try {
+          // get task status
+          const progressRes = await serviceGetTaskProgress(task.id)
+          return progressRes
+        } catch (err) {
+          // if error, resolve it
+          console.error(err)
+          return Promise.resolve(err)
+        }
+      })
+      return Promise.all(statusGetters).then(resArr => {
+        const statusArr = resArr.map((res, index) => {
           console.log(res)
           let status = {
             finished: false,
+            transferEnded: false,
             speed: 0,
             progress: 0,
           }
+          // TODO: transferEnded?
           if (res[0].ContractStatus === 'US_DEAL') {
+            console.log(`task ${index} finished !`)
             status.finished = true
+            // mutate meta data
+            if (taskType === TASK_TYPE_UPLOAD) {
+              context.dispatch(ACT_METADATA_ADD_FILE, context.state.taskQueue[index].file)
+            }
           }
+          return status
         })
         return context.commit(STORE_KEYS.MUT_SET_STATUS, statusArr)
       })
-
+    }
     // define store data
     const getters = {
       [STORE_KEYS.GET_TASK_COUNT]: state => state.taskQueue.length,

@@ -30,32 +30,34 @@ export const logout = () => {}
 export const getUserData = () => {}
 
 export const getWalletAddress = () =>
-  ppioUser
-    .walletId()
-    .then(res => {
-      console.log(res)
-      return res
-    })
-    .catch(err => {
-      console.error(err)
-      return Promise.resolve(err)
-    })
+  ppioUser.walletId().then(res => {
+    console.log(res)
+    return res
+  })
 
-export const getBalance = () =>
-  ppioUser
-    .walletBalance()
-    .then(res => {
-      console.log(res)
-      return res
-    })
-    .catch(err => {
-      console.error(err)
-      return Promise.resolve(err)
-    })
+export const getBalance = () => Promise.resolve()
 
-export const getFund = () => {}
+export const getFund = () => Promise.resolve()
 
-export const getUsage = () => {}
+export const getMetadata = () =>
+  ppioUser.metadataGet().then(res => {
+    console.log('metadata got')
+    console.log(res)
+    if (res.length > 0) {
+      return JSON.parse(res)
+    }
+    return {}
+  })
+
+export const setMetadata = data => {
+  console.log('setting metadata')
+  console.log(data)
+  return ppioUser.metadataPut(JSON.stringify(data)).then(res => {
+    console.log('metadata set')
+    console.log(res)
+    return res
+  })
+}
 
 export const getBillingRecords = () =>
   new Promise((resolve, reject) => {

@@ -7,12 +7,12 @@
           <img class="profile-avatar" :src="userData.avatar" />
           <div class="profile-userinfo">
             <span class="profile-username">{{userData.address}}</span>
-            <template v-if="mode === APP_MODE_COINPOOL">
+            <template v-if="appMode === APP_MODE_COINPOOL">
               <el-progress class="usage-progress" :percentage="usagePercent" :show-text="false"></el-progress>
               <span class="usage-number with-progress">{{userData.usedStorage}}G/{{userData.capacity}}G</span>
             </template>
             <template v-else>
-              <span class="usage-number">Used: {{userData.usedStorage}}</span>
+              <span class="usage-number">Used: {{usedStorage}}</span>
             </template>
           </div>
         </div>
@@ -32,7 +32,6 @@
           <span slot="title">Uploading <el-badge class="task-count-badge" v-show="uploadCount > 0" :value="uploadCount" /></span>
         </el-menu-item>
       </el-menu>
-      <p>{{ppioSdkPath}}</p>
     </el-aside>
     <keep-alive>
       <router-view></router-view>
@@ -52,7 +51,13 @@
 import { mapState, mapGetters } from 'vuex'
 import electron from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
-import { DL_TASK, UL_TASK, USAGE_PERCENT_GETTER } from '../constants/store'
+import {
+  DL_TASK,
+  UL_TASK,
+  USAGE_PERCENT_GETTER,
+  ACT_GET_USER_DATA,
+  USAGE_STORAGE_GETTER,
+} from '../constants/store'
 
 import Profile from '../components/Profile'
 import Download from './subviews/Download'
@@ -67,8 +72,6 @@ export default {
   name: 'home',
   data() {
     return {
-      ppioSdkPath: '',
-      mode: APP_MODE_COINPOOL,
       APP_MODE_COINPOOL: APP_MODE_COINPOOL,
       showProfile: false,
       showPopups: {
@@ -91,11 +94,14 @@ export default {
   computed: {
     ...mapState({
       userData: state => state.user,
+      appMode: state => state.appMode,
+      usedStorage: state => state.file.usedStorage,
     }),
     ...mapGetters({
       downloadCount: DL_TASK.GET_TASK_COUNT,
       uploadCount: UL_TASK.GET_TASK_COUNT,
       usagePercent: USAGE_PERCENT_GETTER,
+      usedStorage: USAGE_STORAGE_GETTER,
     }),
     curRoutePath() {
       return this.$route.path.split('/').slice(-1)[0]
@@ -113,21 +119,12 @@ export default {
   },
   mounted() {
     this.f_initEventBus()
-    this.ppioSdkPath = this.$remote.getGlobal('ppioUser').ppioExe
-    setTimeout(() => {
-      this.$remote
-        .getGlobal('ppioUser')
-        .netId()
-        .then(data => {
-          console.log(`user net id ${JSON.stringify(data)}`)
-          return data
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    }, 3000)
+    this.f_initUserData()
   },
   methods: {
+    f_initUserData() {
+      this.$store.dispatch(ACT_GET_USER_DATA)
+    },
     f_goBilling() {
       this.showProfile = false
       this.$vueBus.$emit(this.$events.OPEN_BILLING_RECORDS)

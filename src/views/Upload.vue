@@ -1,7 +1,7 @@
 <template>
   <TransferTable
       tableName="upload"
-      :tableData="transferList"
+      :tableData="taskList"
       @cancel="f_cancel"
   ></TransferTable>
 </template>
@@ -17,7 +17,7 @@ export default {
   }),
   computed: {
     ...mapState({
-      transferList: state => {
+      taskList: state => {
         console.log(state.file)
         return state.uploadTask.taskQueue
       },
@@ -45,14 +45,10 @@ export default {
     },
     f_updateStatus() {
       console.log('update ul status')
-      this.$store
-        .dispatch(UL_TASK.ACT_GET_STATUS, this.transferList.map(task => task.id))
-        .then(() => true)
-        .catch(err => {
-          console.error(err)
-          this.f_updateStatus()
-        })
-      if (this.transferList.length > 0) {
+      this.$store.dispatch(UL_TASK.ACT_GET_STATUS).catch(err => {
+        console.error(err)
+      })
+      if (this.taskList.length > 0) {
         this.getStatusTimer = setTimeout(() => {
           this.f_updateStatus()
         }, 2000)

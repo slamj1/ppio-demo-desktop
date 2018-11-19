@@ -48,6 +48,7 @@ export const startUpload = async params => {
 
 export const getProgress = async objectHash => {
   console.log('get upload progress')
+  console.log(objectHash)
   try {
     const progress = await ppioUser.objectStatus({ objectHash: [objectHash] })
     console.log(progress)

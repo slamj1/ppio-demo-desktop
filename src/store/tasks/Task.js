@@ -8,6 +8,7 @@ export default function Task(initData) {
     transferringData: false, // downloading or uploading
     transferProgress: 0, // transferred percentage, in number
     transferSpeed: '0b/s', // transfer speed, in string
+    copying: false,
     finished: false,
     file: initData.file,
   }

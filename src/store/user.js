@@ -3,7 +3,6 @@ import {
   logout,
   getUserData,
   getBalance,
-  getUsage,
   getFund,
   getBillingRecords,
   getWalletAddress,
@@ -17,6 +16,12 @@ import {
   MUT_SET_USER_META_DATA,
   ACT_GET_USER_META_DATA,
   ACT_SET_USER_META_DATA,
+  MUT_METADATA_ADD_FILE,
+  ACT_METADATA_ADD_FILE,
+  MUT_METADATA_REMOVE_FILE,
+  ACT_METADATA_REMOVE_FILE,
+  MUT_METADATA_MODIFY_FILE,
+  ACT_METADATA_MODIFY_FILE,
   ACT_LOGIN,
   MUT_LOGIN,
   ACT_LOGOUT,
@@ -24,7 +29,6 @@ import {
   ACT_REFRESH_USER,
   MUT_SET_BILLING_RECORDS,
   ACT_GET_BILLING_RECORDS,
-  USAGE_PERCENT_GETTER,
 } from '../constants/store'
 
 const store = {
@@ -38,24 +42,48 @@ const store = {
     avatar: require('@/assets/img/avatar.png'),
     address: '',
     dataDir: '/Volumes/ExtCard/user6',
-    usedStorage: 520,
-    capacity: 1000,
     metadata: {},
   },
-  getters: {
-    [USAGE_PERCENT_GETTER]: state => (state.usedStorage / state.capacity) * 100,
-  },
+
   mutations: {
     [MUT_SET_USER_DATA](state, data) {
       console.log('refresh user', data)
       state.uid = data.uid
       state.nickname = data.nickname
       state.balance = data.balance
+      state.address = data.uid
     },
     [MUT_SET_USER_META_DATA](state, data) {
       console.log('set meta data', data)
       console.log(state)
+      if (!data.fileList) {
+        data.fileList = {}
+      }
       state.metadata = data
+    },
+    [MUT_METADATA_ADD_FILE](state, file) {
+      // add a file and its info to metadata
+      console.log(state)
+      state.metadata.fileList[file.id] = {
+        filename: file.filename,
+        size: file.size,
+        type: file.type,
+        isSecure: file.isSecure,
+        isPublic: file.isPublic,
+      }
+    },
+    [MUT_METADATA_REMOVE_FILE](state, fileId) {
+      delete state.metadata.fileList[fileId]
+    },
+    /**
+     * modify file info in metadata
+     * @param state
+     * @param payload.fileId {String} id(objectHash) of file
+     * @param payload.data {Object} file info to modify
+     */
+    [MUT_METADATA_MODIFY_FILE](state, payload) {
+      const fileState = state.metadata.fileList[payload.fileId]
+      state.metadata.fileList[payload.fileId] = Object.assign({}, fileState, payload.data)
     },
     [MUT_LOGIN](state) {
       state.isLogin = true
@@ -85,28 +113,29 @@ const store = {
       )
     },
     [ACT_GET_USER_DATA](context) {
-      return Promise.all([getWalletAddress, getBalance, getFund, getUsage])
+      console.log('init user data')
+      // wrap sdk calls with catch-resolve to prevent errors from interrupting Promise.all()
+      const dataGetters = [getWalletAddress, getBalance, getFund].map(func =>
+        func()
+          .then(res => res)
+          .catch(err => {
+            console.error(err)
+            return Promise.resolve(err)
+          }),
+      )
+      return Promise.all(dataGetters)
         .then(values => {
           console.log(values)
           return context.commit(MUT_SET_USER_DATA, {
             uid: values[0],
             balance: values[1],
             fund: values[2],
-            usage: values[3],
           })
         })
+        .then(() => context.dispatch(ACT_GET_USER_META_DATA))
         .catch(err => {
           console.error(err)
         })
-    },
-    [ACT_LOGOUT](context) {
-      return logout().then(
-        () => context.commit(MUT_LOGOUT),
-        err => {
-          console.log('logout error')
-          console.log(err)
-        },
-      )
     },
     [ACT_GET_USER_META_DATA](context) {
       return getMetadata()
@@ -117,10 +146,26 @@ const store = {
         })
     },
     [ACT_SET_USER_META_DATA](context) {
+      console.log('action set user metadata dispatched')
+      console.log(context.state.metadata)
       return setMetadata(context.state.metadata).catch(err => {
         console.log('set metadata failed')
         console.error(err)
       })
+    },
+    [ACT_METADATA_ADD_FILE](context, file) {
+      console.log('adding new file to metadata')
+      console.log(file)
+      context.commit(MUT_METADATA_ADD_FILE, file)
+      return context.dispatch(ACT_SET_USER_META_DATA)
+    },
+    [ACT_METADATA_REMOVE_FILE](context, fileId) {
+      context.commit(MUT_METADATA_REMOVE_FILE, fileId)
+      return context.dispatch(ACT_SET_USER_META_DATA)
+    },
+    [ACT_METADATA_MODIFY_FILE](context, payload) {
+      context.commit(MUT_METADATA_MODIFY_FILE, payload)
+      return context.dispatch(ACT_SET_USER_META_DATA)
     },
     [ACT_REFRESH_USER](context) {
       return getUserData().then(
@@ -140,6 +185,15 @@ const store = {
         res => context.commit(MUT_SET_BILLING_RECORDS, res),
         err => {
           console.log('get billing records error')
+          console.log(err)
+        },
+      )
+    },
+    [ACT_LOGOUT](context) {
+      return logout().then(
+        () => context.commit(MUT_LOGOUT),
+        err => {
+          console.log('logout error')
           console.log(err)
         },
       )

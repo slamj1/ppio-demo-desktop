@@ -18,6 +18,9 @@
         label="Progress">
       <template slot-scope="scope">
         <el-progress class="transmit-progress" :stroke-width="4" :percentage="scope.row.transferProgress" :show-text="false"></el-progress>
+        <span v-if="scope.row.finished">finished</span>
+        <span v-else-if="scope.row.transferringData">{{scope.row.transferSpeed}}</span>
+        <span v-else>generating copies...</span>
       </template>
     </el-table-column>
     <el-table-column

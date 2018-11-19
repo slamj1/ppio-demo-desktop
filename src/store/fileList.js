@@ -1,3 +1,4 @@
+import filesize from 'filesize'
 import {
   MUT_SET_FILE_LIST,
   MUT_REMOVE_FILE,
@@ -11,7 +12,10 @@ import {
   // ACT_SECURE_FILE,
   // ACT_SHARE_FILE,
   ACT_GET_FILE,
+  USAGE_PERCENT_GETTER,
+  USAGE_STORAGE_GETTER,
 } from '../constants/store'
+import { APP_MODE_COINPOOL } from '../constants/constants'
 import getFileList from '../services/getFileList'
 import { getFile, deleteFile, renameFile } from '../services/file'
 import File from './File'
@@ -19,10 +23,24 @@ import File from './File'
 const store = {
   state: {
     fileList: [],
+    usedStorage: 0,
+    capacity: 0,
+  },
+  getters: {
+    [USAGE_PERCENT_GETTER]: (state, getters, rootState) => {
+      if (rootState.appMode === APP_MODE_COINPOOL) {
+        return (state.usedStorage / state.capacity) * 100
+      }
+      return 0
+    },
+    [USAGE_STORAGE_GETTER]: state => filesize(state.usedStorage),
   },
   mutations: {
     [MUT_SET_FILE_LIST](state, list) {
       state.fileList = list.map(item => new File(item))
+      const usage = list.reduce((acc, cur) => acc + cur.size, 0)
+      console.log(usage)
+      state.usedStorage = usage
     },
     [MUT_REMOVE_FILE](state, idx) {
       state.fileList.splice(idx, 1)
