@@ -1,70 +1,49 @@
 <template>
   <div class="upload-page">
-    <step-popup :steps="steps" :button-title="'Pay'" v-on:close="f_close" v-on:confirm="f_confirm" class="popup-wrap">
+    <step-popup
+        :cur-step="curStep"
+        :steps="steps"
+        :button-title="'Pay'"
+        @close="f_close"
+        @confirm="f_confirm"
+        @next="f_next"
+        @prev="f_prev"
+        class="popup-wrap">
       <span slot="header">Download File</span>
-
       <div class="step-content step-0" slot="step-0">
-        <img src="@/assets/logo.png" class="file-icon" :alt="file.filename">
-        <p class="file-name">{{file.filename}}</p>
-        <el-select v-model="type" class="select"  placeholder="Plaese Choose">
-          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-        </el-option>
-       </el-select>
-       <el-alert title="You can not share secured file." show-icon class="alert-msg" type="warning" :closable="false"> </el-alert>
-      </div>
-
-      <div class="step-content step-1" slot="step-1">
         <div class="inner-wrap">
           <div class="line-wrap">
-            <label class="line-label">Storage Time:</label>
-            <el-radio-group class="radio-group" v-model="radio">
-              <el-radio :label="1">1 Year(365 days)</el-radio> <br>
-              <el-radio :label="2">1 Month(30 days)</el-radio> <br>
-              <el-radio :label="3">
-                <el-input class="storage-day-input" size="mini"></el-input>  <span>Days</span>
-              </el-radio>
-            </el-radio-group>
-          </div>
-          <div class="line-wrap">
-            <label class="line-label">Number of copies:</label>
-            <el-input class="copy-input" v-model="copyNumber" size="mini"></el-input>
-          </div>
-          <div class="line-wrap">
-            <label class="line-label">Gas Price:</label>
-            <el-input class="price-input" size="mini"></el-input>
+            <label class="line-label">Chi Price:</label>
+            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input>
             <span>chi</span>
           </div>
           <div class="line-wrap">
-            <label class="line-label">Gas Limit:</label>
-            <span>34543543</span>
+            <label class="line-label">Chi Limit:</label>
+            <span>{{chiLimit}}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Expected Cost:</label>
-            <span>34543543 PPCOIN</span>
+            <span>{{estimatedCost}} PPCOIN</span>
           </div>
         </div>
       </div>
-
-      <div class="step-content step-2" slot="step-2">
+      <div class="step-content step-1" slot="step-1">
         <div class="inner-wrap">
-          <div class="line-wrap">
-            <label class="line-label">Product:</label>
-            <span class="text-1">Free</span>
-          </div>
-          <div class="line-wrap">
-            <label class="line-label">Upload:</label>
-            <span class="text-1">3.1G</span>
-            <span class="text-2">34.12 PPCoin</span>
-          </div>
-          <div class="line-wrap">
-            <label class="line-label">Storage:</label>
-            <span class="text-1">3.1G/12Days</span>
-            <span class="text-2">234.122 PPCoin(Fund)</span>
-          </div>
-          <div class="line"></div>
-          <div class="line-wrap">
-            <label class="line-label">Gas Limit:</label>
-            <span class="text-2">268.122 PPCoin(Fund)</span>
+          <el-table class="ppio-plain-table payment-table" :data="paymentData">
+            <el-table-column
+                prop="product"
+                label="Product"
+                width="220"
+                class-name="table-column-product">
+            </el-table-column>
+            <el-table-column
+                prop="fee"
+                label="Fee"
+                width="100">
+            </el-table-column>
+          </el-table>
+          <div class="total-cost">
+            <p><b>Total:</b> {{totalCost}} PPCoin</p>
           </div>
         </div>
       </div>
@@ -72,38 +51,72 @@
   </div>
 </template>
 <script>
+import filesize from 'filesize'
 import StepPopup from '@/components/StepPopup'
-import File from '../../store/File'
 import { DL_TASK } from '../../constants/store'
 
 export default {
-  name: 'upload',
+  name: 'download',
   data: () => ({
     type: '1',
-    steps: ['Choose Type', 'Storage Setting', 'Payment'],
+    filename: 'PPIO download filename',
+    curStep: 0,
+    steps: ['Settings', 'Payment'],
     options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
     radio: 1,
-    copyNumber: 5,
-    file: new File({
-      id: '',
-      filename: 'PPIO upload filename',
-      size: 0,
-      type: 0,
-      isSecure: false,
-      isPublic: false,
-    }),
+    estimatedCost: 123,
+    chiPrice: 100,
+    chiLimit: 12332,
+    downloadCost: 12,
   }),
+  props: ['file'],
   components: {
     StepPopup,
   },
+  computed: {
+    fileSizeStr() {
+      return filesize(this.file.size)
+    },
+    paymentData() {
+      return [
+        {
+          product: `Download: ${this.fileSizeStr}`,
+          fee: `${this.downloadCost} PPCoin`,
+        },
+      ]
+    },
+    totalCost() {
+      return this.downloadCost
+    },
+  },
+  mounted() {
+    if (this.file) {
+      this.filename = this.file.name
+    }
+  },
   methods: {
+    f_prev() {
+      this.curStep -= 1
+    },
+    f_next() {
+      if (this.curStep === 0) {
+        if (this.chiPrice > 0) {
+          this.curStep += 1
+        }
+      }
+    },
     f_close() {
       this.$vueBus.$emit(this.$events.CLOSE_DOWNLOAD_FILE)
     },
     f_confirm() {
       console.log('download confirm')
+      const getParams = {
+        file: this.file,
+        objectHash: this.file.id,
+        chiPrice: parseInt(this.chiPrice),
+      }
       this.$store
-        .dispatch(DL_TASK.ACT_CREATE_TASK)
+        .dispatch(DL_TASK.ACT_CREATE_TASK, getParams)
         .then(() => this.$vueBus.$emit(this.$events.DOWNLOAD_FILE_DONE))
         .catch(err => {
           console.error(err)
@@ -122,28 +135,9 @@ export default {
     text-align: left;
   }
   &.step-0 {
-    .file-icon {
-      height: 58px;
-      width: 48px;
-    }
-    .file-name {
-      height: 40px;
-      line-height: 40px;
-    }
-    .select {
-      width: 120px;
-      margin-bottom: 10px;
-    }
-    .alert-msg {
-      width: 280px;
-      margin: auto;
-      text-align: center;
-    }
-  }
-  &.step-1 {
     .line-wrap {
-      padding: 6px 0 6px 130px;
       position: relative;
+      padding: 6px 0 6px 130px;
       .line-label {
         position: absolute;
         top: 6px;
@@ -162,26 +156,21 @@ export default {
       }
     }
   }
-  &.step-2 {
-    .line-wrap {
-      padding: 6px 0 6px 90px;
+  &.step-1 {
+    .payment-table {
+      color: inherit;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .total-cost {
       position: relative;
+      padding-left: 10px;
     }
     .line-label {
       position: absolute;
       top: 6px;
       left: 0;
       font-weight: bold;
-    }
-    .text-1 {
-      display: inline-block;
-      width: 120px;
-    }
-    .line {
-      height: 1px;
-      background-color: #eee;
-      margin-top: 6px;
-      margin-bottom: 6px;
     }
   }
 }

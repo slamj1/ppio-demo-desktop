@@ -38,12 +38,12 @@
     </keep-alive>
 
     <BillingRecords v-if="showPopups.billingRecords" :recordsData="userData.billingRecords"></BillingRecords>
-    <Download ref="download-file" v-if="showPopups.downloadFile" :file="downloadingFile"></Download>
+    <Upload v-if="showPopups.uploadFile" :file="uploadingFile"></Upload>
+    <Download v-if="showPopups.downloadFile" :file="downloadingFile"></Download>
     <Get v-if="showPopups.getFile"></Get>
     <Renew v-if="showPopups.renewFile" :file="renewingFile"></Renew>
     <Rename v-if="showPopups.renameFile" :file="renamingFile" :fileindex="renamingFileIndex"></Rename>
     <Share v-if="showPopups.shareFile" :file="sharingFile"></Share>
-    <Upload v-if="showPopups.uploadFile" :file="uploadingFile"></Upload>
   </el-container>
 </template>
 
@@ -119,11 +119,10 @@ export default {
   },
   mounted() {
     this.f_initEventBus()
-    this.f_initUserData()
   },
   methods: {
     f_initUserData() {
-      this.$store.dispatch(ACT_GET_USER_DATA)
+      return this.$store.dispatch(ACT_GET_USER_DATA)
     },
     f_goBilling() {
       this.showProfile = false
@@ -150,10 +149,30 @@ export default {
         this.showPopups.getFile = false
       })
 
+      // upload file
+      // open upload file
+      this.$vueBus.$on(this.$events.OPEN_UPLOAD_FILE, file => {
+        console.log('open upload file')
+        this.uploadingFile = file
+        this.showPopups.uploadFile = true
+      })
+      // close upload file
+      this.$vueBus.$on(this.$events.CLOSE_UPLOAD_FILE, () => {
+        console.log('close upload file')
+        this.showPopups.uploadFile = false
+        this.uploadingFile = null
+      })
+      // upload file
+      this.$vueBus.$on(this.$events.UPLOAD_FILE_DONE, () => {
+        console.log('upload file done')
+        this.showPopups.uploadFile = false
+        this.uploadingFile = null
+        this.$router.push({ name: 'upload-list' })
+      })
+
       // download file
       // open download file
       this.$vueBus.$on(this.$events.OPEN_DOWNLOAD_FILE, file => {
-        this.$store.dispatch(DL_TASK.ACT_CREATE_TASK, file)
         console.log('open download file ', file)
         this.showPopups.downloadFile = true
         this.downloadingFile = file
@@ -237,27 +256,6 @@ export default {
         console.log('rename file done')
         this.showPopups.renameFile = false
         this.renamingFile = null
-      })
-
-      // upload file
-      // open upload file
-      this.$vueBus.$on(this.$events.OPEN_UPLOAD_FILE, file => {
-        console.log('open upload file')
-        this.uploadingFile = file
-        this.showPopups.uploadFile = true
-      })
-      // close download file
-      this.$vueBus.$on(this.$events.CLOSE_UPLOAD_FILE, () => {
-        console.log('close upload file')
-        this.showPopups.uploadFile = false
-        this.uploadingFile = null
-      })
-      // upload file
-      this.$vueBus.$on(this.$events.UPLOAD_FILE_DONE, () => {
-        console.log('upload file done')
-        this.showPopups.uploadFile = false
-        this.uploadingFile = null
-        this.$router.push({ name: 'upload-list' })
       })
 
       // open billing records

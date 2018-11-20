@@ -10,26 +10,17 @@
         </div>
         <div class="step-popup-stepper">
           <el-steps :active="curStep" class="popup-steps" simple>
-            <el-step v-for="(item,index) in steps" v-bind:key="index" :title="item"></el-step>
+            <el-step v-for="(stepTitle, index) in steps" v-bind:key="index" :title="stepTitle"></el-step>
           </el-steps>
         </div>
         <div class="step-popup-content">
-          <div v-if="curStep == 0" class="step-slot-wrap">
-            <slot name="step-0"></slot>
-          </div>
-          <div v-if="curStep == 1" class="step-slot-wrap">
-            <slot name="step-1"></slot>
-          </div>
-          <div v-if="curStep == 2" class="step-slot-wrap">
-            <slot name="step-2"></slot>
-          </div>
-          <div v-if="curStep == 3" class="step-slot-wrap">
-            <slot name="step-3"></slot>
+          <div v-for="(stepTitle, index) in steps" v-if="curStep === index" :key="index" class="step-slot-wrap">
+            <slot :name="`step-${index}`"></slot>
           </div>
         </div>
         <div class="step-popup-footer">
-          <slot class="footer"></slot>
-          <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini">Prev</el-button>
+          <slot name="footer"></slot>
+          <el-button class="button" v-if="curStep > 0" v-on:click="f_emitPrev" size="mini">Prev</el-button>
           <el-button class="button" v-if="curStep < steps.length - 1" v-on:click="f_emitNext" size="mini" type="primary">Next</el-button>
           <el-button class="button" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">{{ButtonTitle ? ButtonTitle : 'Confirm'}}</el-button>
         </div>
@@ -40,10 +31,7 @@
 <script>
 export default {
   name: 'step-popup',
-  data: () => ({
-    curStep: 0,
-  }),
-  props: ['steps', 'ButtonTitle'],
+  props: ['steps', 'curStep', 'ButtonTitle'],
   methods: {
     f_close() {
       this.$emit('close')
@@ -51,14 +39,11 @@ export default {
     f_confirm() {
       this.$emit('confirm')
     },
-    f_prev() {
-      this.curStep--
-    },
     f_emitNext() {
-      this.$emit('next', this.curStep)
+      this.$emit('next')
     },
-    f_next() {
-      this.curStep++
+    f_emitPrev() {
+      this.$emit('prev')
     },
   },
 }

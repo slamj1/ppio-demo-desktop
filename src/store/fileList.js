@@ -7,6 +7,7 @@ import {
   MUT_SHARE_FILE,
   MUT_GET_FILE,
   ACT_GET_FILE_LIST,
+  ACT_REFRESH_FILE_LIST,
   ACT_REMOVE_FILE,
   ACT_RENAME_FILE,
   // ACT_SECURE_FILE,
@@ -36,9 +37,9 @@ const store = {
     [USAGE_STORAGE_GETTER]: state => filesize(state.usedStorage),
   },
   mutations: {
-    [MUT_SET_FILE_LIST](state, list) {
-      state.fileList = list.map(item => new File(item))
-      const usage = list.reduce((acc, cur) => acc + cur.size, 0)
+    [MUT_SET_FILE_LIST](state, fileList) {
+      state.fileList = fileList
+      const usage = fileList.reduce((acc, cur) => acc + cur.size, 0)
       console.log(usage)
       state.usedStorage = usage
     },
@@ -61,12 +62,55 @@ const store = {
   actions: {
     [ACT_GET_FILE_LIST](context) {
       return getFileList().then(
-        res => context.commit(MUT_SET_FILE_LIST, res),
+        res => {
+          const fileList = res.map(item => {
+            let metadataFile, filename, isSecure
+            // TODO: Unstable. Sometimes cannot get filename
+            if ((metadataFile = context.rootState.user.metadata.fileList[item.id])) {
+              filename = metadataFile.filename
+              isSecure = metadataFile.isSecure
+            } else {
+              filename = item.id
+              isSecure = item.isSecure // false
+            }
+            const fileInfo = {
+              id: item.id,
+              filename,
+              size: item.size,
+              type: item.type || 'file',
+              isSecure,
+              isPublic: item.isPublic,
+            }
+            return new File(fileInfo)
+          })
+          console.log(fileList)
+          return context.commit(MUT_SET_FILE_LIST, fileList)
+        },
         err => {
           console.log('set file list error')
           console.log(err)
         },
       )
+    },
+    /**
+     * refresh file list when metadata changes
+     * @param context
+     */
+    [ACT_REFRESH_FILE_LIST](context) {
+      console.log('refreshing file list')
+      const metaData = context.rootState.user.metadata
+      const newList = context.state.fileList.map(file => {
+        const newFileInfo = metaData.fileList[file.id]
+        console.log(newFileInfo)
+        if (newFileInfo) {
+          return Object.assign({}, file, {
+            filename: newFileInfo.filename,
+            isSecure: newFileInfo.isSecure,
+          })
+        }
+        return file
+      })
+      return context.commit(MUT_SET_FILE_LIST, newList)
     },
     [ACT_GET_FILE](context, fileInfo) {
       console.log('get file', fileInfo)

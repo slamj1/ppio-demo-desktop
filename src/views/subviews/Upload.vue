@@ -1,8 +1,16 @@
 <template>
   <div class="upload-page">
-    <step-popup ref="step" :steps="steps" :button-title="'Pay'" @close="f_close" @confirm="f_confirm" @next="f_next" class="popup-wrap">
+    <step-popup
+        ref="step"
+        :steps="steps"
+        :cur-step="curStep"
+        :button-title="'Pay'"
+        @close="f_close"
+        @confirm="f_confirm"
+        @next="f_next"
+        @prev="f_prev"
+        class="popup-wrap">
       <span slot="header">Upload File</span>
-
       <div class="step-content step-0" slot="step-0">
         <img src="@/assets/img/file.png" class="file-icon" :alt="filename">
         <el-input v-model="filename" class="file-name-input"></el-input>
@@ -46,24 +54,21 @@
 
       <div class="step-content step-2" slot="step-2">
         <div class="inner-wrap">
-          <div class="line-wrap">
-            <label class="line-label">Product:</label>
-            <span class="text-1">Free</span>
-          </div>
-          <div class="line-wrap">
-            <label class="line-label">Upload:</label>
-            <span class="text-1">{{fileSizeStr}}</span>
-            <span class="text-2">{{estimatedCost}} PPCoin</span>
-          </div>
-          <div class="line-wrap">
-            <label class="line-label">Storage:</label>
-            <span class="text-1">{{fileSizeStr}}/{{storageTimeStr}}</span>
-            <span class="text-2">234.122 PPCoin(Fund)</span>
-          </div>
-          <div class="line"></div>
-          <div class="line-wrap">
-            <label class="line-label">Gas Limit:</label>
-            <span class="text-2">268.122 PPCoin(Fund)</span>
+          <el-table class="ppio-plain-table payment-table" :data="paymentData" :fit="true">
+            <el-table-column
+                class-name="table-column-product"
+                prop="product"
+                label="Product"
+                min-width="240">
+            </el-table-column>
+            <el-table-column
+                prop="fee"
+                label="Fee"
+                min-width="150">
+            </el-table-column>
+          </el-table>
+          <div class="total-cost">
+            <p><b>Total:</b> {{totalCost}} PPCoin</p>
           </div>
         </div>
       </div>
@@ -83,15 +88,33 @@ export default {
     filename: 'PPIO upload filename',
     customStorageDays: '1',
     chiPrice: 100,
-    steps: ['Choose Type', 'Storage Setting', 'Payment'],
+    steps: ['Choose Type', 'Storage Settings', 'Payment'],
+    curStep: 0,
     options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
     radio: 1,
     copyCount: 1,
+    estimatedCost: 123,
     chiLimit: 12332,
-    estimatedCost: 12,
+    storageCost: 123,
+    uploadCost: 12,
   }),
   props: ['file'],
+  components: {
+    StepPopup,
+  },
   computed: {
+    paymentData: function() {
+      return [
+        {
+          product: `Upload: ${this.fileSizeStr}`,
+          fee: `${this.uploadCost} PPCoin`,
+        },
+        {
+          product: `Storage: ${this.fileSizeStr}/${this.storageTimeStr}`,
+          fee: `${this.storageCost} PPCoin(Fund)`,
+        },
+      ]
+    },
     fileSizeStr() {
       return filesize(this.file.size)
     },
@@ -129,25 +152,29 @@ export default {
         chiPrice: parseInt(this.chiPrice),
       }
     },
-  },
-  components: {
-    StepPopup,
+    totalCost() {
+      return this.storageCost + this.uploadCost
+    },
   },
   mounted() {
     if (this.file) {
       this.filename = this.file.name
     }
+    // TODO: get ongoing contract from sdk, concat with persisted task queue
   },
   methods: {
-    async f_next(step) {
-      if (step === 0) {
+    f_prev() {
+      this.curStep -= 1
+    },
+    async f_next() {
+      if (this.curStep === 0) {
         if (this.filename.length > 0) {
-          this.$refs.step.f_next()
+          this.curStep += 1
         }
-      } else if (step === 1) {
+      } else if (this.curStep === 1) {
         const options = this.taskOptions
         if (options.storageTime > 0 && options.chiPrice > 0 && options.copyCount > 0) {
-          this.$refs.step.f_next()
+          this.curStep += 1
         }
       }
     },
@@ -223,8 +250,8 @@ export default {
   }
   &.step-1 {
     .line-wrap {
-      padding: 6px 0 6px 130px;
       position: relative;
+      padding: 6px 0 6px 130px;
       .line-label {
         position: absolute;
         top: 6px;
@@ -244,25 +271,20 @@ export default {
     }
   }
   &.step-2 {
-    .line-wrap {
-      padding: 6px 0 6px 90px;
+    .payment-table {
+      color: inherit;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .total-cost {
       position: relative;
+      padding-left: 10px;
     }
     .line-label {
       position: absolute;
       top: 6px;
       left: 0;
       font-weight: bold;
-    }
-    .text-1 {
-      display: inline-block;
-      width: 120px;
-    }
-    .line {
-      height: 1px;
-      background-color: #eee;
-      margin-top: 6px;
-      margin-bottom: 6px;
     }
   }
 }

@@ -8,28 +8,34 @@ global.shareObject = {
 
 global.ppioUser = require('./ppiosdk')
 
-global.daemonStarted = false
-global.ppioUser
-  .daemonStart()
-  .then(res => {
-    console.log('daemon started ')
-    console.log(res)
-    global.daemonStarted = true
-    return true
-  })
-  .catch(err => {
-    global.daemonStarted = false
-    console.error(err)
-  })
-
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win
+let splashWin, win
 
 // Standard scheme must be registered before the app is ready
 protocol.registerStandardSchemes(['app'], { secure: true })
+protocol.registerStandardSchemes(['splash'], { secure: true })
+
+function createSplash() {
+  splashWin = new BrowserWindow({
+    width: 300,
+    height: 400,
+    titleBarStyle: 'hidden',
+  })
+  if (isDevelopment) {
+    splashWin.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}/splash.html`)
+    if (!process.env.IS_TEST) splashWin.webContents.openDevTools()
+  } else {
+    createProtocol('splash')
+    splashWin.loadFile('splash.html')
+  }
+
+  splashWin.on('closed', () => {
+    splashWin = null
+  })
+}
 
 function createWindow() {
   win = new BrowserWindow({
@@ -41,7 +47,7 @@ function createWindow() {
   })
 
   if (isDevelopment) {
-    win.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}#/home`)
+    win.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}#/`)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
@@ -53,6 +59,21 @@ function createWindow() {
   })
 }
 
+function startPpioDaemon() {
+  const timer = new Promise(resolve => {
+    setTimeout(() => {
+      resolve()
+    }, 1000)
+  })
+
+  const startDaemon = global.ppioUser.daemonStart().then(res => {
+    console.log('daemon started ')
+    console.log(res)
+    return true
+  })
+  return Promise.all([timer, startDaemon])
+}
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
@@ -61,7 +82,16 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   if (win === null) {
-    createWindow()
+    createSplash()
+    startPpioDaemon()
+      .then(() => {
+        console.log('daemon started')
+        splashWin.close()
+        return createWindow()
+      })
+      .catch(err => {
+        console.error(err)
+      })
   }
 })
 
@@ -73,7 +103,16 @@ app.on('ready', async () => {
     // Install Vue Devtools
     // await installVueDevtools()
   }
-  createWindow()
+  createSplash()
+  startPpioDaemon()
+    .then(() => {
+      console.log('daemon started')
+      splashWin.close()
+      return createWindow()
+    })
+    .catch(err => {
+      console.error(err)
+    })
 })
 
 // Exit cleanly on request from parent process in development mode.

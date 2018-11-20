@@ -5,7 +5,7 @@ const user = require('ppio_sdk_npm')
 console.log('ppio sdk start')
 
 console.log(user.ppioExe)
-user.setRpcPort(18067)
+user.setRpcPort(18066)
 if (process.env.NODE_ENV === 'production') {
   user.ppioExe = user.ppioExe.replace(
     'app.asar',
@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === 'production') {
 console.log(user.ppioExe)
 
 const baseParams = {
-  datadir: '/Users/cmm/Desktop/ppio_cmd/user_cmm',
+  datadir: '/Volumes/ExtCard/user6',
   bindip: '0.0.0.0',
   gatewayrpchost: '192.168.50.220',
 }

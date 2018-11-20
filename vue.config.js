@@ -1,4 +1,8 @@
 module.exports = {
+  pages: {
+    index: 'src/index/main.js',
+    splash: 'src/splash/main.js',
+  },
   pluginOptions: {
     electronBuilder: {
       builderOptions: {

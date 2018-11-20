@@ -29,6 +29,7 @@ export const MUT_RENAME_FILE = 'mutation_renameFile'
 export const ACT_RENAME_FILE = 'action_renameFile'
 export const MUT_GET_FILE = 'mutation_getFile'
 export const ACT_GET_FILE = 'action_getFile'
+export const ACT_REFRESH_FILE_LIST = 'action_refreshFileList' // fired by mutations of metadata
 
 export const MUT_SECURE_FILE = 'mutation_secureFile'
 export const ACT_SECURE_FILE = 'action_secureFile'

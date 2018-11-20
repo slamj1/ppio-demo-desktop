@@ -42,12 +42,7 @@
 import { mapState, mapActions } from 'vuex'
 import { remote } from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
-import {
-  ACT_GET_FILE_LIST,
-  UL_TASK,
-  ACT_GET_FILE,
-  ACT_REMOVE_FILE,
-} from '../constants/store'
+import { ACT_GET_FILE_LIST, ACT_GET_FILE, ACT_REMOVE_FILE } from '../constants/store'
 import FileItem from '@/components/FileItem'
 
 const { Menu, MenuItem, dialog } = remote
@@ -94,7 +89,6 @@ export default {
     ...mapActions({
       getFileList: ACT_GET_FILE_LIST,
       getFile: ACT_GET_FILE,
-      createUpload: UL_TASK.ACT_CREATE_TASK,
     }),
     f_getFileList() {
       if (this.fetchingData) {
@@ -193,12 +187,6 @@ export default {
       this.f_selectFile(idx)
       this.contextMenu.popup({ window: remote.getCurrentWindow() })
     },
-    f_download() {
-      if (!this.operatingFile) {
-        return
-      }
-      this.$vueBus.$emit(this.$events.OPEN_DOWNLOAD_FILE, this.operatingFile)
-    },
     f_share() {
       if (!this.operatingFile) {
         return
@@ -274,6 +262,12 @@ export default {
       if (file) {
         this.$vueBus.$emit(this.$events.OPEN_UPLOAD_FILE, file)
       }
+    },
+    f_download() {
+      if (!this.operatingFile) {
+        return
+      }
+      this.$vueBus.$emit(this.$events.OPEN_DOWNLOAD_FILE, this.operatingFile)
     },
     f_get() {
       this.$vueBus.$emit(this.$events.OPEN_GET_FILE)

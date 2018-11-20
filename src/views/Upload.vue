@@ -6,7 +6,6 @@
   ></TransferTable>
 </template>
 <script>
-import { mapState } from 'vuex'
 import { UL_TASK } from '../constants/store'
 import TransferTable from '@/components/TransferTable'
 
@@ -16,12 +15,12 @@ export default {
     getStatusTimer: null,
   }),
   computed: {
-    ...mapState({
-      taskList: state => {
-        console.log(state.file)
-        return state.uploadTask.taskQueue
-      },
-    }),
+    taskList() {
+      // concat uploading queue and finished queue
+      return this.$store.state.uploadTask.taskQueue.concat(
+        this.$store.state.uploadTask.finishedQueue,
+      )
+    },
   },
   components: {
     TransferTable,
@@ -44,7 +43,6 @@ export default {
       }
     },
     f_updateStatus() {
-      console.log('update ul status')
       this.$store.dispatch(UL_TASK.ACT_GET_STATUS).catch(err => {
         console.error(err)
       })

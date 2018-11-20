@@ -1,25 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home'
-import Files from './views/Files'
-import DownloadList from './views/Download'
-import UploadList from './views/Upload'
-import Start from './views/account/Start'
-import ImportAccount from './views/account/Import'
-import CreateAccount from './views/account/Create'
+import Home from '../views/Home'
+import Files from '../views/Files'
+import DownloadList from '../views/Download'
+import UploadList from '../views/Upload'
+import Start from '../views/account/Start'
+import ImportAccount from '../views/account/Import'
+import CreateAccount from '../views/account/Create'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
-    {
-      path: '/',
-      redirect: '/home/files',
-    },
-    {
-      path: '/home',
-      redirect: '/home/files',
-    },
     {
       path: '/home',
       name: 'home',

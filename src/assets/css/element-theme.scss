@@ -84,6 +84,42 @@ $stripe-color: #f5f7fa;
   }
 }
 
+.ppio-plain-table {
+  color: inherit;
+
+  .el-table__header-wrapper .el-table__header {
+    th {
+      color: #333;
+      background-color: #fff;
+      font-weight: bold;
+      border: none;
+      //text-align: center;
+      white-space: nowrap;
+      padding: 5px 0;
+    }
+  }
+
+  .el-table__body {
+    padding-bottom: 5px;
+
+    thead td {
+      background-color: #fff;
+      border: none;
+    }
+    td {
+      padding: 5px 0;
+      border: none;
+      //text-align: center;
+      .cell {
+        white-space: nowrap;
+      }
+    }
+    .el-table__row:hover > td {
+      background-color: #fff;
+    }
+  }
+}
+
 /* badge style */
 .el-badge {
   sup {

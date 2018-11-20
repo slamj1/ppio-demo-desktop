@@ -86,6 +86,10 @@ export default class TaskStore {
         if (status && state.taskQueue[idx]) {
           const task = state.taskQueue[idx]
           setTaskStatus(task, status)
+          if (status.finished) {
+            state.finishedQueue.unshift(task)
+            state.taskQueue.splice(idx, 1)
+          }
         }
       })
     }
@@ -114,6 +118,8 @@ export default class TaskStore {
       })
 
     const a_getTaskStatus = context => {
+      // const unfinishedTasks = context.state.taskQueue.filter(task => !task.finished)
+      // TODO: divide task queue into two parts by finish status
       const statusGetters = context.state.taskQueue.map(async task => {
         // if finished, resolve empty
         if (task.finished) {
@@ -139,7 +145,7 @@ export default class TaskStore {
             progress: 0,
           }
           // TODO: transferEnded?
-          if (res[0].ContractStatus === 'US_DEAL') {
+          if (res && res[0].ContractStatus === 'US_DEAL') {
             console.log(`task ${index} finished !`)
             status.finished = true
             // mutate meta data
@@ -149,7 +155,10 @@ export default class TaskStore {
           }
           return status
         })
-        return context.commit(STORE_KEYS.MUT_SET_STATUS, statusArr)
+        if (statusArr.length > 0) {
+          return context.commit(STORE_KEYS.MUT_SET_STATUS, statusArr)
+        }
+        return false
       })
     }
     // define store data
@@ -169,6 +178,7 @@ export default class TaskStore {
 
     this.state = {
       taskQueue: [], // maintains the task queue
+      finishedQueue: [], // maintains finished task queue
     }
     this.getters = getters
     this.mutations = mutations

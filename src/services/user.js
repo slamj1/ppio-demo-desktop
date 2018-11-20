@@ -44,15 +44,27 @@ export const getMetadata = () =>
     console.log('metadata got')
     console.log(res)
     if (res.length > 0) {
-      return JSON.parse(res)
+      let metadata
+      try {
+        metadata = JSON.parse(res)
+        // metadata must be an object
+        if (typeof metadata !== 'object') {
+          return null
+        }
+        return metadata
+      } catch (err) {
+        console.log(err)
+        return null
+      }
     }
-    return {}
+    return null
   })
 
 export const setMetadata = data => {
   console.log('setting metadata')
   console.log(data)
-  return ppioUser.metadataPut(JSON.stringify(data)).then(res => {
+  console.log(JSON.stringify(data))
+  return ppioUser.metadataPut({ metadata: JSON.stringify(data) }).then(res => {
     console.log('metadata set')
     console.log(res)
     return res

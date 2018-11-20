@@ -17,10 +17,15 @@
         prop="progress"
         label="Progress">
       <template slot-scope="scope">
-        <el-progress class="transmit-progress" :stroke-width="4" :percentage="scope.row.transferProgress" :show-text="false"></el-progress>
-        <span v-if="scope.row.finished">finished</span>
-        <span v-else-if="scope.row.transferringData">{{scope.row.transferSpeed}}</span>
-        <span v-else>generating copies...</span>
+        <el-progress
+            class="transmit-progress"
+            :stroke-width="4"
+            :percentage="scope.row.transferProgress"
+            :show-text="scope.row.transferringData"
+            :color="getProgressStatus(scope.row)"></el-progress>
+        <span class="transfer-progress-text" v-if="scope.row.finished">finished</span>
+        <span class="transfer-progress-text" v-else-if="scope.row.transferringData">{{scope.row.transferSpeed}}</span>
+        <span class="transfer-progress-text" v-else>generating copies...</span>
       </template>
     </el-table-column>
     <el-table-column
@@ -39,6 +44,13 @@ export default {
   methods: {
     f_cancel(taskIndex) {
       this.$emit('cancel', taskIndex)
+    },
+    getProgressStatus(rowData) {
+      if (rowData.finished) {
+        return 'success'
+      }
+
+      return 'text'
     },
   },
 }
@@ -76,7 +88,13 @@ export default {
     @include general-bg;
   }
   .transmit-progress {
+    display: inline-block;
     width: 200px;
+    margin-right: 20px;
+    vertical-align: middle;
+  }
+  .transfer-progress-text {
+    display: inline-block;
   }
   .cancel-btn {
     cursor: pointer;

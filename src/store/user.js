@@ -29,6 +29,7 @@ import {
   ACT_REFRESH_USER,
   MUT_SET_BILLING_RECORDS,
   ACT_GET_BILLING_RECORDS,
+  ACT_REFRESH_FILE_LIST,
 } from '../constants/store'
 
 const store = {
@@ -42,7 +43,7 @@ const store = {
     avatar: require('@/assets/img/avatar.png'),
     address: '',
     dataDir: '/Volumes/ExtCard/user6',
-    metadata: {},
+    metadata: { fileList: {} },
   },
 
   mutations: {
@@ -56,9 +57,13 @@ const store = {
     [MUT_SET_USER_META_DATA](state, data) {
       console.log('set meta data', data)
       console.log(state)
+      if (data === null) {
+        return
+      }
       if (!data.fileList) {
         data.fileList = {}
       }
+      console.log(data)
       state.metadata = data
     },
     [MUT_METADATA_ADD_FILE](state, file) {
@@ -126,6 +131,7 @@ const store = {
       return Promise.all(dataGetters)
         .then(values => {
           console.log(values)
+          // TODO: handle unlogin case
           return context.commit(MUT_SET_USER_DATA, {
             uid: values[0],
             balance: values[1],
@@ -135,14 +141,21 @@ const store = {
         .then(() => context.dispatch(ACT_GET_USER_META_DATA))
         .catch(err => {
           console.error(err)
+          return Promise.reject(err)
         })
     },
     [ACT_GET_USER_META_DATA](context) {
       return getMetadata()
-        .then(res => context.commit(MUT_SET_USER_META_DATA, res))
+        .then(res => {
+          context.commit(MUT_SET_USER_META_DATA, res)
+          // refresh file list
+          return context.dispatch(ACT_REFRESH_FILE_LIST)
+        })
         .catch(err => {
           console.log('get metadata failed')
           console.error(err)
+          context.commit(MUT_SET_USER_META_DATA, null)
+          return Promise.resolve()
         })
     },
     [ACT_SET_USER_META_DATA](context) {
