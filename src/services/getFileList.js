@@ -13,7 +13,7 @@ export default () =>
           const fileInfo = file.ObjectBasicInfo
           return {
             id: fileInfo.ObjectHash,
-            filename: '111',
+            filename: fileInfo.ObjectHash,
             size: fileInfo.ObjectLength,
             type: 'file',
             isSecure: false,

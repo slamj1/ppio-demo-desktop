@@ -10,26 +10,14 @@
       </div>
 
       <div class="step-content step-1" slot="step-1">
-        <img src="@/assets/img/file.png" class="file-icon" :alt="file && file.filename">
-        <p class="file-name">{{file && file.filename}}</p>
-        <el-select v-model="type" class="select"  placeholder="Plaese Choose">
-         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-         </el-option>
-       </el-select>
-       <el-alert title="You can not share secured file." show-icon class="alert-msg" type="warning" :closable="false"> </el-alert>
-      </div>
-
-      <div class="step-content step-2" slot="step-2">
         <div class="inner-wrap">
+          <div class="fileinfo-wrap">
+            <img src="@/assets/img/file.png" class="file-icon" :alt="fileInfo && fileInfo.filename">
+            <p class="file-name">{{fileInfo && fileInfo.filename}}</p>
+          </div>
           <div class="line-wrap">
             <label class="line-label">Storage Time:</label>
-            <el-radio-group class="radio-group" v-model="radio">
-              <el-radio :label="1">1 Year(365 days)</el-radio> <br>
-              <el-radio :label="2">1 Month(30 days)</el-radio> <br>
-              <el-radio :label="3">
-                <el-input class="storage-day-input" size="mini"></el-input>  <span>Days</span>
-              </el-radio>
-            </el-radio-group>
+            <el-input class="storage-day-input" v-model="day" size="mini"></el-input><span>days</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Number of copies:</label>
@@ -37,40 +25,40 @@
           </div>
           <div class="line-wrap">
             <label class="line-label">Gas Price:</label>
-            <el-input class="price-input" size="mini"></el-input>
+            <el-input class="price-input" v-model="gasPrice" size="mini"></el-input>
             <span>chi</span>
           </div>
           <div class="line-wrap">
-            <label class="line-label">Gas Limit:</label>
-            <span>34543543</span>
+            <label class="line-label">Gas Total:</label>
+            <span>gasTotal</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Expected Cost:</label>
-            <span>34543543 PPCOIN</span>
+            <span>{{gasPrice}} * {{gasTotal}} = {{gasTotal*gasPrice}} ppcoin</span>
           </div>
         </div>
       </div>
 
-      <div class="step-content step-3" slot="step-3">
+      <div class="step-content step-2" slot="step-2">
         <div class="inner-wrap">
           <div class="line-wrap">
-            <label class="line-label">Product:</label>
-            <span class="text-1">Free</span>
+            <label class="line-label">Service:</label>
+            <span class="text-1">Fee</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Upload:</label>
-            <span class="text-1">3.1G</span>
-            <span class="text-2">34.12 PPCoin</span>
+            <span class="text-1">{{ (fileInfo && fileInfo.size) | convertFileSize }}</span>
+            <span class="text-2">{{ gasTotal*gasPrice }} ppcoin</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Storage:</label>
-            <span class="text-1">3.1G/12Days</span>
-            <span class="text-2">234.122 PPCoin(Fund)</span>
+            <span class="text-1">{{ (fileInfo && fileInfo.size) | convertFileSize }} / {{ day }} days</span>
+            <span class="text-2">{{ gasTotal*gasPrice }}  ppcoin</span>
           </div>
           <div class="line"></div>
           <div class="line-wrap">
-            <label class="line-label">Gas Limit:</label>
-            <span class="text-2">268.122 PPCoin(Fund)</span>
+            <label class="line-label">Expected Cost:</label>
+            <span class="text-2">{{ gasTotal*gasPrice }} ppcoin</span>
           </div>
         </div>
       </div>
@@ -88,11 +76,12 @@ export default {
     type: '1',
     shareCode: '',
     errorMsg: '',
-    file: null,
-    steps: ['Input Code', 'Choose Type', 'Storage Setting', 'Payment'],
-    options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
-    radio: 1,
-    copyNumber: 5,
+    fileInfo: null,
+    steps: ['Share Code', 'Storage Setting', 'Payment'],
+    day: 30,
+    gasPrice: '100',
+    gasTotal: 343,
+    copyNumber: 1,
   }),
   components: {
     StepPopup,
@@ -111,7 +100,7 @@ export default {
             .then(
               res => {
                 console.log('get fileinfo by share code', res.result)
-                this.file = res.result
+                this.fileInfo = res.result
                 return this.$refs.step.f_next()
               },
               err => {
@@ -120,7 +109,7 @@ export default {
               },
             )
             .catch(err => {
-              console.log(err.toString())
+              console.log(err)
             })
         }
         return
@@ -129,11 +118,23 @@ export default {
     },
     f_confirm() {
       this.$store
-        .dispatch(ACT_GET_FILE, this.file)
+        .dispatch(
+          ACT_GET_FILE,
+          Object.assign(
+            {},
+            {
+              copies: this.copyNumber,
+              duration: this.day,
+              gasprice: this.gasPrice,
+              acl: 'private',
+            },
+            this.fileInfo,
+          ),
+        )
         .then(
           () => {
             this.$notify.success({
-              title: `get the ${this.file.filename} success`,
+              title: `get the ${this.fileInfo.filename} success`,
               duration: 2000,
             })
             return this.$vueBus.$emit(this.$events.GET_FILE_DONE)
@@ -156,7 +157,6 @@ export default {
   padding-bottom: 20px;
   .inner-wrap {
     display: inline-block;
-    text-align: left;
   }
   .share-code-input {
     width: 360px;
@@ -164,7 +164,9 @@ export default {
   .error-msg {
     margin-top: 10px;
   }
-  &.step-1 {
+
+  .fileinfo-wrap {
+    text-align: center;
     .file-icon {
       width: 50px;
     }
@@ -172,52 +174,37 @@ export default {
       height: 40px;
       line-height: 40px;
     }
-    .select {
-      width: 120px;
-      margin-bottom: 10px;
-    }
-    .alert-msg {
-      width: 280px;
-      margin: auto;
-      text-align: center;
-    }
   }
-  &.step-2 {
-    .line-wrap {
-      padding: 6px 0 6px 130px;
-      position: relative;
-      .line-label {
-        position: absolute;
-        top: 6px;
-        left: 0;
-      }
-      .radio-group {
-        label {
-          margin-bottom: 10px;
-        }
-      }
-      .storage-day-input,
-      .price-input,
-      .copy-input {
-        width: 100px;
-        margin-right: 8px;
-      }
-    }
-  }
-  &.step-3 {
-    .line-wrap {
-      padding: 6px 0 6px 90px;
-      position: relative;
-    }
+  .line-wrap {
+    padding: 6px 0 6px 150px;
+    position: relative;
+    text-align: left;
     .line-label {
       position: absolute;
       top: 6px;
       left: 0;
       font-weight: bold;
     }
+    .radio-group {
+      label {
+        margin-bottom: 10px;
+      }
+    }
+    .storage-day-input,
+    .price-input,
+    .copy-input {
+      width: 100px;
+      margin-right: 8px;
+    }
+  }
+  &.step-2 {
+    .line-wrap {
+      padding: 6px 0 6px 120px;
+      position: relative;
+    }
     .text-1 {
       display: inline-block;
-      width: 120px;
+      width: 150px;
     }
     .line {
       height: 1px;

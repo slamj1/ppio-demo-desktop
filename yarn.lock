@@ -3453,9 +3453,16 @@ electron-updater@^3.1.6:
     semver "^5.6.0"
     source-map-support "^0.5.9"
 
+<<<<<<< Updated upstream
 electron@^3.0.6:
   version "3.0.8"
   resolved "http://registry.npm.taobao.org/electron/download/electron-3.0.8.tgz#7905806ebaead4c693531e11cda6568c32efa7bb"
+=======
+electron@^3.0.9:
+  version "3.0.9"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-3.0.9.tgz#79bd25dfd5496918a00d579e702fb83082f1a036"
+  integrity sha512-OoSoeUWo9PzbArgrwS1yTfTRSlpXmIgrFGWUuUZCjKAk4DGR70elHDNeRnnBJ9NTwXXZVifChcfx73Ah3GnlVQ==
+>>>>>>> Stashed changes
   dependencies:
     "@types/node" "^8.0.24"
     electron-download "^4.1.0"
@@ -3574,7 +3581,12 @@ es-to-primitive@^1.1.1:
 
 es6-promise@^4.0.3:
   version "4.2.5"
+<<<<<<< Updated upstream
   resolved "https://registry.npmjs.org/es6-promise/-/es6-promise-4.2.5.tgz#da6d0d5692efb461e082c14817fe2427d8f5d054"
+=======
+  resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.2.5.tgz#da6d0d5692efb461e082c14817fe2427d8f5d054"
+  integrity sha512-n6wvpdE43VFtJq+lUDYDBFUwV8TZbuGXLV4D6wKafg13ldznKsyEvatubnmUe31zcvelSzOHF+XbaT+Bl9ObDg==
+>>>>>>> Stashed changes
 
 es6-promise@~3.0.2:
   version "3.0.2"
@@ -3582,7 +3594,12 @@ es6-promise@~3.0.2:
 
 es6-promisify@^5.0.0:
   version "5.0.0"
+<<<<<<< Updated upstream
   resolved "http://registry.npmjs.org/es6-promisify/-/es6-promisify-5.0.0.tgz#5109d62f3e56ea967c4b63505aef08291c8a5203"
+=======
+  resolved "https://registry.yarnpkg.com/es6-promisify/-/es6-promisify-5.0.0.tgz#5109d62f3e56ea967c4b63505aef08291c8a5203"
+  integrity sha1-UQnWLz5W6pZ8S2NQWu8IKRyKUgM=
+>>>>>>> Stashed changes
   dependencies:
     es6-promise "^4.0.3"
 
@@ -4046,7 +4063,12 @@ extsprintf@^1.2.0:
 
 eyes@^0.1.8:
   version "0.1.8"
+<<<<<<< Updated upstream
   resolved "https://registry.npmjs.org/eyes/-/eyes-0.1.8.tgz#62cf120234c683785d902348a800ef3e0cc20bc0"
+=======
+  resolved "https://registry.yarnpkg.com/eyes/-/eyes-0.1.8.tgz#62cf120234c683785d902348a800ef3e0cc20bc0"
+  integrity sha1-Ys8SAjTGg3hdkCNIqADvPgzCC8A=
+>>>>>>> Stashed changes
 
 fast-deep-equal@^1.0.0:
   version "1.1.0"
@@ -5525,7 +5547,12 @@ javascript-stringify@^1.6.0:
 
 jayson@^2.1.0:
   version "2.1.0"
+<<<<<<< Updated upstream
   resolved "https://registry.npmjs.org/jayson/-/jayson-2.1.0.tgz#d1cd79bff3247666ecb61120edbb0c61f0e345b2"
+=======
+  resolved "https://registry.yarnpkg.com/jayson/-/jayson-2.1.0.tgz#d1cd79bff3247666ecb61120edbb0c61f0e345b2"
+  integrity sha512-WQhCph4BgSDbRUPdZYqGMojKMxjzPqCCKmWYMsRWX/Bvh1oP+Irs2upeEJy8flU3ZAZzm68TjuL1X8u9Rt4wWQ==
+>>>>>>> Stashed changes
   dependencies:
     "@types/node" "^10.3.5"
     JSONStream "^1.3.1"
@@ -5983,7 +6010,12 @@ jsonify@~0.0.0:
 
 jsonparse@^1.2.0:
   version "1.3.1"
+<<<<<<< Updated upstream
   resolved "https://registry.npmjs.org/jsonparse/-/jsonparse-1.3.1.tgz#3f4dae4a91fac315f71062f8521cc239f1366280"
+=======
+  resolved "https://registry.yarnpkg.com/jsonparse/-/jsonparse-1.3.1.tgz#3f4dae4a91fac315f71062f8521cc239f1366280"
+  integrity sha1-P02uSpH6wxX3EGL4UhzCOfE2YoA=
+>>>>>>> Stashed changes
 
 jsprim@^1.2.2:
   version "1.4.1"
@@ -6365,7 +6397,12 @@ lodash.without@~4.4.0:
 
 lodash@4.x, lodash@^4.0.0, lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.3.0, lodash@^4.8.0, lodash@~4.17.10:
   version "4.17.11"
+<<<<<<< Updated upstream
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
+=======
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
+  integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
+>>>>>>> Stashed changes
 
 log-symbols@^1.0.2:
   version "1.0.2"
@@ -8145,9 +8182,21 @@ postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.5:
     source-map "^0.6.1"
     supports-color "^5.5.0"
 
+<<<<<<< Updated upstream
 ppio_sdk_npm@^1.0.1-alpha.6:
+<<<<<<< Updated upstream
   version "1.0.1-alpha.10"
   resolved "https://registry.npmjs.org/ppio_sdk_npm/-/ppio_sdk_npm-1.0.1-alpha.10.tgz#195152695fe854376b3d3820aafce66d488ef32f"
+=======
+  version "1.0.1-alpha.8"
+  resolved "https://registry.npmjs.org/ppio_sdk_npm/-/ppio_sdk_npm-1.0.1-alpha.8.tgz#3d824a83e9ec37c538ec30fb82cf83406801c26b"
+=======
+ppio_sdk_npm@^1.0.1-alpha.9:
+  version "1.0.1-alpha.9"
+  resolved "https://registry.yarnpkg.com/ppio_sdk_npm/-/ppio_sdk_npm-1.0.1-alpha.9.tgz#4181f5ea619d3cf1b0329d37118296ec283b18dc"
+  integrity sha512-xg1bbC0AXFT+Sn4pCZW6JnjUrJP2XH9X6f5kzqYhJvt9J7W0012Y/Nbju/E5bHQTsoT2nW11pGqVzGCtyLlT0A==
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   dependencies:
     jayson "^2.1.0"
 

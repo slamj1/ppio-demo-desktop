@@ -68,15 +68,21 @@ const store = {
         },
       )
     },
-    [ACT_GET_FILE](context, file) {
-      return getFile(file.id).then(
-        () => {
-          context.commit(MUT_GET_FILE, file)
-          return true
+    [ACT_GET_FILE](context, fileInfo) {
+      console.log('get file', fileInfo)
+      return getFile(fileInfo).then(
+        data => {
+          console.log('commit', data)
+          // context.commit(MUT_GET_FILE, fileInfo)
+          return 1
         },
         err => {
           console.error(err)
-          return err
+          if (err.error.code === -1) {
+            return Promise.reject(err.error.message)
+          } else {
+            return Promise.reject(new Error('Unknown Error'))
+          }
         },
       )
     },
