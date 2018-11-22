@@ -1,6 +1,10 @@
 <template>
   <div class="renew-page">
-    <step-popup :steps="steps" :button-title="'Pay'" v-on:close="f_close" v-on:confirm="f_confirm" class="popup-wrap">
+    <step-popup
+        :cur-step="curStep"
+        :steps="steps"
+        @close="f_close"
+        class="popup-wrap">
       <span slot="header">Renew File</span>
 
       <div class="step-content step-0" slot="step-0">
@@ -68,6 +72,12 @@
           </div>
         </div>
       </div>
+
+      <template slot="footer">
+        <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini">Prev</el-button>
+        <el-button class="button" v-if="curStep < steps.length - 1" v-on:click="f_next" size="mini" type="primary">Next</el-button>
+        <el-button class="button" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">Pay</el-button>
+      </template>
     </step-popup>
   </div>
 </template>

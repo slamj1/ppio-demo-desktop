@@ -83,6 +83,11 @@ a {
   &.icon-nav-download {
     background-image: url('~@/assets/img/nav-download.png');
   }
+
+  &.icon-open {
+    background-image: url('~@/assets/img/icon-open.png');
+    background-size: auto 14px;
+  }
 }
 
 .el-menu-item.is-active {

@@ -1,14 +1,9 @@
 <template>
   <div class="upload-page">
     <step-popup
-        ref="step"
         :steps="steps"
         :cur-step="curStep"
-        :button-title="'Pay'"
         @close="f_close"
-        @confirm="f_confirm"
-        @next="f_next"
-        @prev="f_prev"
         class="popup-wrap">
       <span slot="header">Upload File</span>
       <div class="step-content step-0" slot="step-0">
@@ -54,30 +49,22 @@
 
       <div class="step-content step-2" slot="step-2">
         <div class="inner-wrap">
-          <el-table class="ppio-plain-table payment-table" :data="paymentData" :fit="true">
-            <el-table-column
-                class-name="table-column-product"
-                prop="product"
-                label="Product"
-                min-width="240">
-            </el-table-column>
-            <el-table-column
-                prop="fee"
-                label="Fee"
-                min-width="150">
-            </el-table-column>
-          </el-table>
-          <div class="total-cost">
-            <p><b>Total:</b> {{totalCost}} PPCoin</p>
-          </div>
+          <PaymentTable :payment-data="paymentData"></PaymentTable>
         </div>
       </div>
+
+      <template slot="footer">
+        <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini">Prev</el-button>
+        <el-button class="button" v-if="curStep < steps.length - 1" v-on:click="f_next" size="mini" type="primary">Next</el-button>
+        <el-button class="button" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">Pay</el-button>
+      </template>
     </step-popup>
   </div>
 </template>
 <script>
 import filesize from 'filesize'
 import StepPopup from '@/components/StepPopup'
+import PaymentTable from '@/components/PaymentTable'
 import { UL_TASK } from '../../constants/store'
 import { importObject } from '../../services/upload'
 
@@ -97,23 +84,28 @@ export default {
     chiLimit: 12332,
     storageCost: 123,
     uploadCost: 12,
+    preparingUpload: false,
   }),
-  props: ['file'],
+  props: ['file'], // file is a Web File object
   components: {
     StepPopup,
+    PaymentTable,
   },
   computed: {
     paymentData: function() {
-      return [
-        {
-          product: `Upload: ${this.fileSizeStr}`,
-          fee: `${this.uploadCost} PPCoin`,
-        },
-        {
-          product: `Storage: ${this.fileSizeStr}/${this.storageTimeStr}`,
-          fee: `${this.storageCost} PPCoin(Fund)`,
-        },
-      ]
+      return {
+        list: [
+          {
+            product: `Upload: ${this.fileSizeStr}`,
+            fee: `${this.uploadCost} PPCoin`,
+          },
+          {
+            product: `Storage: ${this.fileSizeStr}/${this.storageTimeStr}`,
+            fee: `${this.storageCost} PPCoin(Fund)`,
+          },
+        ],
+        totalCost: this.storageCost + this.uploadCost,
+      }
     },
     fileSizeStr() {
       return filesize(this.file.size)
@@ -152,11 +144,9 @@ export default {
         chiPrice: parseInt(this.chiPrice),
       }
     },
-    totalCost() {
-      return this.storageCost + this.uploadCost
-    },
   },
   mounted() {
+    this.preparingUpload = false
     if (this.file) {
       this.filename = this.file.name
     }
@@ -182,6 +172,10 @@ export default {
       this.$vueBus.$emit(this.$events.CLOSE_UPLOAD_FILE)
     },
     async f_confirm() {
+      if (this.preparingUpload) {
+        return
+      }
+      this.preparingUpload = true
       console.log('upload confirm')
       const options = this.taskOptions
       console.log(options)
@@ -199,9 +193,11 @@ export default {
           ...options,
         }
         await this.$store.dispatch(UL_TASK.ACT_CREATE_TASK, putParams)
+        this.preparingUpload = false
         this.$vueBus.$emit(this.$events.UPLOAD_FILE_DONE)
       } catch (err) {
         console.error(err)
+        this.preparingUpload = false
         if (parseInt(err.code) === 2017) {
           return this.$message.error('Object existed')
         }
@@ -268,23 +264,6 @@ export default {
         width: 100px;
         margin-right: 8px;
       }
-    }
-  }
-  &.step-2 {
-    .payment-table {
-      color: inherit;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .total-cost {
-      position: relative;
-      padding-left: 10px;
-    }
-    .line-label {
-      position: absolute;
-      top: 6px;
-      left: 0;
-      font-weight: bold;
     }
   }
 }

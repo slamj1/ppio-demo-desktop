@@ -147,6 +147,7 @@ export default {
       this.$vueBus.$on(this.$events.GET_FILE_DONE, () => {
         console.log('get file done')
         this.showPopups.getFile = false
+        // this.$router.push({ name: 'files' })
       })
 
       // upload file

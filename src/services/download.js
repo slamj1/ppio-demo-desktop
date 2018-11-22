@@ -1,47 +1,50 @@
-import sdk from './sdk'
-import { randomStr } from './utils'
-import {
-  GET_FILE_INFO,
-  CREATE_DOWNLOAD,
-  GET_DOWNLOAD_STATUS,
-  CANCEL_DOWNLOAD,
-} from '../constants/sdk-methods'
+import { remote } from 'electron'
+import { CANCEL_DOWNLOAD } from '../constants/sdk-methods'
+import { APP_SECURE_KEY } from '../constants/constants'
 
-export const startDownload = async fileHash => {
+const ppioUser = remote.getGlobal('ppioUser')
+
+export const startDownload = async params => {
   console.log('start download service')
-  let hash = randomStr()
+  console.log(params)
   try {
-    const fileRes = await sdk({
-      method: GET_FILE_INFO,
-      params: {
-        hash,
-      },
-    })
-    const dlRes = await sdk({
-      method: CREATE_DOWNLOAD,
-      params: {
-        fileHash: fileRes.result.id,
-      },
+    await ppioUser.objectGet({
+      objectHash: params.objectHash,
+      gasprice: params.chiPrice,
+      auth: params.auth,
+      owner: params.owner,
     })
 
-    console.log(fileRes)
-    console.log(dlRes)
     return {
-      taskId: dlRes.taskId,
-      file: fileRes.result,
+      taskId: params.objectHash,
     }
   } catch (err) {
+    console.error('get object error')
     console.error(err)
-    return {}
+    return err
   }
 }
 
-export const getProgress = taskId => ({
-  method: GET_DOWNLOAD_STATUS,
-  params: {
-    taskId,
-  },
-})
+export const exportObject = async params => {
+  console.log('exporting object')
+  console.log(params)
+  try {
+    const exportParams = {
+      objectHash: params.objectHash,
+      output: params.exportPath,
+    }
+    if (params.isSecure) {
+      exportParams.encrypt = 'AES'
+      exportParams.key = APP_SECURE_KEY
+    }
+    const exported = await ppioUser.objectExport(exportParams)
+    console.log(exported)
+    return exported
+  } catch (err) {
+    console.error(err)
+    return err
+  }
+}
 
 export const cancelDownload = taskId => ({
   method: CANCEL_DOWNLOAD,

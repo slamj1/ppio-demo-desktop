@@ -45,5 +45,6 @@ export default new Vuex.Store({
     file: fileListStore,
     uploadTask: new TaskStore('upload'),
     downloadTask: new TaskStore('download'),
+    getTask: new TaskStore('get'),
   },
 })

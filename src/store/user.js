@@ -125,7 +125,7 @@ const store = {
           .then(res => res)
           .catch(err => {
             console.error(err)
-            return Promise.resolve(err)
+            return Promise.resolve('')
           }),
       )
       return Promise.all(dataGetters)

@@ -1,12 +1,15 @@
 <template>
   <TransferTable
+      class="download-task-manager"
       tableName="download"
-      :tableData="taskList"
-      @cancel="f_cancel"
-  ></TransferTable>
+      :tableData="taskList">
+    <template slot="operations" slot-scope="operationProps">
+      <span class="open-btn" @click="f_open(operationProps.index)"><i class="app-icon icon-open"></i></span>
+    </template>
+  </TransferTable>
 </template>
 <script>
-import { mapState } from 'vuex'
+import { remote } from 'electron'
 import { DL_TASK } from '../constants/store'
 import TransferTable from '@/components/TransferTable'
 
@@ -16,18 +19,19 @@ export default {
     getStatusTimer: null,
   }),
   computed: {
-    ...mapState({
-      taskList: state => {
-        console.log(state.file)
-        return state.downloadTask.taskQueue
-      },
-    }),
+    taskList() {
+      // concat uploading queue and finished queue
+      return this.$store.state.downloadTask.taskQueue.concat(
+        this.$store.state.downloadTask.finishedQueue,
+      )
+    },
   },
   components: {
     TransferTable,
   },
   activated() {
     console.log('activated')
+    // TODO: start getting all task status on app start
     this.f_updateStatus()
   },
   deactivated() {
@@ -37,14 +41,12 @@ export default {
     }
   },
   methods: {
-    f_cancel(taskId) {
-      const toCancel = window.confirm('Are you sure to cancel the downloading?')
-      if (toCancel) {
-        this.$store.dispatch(DL_TASK.ACT_CANCEL_TASK, taskId)
-      }
+    f_open(index) {
+      console.log('opening file ', index)
+      console.log(this.taskList[index].exportPath)
+      remote.shell.showItemInFolder(this.taskList[index].exportPath)
     },
     f_updateStatus() {
-      console.log('update dl status')
       this.$store.dispatch(DL_TASK.ACT_GET_STATUS).catch(err => {
         console.error(err)
       })
@@ -57,3 +59,15 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+.download-task-manager {
+  .open-btn {
+    cursor: pointer;
+
+    .app-icon {
+      vertical-align: middle;
+    }
+  }
+}
+</style>

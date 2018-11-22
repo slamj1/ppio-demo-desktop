@@ -1,10 +1,14 @@
 <template>
-  <div class="upload-page">
-    <step-popup :steps="steps" ref="step" :button-title="'Pay'" @close="f_close" @next="f_step" @confirm="f_confirm" class="popup-wrap">
+  <div class="get-page">
+    <step-popup
+        :cur-step="curStep"
+        :steps="steps"
+        @close="f_close"
+        class="popup-wrap">
       <span slot="header">Get File</span>
       <div class="step-content step-0" slot="step-0">
         <div class="inner-wrap">
-          <el-input v-model="shareCode" class="share-code-input" placeholder="Enter the share code"></el-input>
+          <el-input type="textarea" resize="none" :rows="4" v-model="shareCode" class="share-code-input" placeholder="Enter the share code"></el-input>
           <el-alert v-show="errorMsg!=''" :title="errorMsg" show-icon class="error-msg" type="error" :closable="false"> </el-alert>
         </div>
       </div>
@@ -17,133 +21,193 @@
           </div>
           <div class="line-wrap">
             <label class="line-label">Storage Time:</label>
-            <el-input class="storage-day-input" v-model="day" size="mini"></el-input><span>days</span>
+            <el-radio-group class="radio-group" v-model="radio">
+              <el-radio :label="1">1 Year(365 days)</el-radio> <br>
+              <el-radio :label="2">1 Month(30 days)</el-radio> <br>
+              <el-radio :label="3" @change="$refs.customStorageDaysInput.focus()">
+                <el-input class="storage-day-input" ref="customStorageDaysInput" type="number" size="mini" v-model="customStorageDays" @focus="radio = 3"></el-input>  <span>Days</span>
+              </el-radio>
+            </el-radio-group>
           </div>
           <div class="line-wrap">
             <label class="line-label">Number of copies:</label>
-            <el-input class="copy-input" v-model="copyNumber" size="mini"></el-input>
+            <el-input class="copy-input" v-model="copyCount" size="mini"></el-input>
           </div>
           <div class="line-wrap">
-            <label class="line-label">Gas Price:</label>
-            <el-input class="price-input" v-model="gasPrice" size="mini"></el-input>
+            <label class="line-label">Chi Price:</label>
+            <el-input class="price-input" v-model="chiPrice" size="mini"></el-input>
             <span>chi</span>
           </div>
           <div class="line-wrap">
-            <label class="line-label">Gas Total:</label>
-            <span>gasTotal</span>
+            <label class="line-label">Chi Limit:</label>
+            <span>{{chiLimit}}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Expected Cost:</label>
-            <span>{{gasPrice}} * {{gasTotal}} = {{gasTotal*gasPrice}} ppcoin</span>
+            <span>{{chiPrice}} * {{totalChi}} = {{totalChi*chiPrice}} PPCoin</span>
           </div>
         </div>
       </div>
 
       <div class="step-content step-2" slot="step-2">
         <div class="inner-wrap">
-          <div class="line-wrap">
-            <label class="line-label">Service:</label>
-            <span class="text-1">Fee</span>
-          </div>
-          <div class="line-wrap">
-            <label class="line-label">Upload:</label>
-            <span class="text-1">{{ (fileInfo && fileInfo.size) | convertFileSize }}</span>
-            <span class="text-2">{{ gasTotal*gasPrice }} ppcoin</span>
-          </div>
-          <div class="line-wrap">
-            <label class="line-label">Storage:</label>
-            <span class="text-1">{{ (fileInfo && fileInfo.size) | convertFileSize }} / {{ day }} days</span>
-            <span class="text-2">{{ gasTotal*gasPrice }}  ppcoin</span>
-          </div>
-          <div class="line"></div>
-          <div class="line-wrap">
-            <label class="line-label">Expected Cost:</label>
-            <span class="text-2">{{ gasTotal*gasPrice }} ppcoin</span>
-          </div>
+          <PaymentTable :payment-data="paymentData"></PaymentTable>
         </div>
       </div>
+
+      <template slot="footer">
+        <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini">Prev</el-button>
+        <el-button class="button" v-if="curStep < steps.length - 1" v-on:click="f_next" size="mini" type="primary">Next</el-button>
+        <el-button class="button" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">Pay</el-button>
+      </template>
     </step-popup>
   </div>
 </template>
 <script>
+import filesize from 'filesize'
 import StepPopup from '@/components/StepPopup'
-import { getFileInfoByShareCode } from '@/services/file'
-import { ACT_GET_FILE } from '../../constants/store'
+import PaymentTable from '@/components/PaymentTable'
+import { getFileInfoByShareCode } from '../../services/getFile'
+import { GET_TASK } from '../../constants/store'
 
 export default {
-  name: 'upload',
+  name: 'get-file',
   data: () => ({
-    type: '1',
     shareCode: '',
     errorMsg: '',
     fileInfo: null,
+    curStep: 0,
     steps: ['Share Code', 'Storage Setting', 'Payment'],
-    day: 30,
-    gasPrice: '100',
-    gasTotal: 343,
-    copyNumber: 1,
+    radio: 1,
+    customStorageDays: 30,
+    chiPrice: 100,
+    chiLimit: 12332,
+    totalChi: 343,
+    getCost: 12,
+    storageCost: 123,
+    copyCount: 1,
+    gettingFile: false,
   }),
+  computed: {
+    paymentData: function() {
+      return {
+        list: [
+          {
+            product: `Create copy: ${this.fileSizeStr}`,
+            fee: `${this.getCost} PPCoin`,
+          },
+          {
+            product: `Storage: ${this.fileSizeStr}/${this.storageTimeStr}`,
+            fee: `${this.storageCost} PPCoin(Fund)`,
+          },
+        ],
+        totalCost: this.storageCost + this.getCost,
+      }
+    },
+    fileSizeStr() {
+      return this.fileInfo ? filesize(this.fileInfo.size) : ''
+    },
+    storageDays() {
+      let days = 0
+      switch (this.radio) {
+        case 1:
+          days = 365
+          break
+        case 2:
+          days = 30
+          break
+        case 3:
+          days = parseInt(this.customStorageDays)
+          break
+      }
+      return days
+    },
+    storageTimeStr() {
+      if (this.storageDays === 365) {
+        return '1 Year'
+      } else if (this.storageDays === 30) {
+        return '1 Month'
+      } else {
+        return `${this.storageDays} Days`
+      }
+    },
+    taskOptions() {
+      return {
+        isSecure: this.fileInfo.isSecure,
+        storageTime: this.storageDays * 24 * 3600,
+        copyCount: parseInt(this.copyCount),
+        chiPrice: parseInt(this.chiPrice),
+      }
+    },
+  },
   components: {
     StepPopup,
+    PaymentTable,
+  },
+  mounted() {
+    this.gettingFile = false
   },
   methods: {
-    f_close() {
-      this.$vueBus.$emit(this.$events.CLOSE_GET_FILE)
+    f_prev() {
+      this.curStep -= 1
     },
-    f_step(step) {
-      if (step === 0) {
+    async f_next() {
+      if (this.curStep === 0) {
         if (this.shareCode === '') {
-          this.errorMsg = 'share code can not be empty'
+          // TODO: validate sharecode
+          this.$message.error('share code can not be empty')
         } else {
           this.errorMsg = ''
           getFileInfoByShareCode(this.shareCode)
-            .then(
-              res => {
-                console.log('get fileinfo by share code', res.result)
-                this.fileInfo = res.result
-                return this.$refs.step.f_next()
-              },
-              err => {
-                this.errorMsg = err.toString()
-                console.log(err)
-              },
-            )
+            .then(res => {
+              console.log('got file info by share code', res.result)
+              this.fileInfo = {
+                id: res.result.hashCode,
+                filename: res.result.filename,
+                size: res.result.size,
+                type: res.result.fileType || 'file',
+                isSecure: res.result.isSecure,
+                isPublic: true,
+                ownerId: res.result.ownerId,
+              }
+              return this.curStep++
+            })
             .catch(err => {
-              console.log(err)
+              console.error(err)
+              this.$message.error('failed to get file')
             })
         }
-        return
+      } else if (this.curStep === 1) {
+        const options = this.taskOptions
+        if (options.storageTime > 0 && options.chiPrice > 0 && options.copyCount > 0) {
+          this.curStep += 1
+        }
       }
-      this.$refs.step.f_next()
+    },
+    f_close() {
+      this.$vueBus.$emit(this.$events.CLOSE_GET_FILE)
     },
     f_confirm() {
+      if (this.gettingFile) {
+        return
+      }
+      this.gettingFile = true
       this.$store
-        .dispatch(
-          ACT_GET_FILE,
-          Object.assign(
-            {},
-            {
-              copies: this.copyNumber,
-              duration: this.day,
-              gasprice: this.gasPrice,
-              acl: 'private',
-            },
-            this.fileInfo,
-          ),
-        )
-        .then(
-          () => {
-            this.$notify.success({
-              title: `get the ${this.fileInfo.filename} success`,
-              duration: 2000,
-            })
-            return this.$vueBus.$emit(this.$events.GET_FILE_DONE)
-          },
-          err => {
-            this.$notify.error({ title: err.toString(), duration: 2000 })
-          },
-        )
+        .dispatch(GET_TASK.ACT_CREATE_TASK, {
+          copies: this.taskOptions.copyCount,
+          duration: this.taskOptions.storageTime,
+          chiPrice: this.taskOptions.chiPrice,
+          acl: 'private',
+          objectHash: this.fileInfo.id,
+          ownerId: this.fileInfo.ownerId,
+          file: this.fileInfo,
+        })
+        .then(() => {
+          this.gettingFile = false
+          return this.$vueBus.$emit(this.$events.GET_FILE_DONE)
+        })
         .catch(err => {
+          this.$notify.error({ title: err.toString(), duration: 2000 })
           console.error(err.toString())
         })
     },
@@ -157,6 +221,7 @@ export default {
   padding-bottom: 20px;
   .inner-wrap {
     display: inline-block;
+    text-align: left;
   }
   .share-code-input {
     width: 360px;

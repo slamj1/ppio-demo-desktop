@@ -56,5 +56,16 @@ export const UL_TASK = {
   GET_TASK_COUNT: 'getter_uploadTaskCount',
 }
 
+export const GET_TASK = {
+  MUT_ADD_TASK: 'mutation_addGetTask',
+  ACT_CREATE_TASK: 'action_createGetTask',
+  MUT_REMOVE_TASK: 'mutation_removeGetTask',
+  ACT_CANCEL_TASK: 'action_cancelGetTask',
+  MUT_SET_STATUS: 'mutation_setGetStatus',
+  ACT_GET_STATUS: 'action_getGetStatus',
+  GET_TASK_COUNT: 'getter_GetTaskCount',
+}
+
 export const TASK_TYPE_DOWNLOAD = 'taskType_download'
 export const TASK_TYPE_UPLOAD = 'taskType_upload'
+export const TASK_TYPE_GET = 'taskType_get'

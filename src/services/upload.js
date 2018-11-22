@@ -37,24 +37,9 @@ export const startUpload = async params => {
 
     return {
       taskId: params.objectHash,
-      file: params.file,
     }
   } catch (err) {
     console.error('put object error')
-    console.error(err)
-    return err
-  }
-}
-
-export const getProgress = async objectHash => {
-  console.log('get upload progress')
-  console.log(objectHash)
-  try {
-    const progress = await ppioUser.objectStatus({ objectHash: [objectHash] })
-    console.log(progress)
-    return progress
-  } catch (err) {
-    console.error('get upload object status error')
     console.error(err)
     return err
   }

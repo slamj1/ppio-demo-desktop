@@ -20,9 +20,6 @@
         </div>
         <div class="step-popup-footer">
           <slot name="footer"></slot>
-          <el-button class="button" v-if="curStep > 0" v-on:click="f_emitPrev" size="mini">Prev</el-button>
-          <el-button class="button" v-if="curStep < steps.length - 1" v-on:click="f_emitNext" size="mini" type="primary">Next</el-button>
-          <el-button class="button" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">{{ButtonTitle ? ButtonTitle : 'Confirm'}}</el-button>
         </div>
       </div>
     </div>
@@ -31,19 +28,10 @@
 <script>
 export default {
   name: 'step-popup',
-  props: ['steps', 'curStep', 'ButtonTitle'],
+  props: ['steps', 'curStep'],
   methods: {
     f_close() {
       this.$emit('close')
-    },
-    f_confirm() {
-      this.$emit('confirm')
-    },
-    f_emitNext() {
-      this.$emit('next')
-    },
-    f_emitPrev() {
-      this.$emit('prev')
     },
   },
 }
@@ -147,9 +135,6 @@ export default {
         margin-right: 0px;
       }
     }
-  }
-  .step-popup-content {
-    max-height: 360px;
   }
 }
 </style>

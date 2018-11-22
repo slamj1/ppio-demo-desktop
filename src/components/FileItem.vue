@@ -2,17 +2,23 @@
   <div class="file-item"
        :class="{'secure': file.isSecure,
                 'public': file.isPublic,
+                'getting': isGetting,
                 'selected': selected}">
     <div class="file-icon-wrap">
       <span class="file-icon"><span class="file-icon-status"></span></span>
     </div>
-    <p class="filename">{{file.filename}}</p>
+    <p class="filename">
+      <template v-if="isGetting">
+        getting file<br>
+      </template>
+      {{file.filename}}
+    </p>
   </div>
 </template>
 <script>
 export default {
   name: 'fileitem',
-  props: ['file', 'selected'],
+  props: ['file', 'selected', 'isGetting'],
 }
 </script>
 <style lang="scss" scoped>
@@ -25,6 +31,10 @@ $file-item-width: 105px;
   margin: 14px 20px;
   text-align: center;
   cursor: pointer;
+
+  &.getting {
+    opacity: 0.6;
+  }
 
   .file-icon-wrap {
     display: flex;

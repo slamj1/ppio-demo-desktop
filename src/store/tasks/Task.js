@@ -1,15 +1,29 @@
-export default function Task(initData) {
-  if (!initData.id || !initData.file) {
-    throw new Error('invalid task data')
+// Cannot call instance method to mutate its props
+// Must be in vuex mutations
+
+export class Task {
+  constructor(initData) {
+    if (!initData || !initData.id || !initData.type) {
+      throw new Error('invalid task data')
+    }
+    this.type = initData.type
+    this.id = initData.id
+    this.status = new TaskStatus()
+    this.file = initData.file || null
+    this.exportPath = initData.exportPath || null
+    this.localPath = initData.localPath || null
   }
-  return {
-    type: initData.type,
-    id: initData.id,
-    transferringData: false, // downloading or uploading
-    transferProgress: 0, // transferred percentage, in number
-    transferSpeed: '0b/s', // transfer speed, in string
-    copying: false,
-    finished: false,
-    file: initData.file,
+}
+
+export class TaskStatus {
+  constructor() {
+    this.transferringData = false // downloading or uploading
+    this.transferProgress = 0 // transferred percentage, in number
+    this.transferSpeed = '0b/s' // transfer speed, in string
+    this.addingFileIndex = false // adding file to metadata after upload
+    this.exportingFile = false // exporting file after download
+    this.finished = false
+    this.failed = false
+    this.failMsg = ''
   }
 }

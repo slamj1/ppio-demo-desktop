@@ -13,25 +13,23 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column
-        prop="progress"
-        label="Progress">
+    <el-table-column prop="progress" label="Progress">
       <template slot-scope="scope">
         <el-progress
             class="transmit-progress"
             :stroke-width="4"
-            :percentage="scope.row.transferProgress"
-            :show-text="scope.row.transferringData"
-            :color="getProgressStatus(scope.row)"></el-progress>
-        <span class="transfer-progress-text" v-if="scope.row.finished">finished</span>
-        <span class="transfer-progress-text" v-else-if="scope.row.transferringData">{{scope.row.transferSpeed}}</span>
-        <span class="transfer-progress-text" v-else>generating copies...</span>
+            :percentage="scope.row.status.transferProgress"
+            :show-text="scope.row.status.transferringData || scope.row.status.finished"
+            :status="getProgressStatus(scope.row)"></el-progress>
+        <span class="transfer-progress-text" v-if="scope.row.status.transferringData">{{scope.row.status.transferSpeed}}</span>
+        <span class="transfer-progress-text processing" v-else-if="scope.row.status.addingFileIndex">adding file index</span>
+        <span class="transfer-progress-text processing" v-else-if="scope.row.status.exportingFile">exporting file</span>
+        <span class="transfer-progress-text failed" v-else-if="scope.row.status.failed">{{scope.row.status.failMsg}}</span>
       </template>
     </el-table-column>
-    <el-table-column
-        width="120">
+    <el-table-column width="120">
       <template slot-scope="scope">
-        <span class="cancel-btn" @click="f_cancel(scope.$index)"><i class="el-icon el-icon-delete"></i></span>
+        <slot name="operations" :index="scope.$index"></slot>
       </template>
     </el-table-column>
   </el-table>
@@ -39,15 +37,19 @@
 
 <script>
 export default {
-  name: 'download-list',
+  name: 'transfer-list',
   props: ['tableName', 'tableData'],
   methods: {
     f_cancel(taskIndex) {
       this.$emit('cancel', taskIndex)
     },
     getProgressStatus(rowData) {
-      if (rowData.finished) {
+      if (rowData.status.finished) {
         return 'success'
+      }
+
+      if (rowData.status.failed) {
+        return 'exeption'
       }
 
       return 'text'
@@ -95,6 +97,14 @@ export default {
   }
   .transfer-progress-text {
     display: inline-block;
+
+    &.processing {
+      color: #ccc;
+    }
+
+    &.failed {
+      color: red;
+    }
   }
   .cancel-btn {
     cursor: pointer;

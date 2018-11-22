@@ -3,11 +3,7 @@
     <step-popup
         :cur-step="curStep"
         :steps="steps"
-        :button-title="'Pay'"
         @close="f_close"
-        @confirm="f_confirm"
-        @next="f_next"
-        @prev="f_prev"
         class="popup-wrap">
       <span slot="header">Download File</span>
       <div class="step-content step-0" slot="step-0">
@@ -29,37 +25,29 @@
       </div>
       <div class="step-content step-1" slot="step-1">
         <div class="inner-wrap">
-          <el-table class="ppio-plain-table payment-table" :data="paymentData">
-            <el-table-column
-                prop="product"
-                label="Product"
-                width="220"
-                class-name="table-column-product">
-            </el-table-column>
-            <el-table-column
-                prop="fee"
-                label="Fee"
-                width="100">
-            </el-table-column>
-          </el-table>
-          <div class="total-cost">
-            <p><b>Total:</b> {{totalCost}} PPCoin</p>
-          </div>
+          <PaymentTable :payment-data="paymentData"></PaymentTable>
         </div>
       </div>
+
+      <template slot="footer">
+        <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini">Prev</el-button>
+        <el-button class="button" v-if="curStep < steps.length - 1" v-on:click="f_next" size="mini" type="primary">Next</el-button>
+        <el-button class="button" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">Pay</el-button>
+      </template>
     </step-popup>
   </div>
 </template>
 <script>
+import { remote } from 'electron'
 import filesize from 'filesize'
 import StepPopup from '@/components/StepPopup'
+import PaymentTable from '@/components/PaymentTable'
 import { DL_TASK } from '../../constants/store'
 
 export default {
   name: 'download',
   data: () => ({
     type: '1',
-    filename: 'PPIO download filename',
     curStep: 0,
     steps: ['Settings', 'Payment'],
     options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
@@ -68,31 +56,31 @@ export default {
     chiPrice: 100,
     chiLimit: 12332,
     downloadCost: 12,
+    preparingDownload: false,
   }),
-  props: ['file'],
+  props: ['file'], // file is a File.js object
   components: {
     StepPopup,
+    PaymentTable,
   },
   computed: {
     fileSizeStr() {
       return filesize(this.file.size)
     },
     paymentData() {
-      return [
-        {
-          product: `Download: ${this.fileSizeStr}`,
-          fee: `${this.downloadCost} PPCoin`,
-        },
-      ]
-    },
-    totalCost() {
-      return this.downloadCost
+      return {
+        list: [
+          {
+            product: `Download: ${this.fileSizeStr}`,
+            fee: `${this.downloadCost} PPCoin`,
+          },
+        ],
+        totalCost: this.downloadCost,
+      }
     },
   },
   mounted() {
-    if (this.file) {
-      this.filename = this.file.name
-    }
+    this.preparingDownload = false
   },
   methods: {
     f_prev() {
@@ -109,19 +97,42 @@ export default {
       this.$vueBus.$emit(this.$events.CLOSE_DOWNLOAD_FILE)
     },
     f_confirm() {
-      console.log('download confirm')
-      const getParams = {
-        file: this.file,
-        objectHash: this.file.id,
-        chiPrice: parseInt(this.chiPrice),
+      if (this.preparingDownload) {
+        return
       }
-      this.$store
-        .dispatch(DL_TASK.ACT_CREATE_TASK, getParams)
-        .then(() => this.$vueBus.$emit(this.$events.DOWNLOAD_FILE_DONE))
-        .catch(err => {
-          console.error(err)
-          this.$notify.error({ title: JSON.stringify(err), duration: 2000 })
-        })
+      this.preparingDownload = true
+      console.log('download confirm')
+      remote.dialog.showSaveDialog(
+        remote.getCurrentWindow(),
+        {
+          defaultPath: this.file.filename,
+          message: 'Choose the location to download the file',
+          properties: ['openDirectory', 'createDirectory', 'promptToCreate'],
+        },
+        filePath => {
+          console.log(filePath)
+          if (!filePath) {
+            return
+          }
+          const getParams = {
+            file: this.file,
+            objectHash: this.file.id,
+            chiPrice: parseInt(this.chiPrice),
+            exportPath: filePath,
+          }
+          this.$store
+            .dispatch(DL_TASK.ACT_CREATE_TASK, getParams)
+            .then(() => {
+              this.preparingDownload = false
+              return this.$vueBus.$emit(this.$events.DOWNLOAD_FILE_DONE)
+            })
+            .catch(err => {
+              console.error(err)
+              this.preparingDownload = false
+              this.$notify.error({ title: JSON.stringify(err), duration: 2000 })
+            })
+        },
+      )
     },
   },
 }
@@ -129,7 +140,7 @@ export default {
 <style lang="scss" scoped>
 .step-content {
   text-align: center;
-  padding: 20px 20px 0px;
+  padding: 20px 20px 0;
   .inner-wrap {
     display: inline-block;
     text-align: left;
@@ -154,23 +165,6 @@ export default {
         width: 100px;
         margin-right: 8px;
       }
-    }
-  }
-  &.step-1 {
-    .payment-table {
-      color: inherit;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .total-cost {
-      position: relative;
-      padding-left: 10px;
-    }
-    .line-label {
-      position: absolute;
-      top: 6px;
-      left: 0;
-      font-weight: bold;
     }
   }
 }

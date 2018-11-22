@@ -6,4 +6,4 @@ Vue.config.devtools = true
 
 new Vue({
   render: h => h(Splash),
-}).$mount('#app')
+}).$mount('#splash-screen')

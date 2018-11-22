@@ -56,7 +56,8 @@ const store = {
       state.fileList[payload.idx].isPublic = payload.toshare
     },
     [MUT_GET_FILE](state, payload) {
-      state.fileList.push(new File(payload))
+      console.log('adding gotten file')
+      state.fileList.unshift(new File(payload))
     },
   },
   actions: {
@@ -117,7 +118,7 @@ const store = {
       return getFile(fileInfo).then(
         data => {
           console.log('commit', data)
-          // context.commit(MUT_GET_FILE, fileInfo)
+          context.commit(MUT_GET_FILE, fileInfo)
           return 1
         },
         err => {

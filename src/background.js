@@ -60,18 +60,20 @@ function createWindow() {
 }
 
 function startPpioDaemon() {
-  const timer = new Promise(resolve => {
-    setTimeout(() => {
-      resolve()
-    }, 1000)
-  })
+  const timer = () =>
+    new Promise(resolve => {
+      setTimeout(() => {
+        resolve()
+      }, 3000)
+    })
 
-  const startDaemon = global.ppioUser.daemonStart().then(res => {
-    console.log('daemon started ')
-    console.log(res)
-    return true
-  })
-  return Promise.all([timer, startDaemon])
+  const startDaemon = () =>
+    global.ppioUser.daemonStart().then(res => {
+      console.log('daemon started ')
+      console.log(res)
+      return true
+    })
+  return Promise.all([timer(), startDaemon()])
 }
 
 app.on('window-all-closed', () => {

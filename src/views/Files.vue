@@ -33,6 +33,11 @@
             :file="file"
             @click.native.right.prevent.stop="f_rightClickFile(idx)"
             @click.native.stop="f_selectFile(idx)"></FileItem>
+        <FileItem
+            v-for="task in gettingTaskList"
+            :file="task.file"
+            :key="`gettingtask_${task.file.id}`"
+            :is-getting="true"></FileItem>
       </div>
     </el-main>
     <router-view :file="operatingFile" @click.native.stop=""></router-view>
@@ -42,7 +47,12 @@
 import { mapState, mapActions } from 'vuex'
 import { remote } from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
-import { ACT_GET_FILE_LIST, ACT_GET_FILE, ACT_REMOVE_FILE } from '../constants/store'
+import {
+  ACT_GET_FILE_LIST,
+  ACT_GET_FILE,
+  ACT_REMOVE_FILE,
+  GET_TASK,
+} from '../constants/store'
 import FileItem from '@/components/FileItem'
 
 const { Menu, MenuItem, dialog } = remote
@@ -64,14 +74,13 @@ export default {
       fetchingData: false,
       operatingFile: null,
       contextMenu: new Menu(),
+      getStatusTimer: null,
     }
   },
   computed: {
     ...mapState({
-      fileList: state => {
-        console.log(state.file)
-        return state.file.fileList
-      },
+      fileList: state => state.file.fileList,
+      gettingTaskList: state => state.getTask.taskQueue, // TODO: move gettingTaskList into fileList, to make finished file retain its position
     }),
   },
   components: {
@@ -79,10 +88,22 @@ export default {
   },
   mounted() {
     this.f_createContextMenu()
+    console.log('files page mounted')
+
+    // get file done
+    this.$vueBus.$on(this.$events.GET_FILE_DONE, () => {
+      console.log('Files page get file listener')
+      if (this.getStatusTimer === null) {
+        this.f_updateGetStatus()
+      }
+    })
   },
 
   activated() {
     this.f_getFileList()
+    console.log('files page activated')
+    console.log(this.gettingTaskList)
+    this.f_updateGetStatus()
   },
 
   methods: {
@@ -90,21 +111,42 @@ export default {
       getFileList: ACT_GET_FILE_LIST,
       getFile: ACT_GET_FILE,
     }),
+    f_updateGetStatus() {
+      if (this.gettingTaskList.length > 0) {
+        console.log('updating get status')
+        this.$store
+          .dispatch(GET_TASK.ACT_GET_STATUS)
+          .then(taskStatusArr => {
+            // if any task finished, refresh file list from sdk
+            if (taskStatusArr.filter(status => status.finished).length > 0) {
+              this.f_refreshList()
+            }
+            return true
+          })
+          .catch(err => {
+            console.error(err)
+          })
+        this.getStatusTimer = setTimeout(() => {
+          this.f_updateGetStatus()
+        }, 2000)
+      } else {
+        this.getStatusTimer = null
+      }
+    },
     f_getFileList() {
       if (this.fetchingData) {
         return Promise.resolve()
       }
       if (this.fileList.map(file => file.id).indexOf(this.selectedFileId) === -1) {
+        console.log('lose select')
         this.selectedFileId = 0
+        this.operatingFile = null
       }
       this.fetchingData = true
       return this.getFileList()
         .then(() => {
           this.fetchingData = false
           return ''
-        })
-        .finally(() => {
-          this.f_selectFile(-1)
         })
         .catch(err => {
           this.fetchingData = false
@@ -114,7 +156,6 @@ export default {
     f_refreshList() {
       console.log('refreshing file list')
       this.refreshingData = true
-      this.selectedFileId = 0
       this.f_getFileList()
         .then(() => (this.refreshingData = false))
         .catch(err => {
@@ -123,6 +164,7 @@ export default {
     },
     f_selectFile(idx) {
       if (idx === -1) {
+        console.log('lose select')
         this.selectedFileId = 0
         this.operatingFile = null
       } else {
@@ -221,6 +263,8 @@ export default {
       if (!this.operatingFile) {
         return
       }
+      console.log('deleting file')
+      console.log(this.operatingFile)
       dialog.showMessageBox(
         this.$remote.getCurrentWindow(),
         {
@@ -236,18 +280,16 @@ export default {
                 file: this.operatingFile,
                 fileIndex: this.fileList.indexOf(this.operatingFile),
               })
-              .then(
-                () => {
-                  this.$notify.success({
-                    title: `delete the file success`,
-                    duration: 2000,
-                  })
-                  return this.f_selectFile(-1)
-                },
-                err => this.$notify.error({ title: err.toString(), duration: 2000 }),
-              )
+              .then(() => {
+                this.$notify.success({
+                  title: `delete file success`,
+                  duration: 2000,
+                })
+                return this.f_selectFile(-1)
+              })
               .catch(err => {
-                console.error(err.toString())
+                console.error(err)
+                this.$notify.error({ title: 'Deletion failed!', duration: 2000 })
               })
           }
         },

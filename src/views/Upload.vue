@@ -1,9 +1,15 @@
 <template>
   <TransferTable
+      class="upload-task-manager"
       tableName="upload"
-      :tableData="taskList"
-      @cancel="f_cancel"
-  ></TransferTable>
+      :tableData="taskList">
+    <template slot="operations" slot-scope="operationProps">
+      <span class="cancel-btn" @click="f_cancel(operationProps.index)"><i class="el-icon el-icon-delete"></i></span>
+    </template>
+    <template slot="operations">
+
+    </template>
+  </TransferTable>
 </template>
 <script>
 import { UL_TASK } from '../constants/store'
