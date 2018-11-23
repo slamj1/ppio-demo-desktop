@@ -1,6 +1,5 @@
 import { remote } from 'electron'
 import { APP_SECURE_KEY } from '../constants/constants'
-import { CANCEL_DOWNLOAD } from '../constants/sdk-methods'
 
 const ppioUser = remote.getGlobal('ppioUser')
 
@@ -48,9 +47,4 @@ export const getFile = async params => {
   }
 }
 
-export const cancelGet = taskId => ({
-  method: CANCEL_DOWNLOAD,
-  params: {
-    taskId,
-  },
-})
+export const cancelGet = taskId => Promise.resolve(taskId)

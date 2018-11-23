@@ -2,23 +2,23 @@ import filesize from 'filesize'
 import {
   MUT_SET_FILE_LIST,
   MUT_REMOVE_FILE,
-  MUT_RENAME_FILE,
+  // MUT_RENAME_FILE,
   MUT_SECURE_FILE,
   MUT_SHARE_FILE,
-  MUT_GET_FILE,
+  // MUT_GET_FILE,
   ACT_GET_FILE_LIST,
   ACT_REFRESH_FILE_LIST,
   ACT_REMOVE_FILE,
   ACT_RENAME_FILE,
   // ACT_SECURE_FILE,
-  // ACT_SHARE_FILE,
-  ACT_GET_FILE,
+  ACT_SHARE_FILE,
+  // ACT_GET_FILE,
   USAGE_PERCENT_GETTER,
   USAGE_STORAGE_GETTER,
+  ACT_METADATA_MODIFY_FILE,
 } from '../constants/store'
 import { APP_MODE_COINPOOL } from '../constants/constants'
-import getFileList from '../services/getFileList'
-import { getFile, deleteFile, renameFile } from '../services/file'
+import { deleteFile, getObjectList, changeObjectAcl } from '../services/file'
 import File from './File'
 
 const store = {
@@ -46,30 +46,26 @@ const store = {
     [MUT_REMOVE_FILE](state, idx) {
       state.fileList.splice(idx, 1)
     },
-    [MUT_RENAME_FILE](state, payload) {
-      state.fileList[payload.idx].filename = payload.name
-    },
+    // [MUT_RENAME_FILE](state, payload) {
+    //   state.fileList[payload.idx].filename = payload.name
+    // },
     [MUT_SECURE_FILE](state, payload) {
       state.fileList[payload.idx].isSecure = payload.secure
     },
     [MUT_SHARE_FILE](state, payload) {
-      state.fileList[payload.idx].isPublic = payload.toshare
-    },
-    [MUT_GET_FILE](state, payload) {
-      console.log('adding gotten file')
-      state.fileList.unshift(new File(payload))
+      state.fileList[payload.idx].isPublic = payload.isPublic
     },
   },
   actions: {
     [ACT_GET_FILE_LIST](context) {
-      return getFileList().then(
+      return getObjectList().then(
         res => {
           const fileList = res.map(item => {
-            let metadataFile, filename, isSecure
+            let fileMetadata, filename, isSecure
             // TODO: Unstable. Sometimes cannot get filename
-            if ((metadataFile = context.rootState.user.metadata.fileList[item.id])) {
-              filename = metadataFile.filename
-              isSecure = metadataFile.isSecure
+            if ((fileMetadata = context.rootState.user.metadata.fileList[item.id])) {
+              filename = fileMetadata.filename
+              isSecure = fileMetadata.isSecure
             } else {
               filename = item.id
               isSecure = item.isSecure // false
@@ -113,24 +109,6 @@ const store = {
       })
       return context.commit(MUT_SET_FILE_LIST, newList)
     },
-    [ACT_GET_FILE](context, fileInfo) {
-      console.log('get file', fileInfo)
-      return getFile(fileInfo).then(
-        data => {
-          console.log('commit', data)
-          context.commit(MUT_GET_FILE, fileInfo)
-          return 1
-        },
-        err => {
-          console.error(err)
-          if (err.error.code === -1) {
-            return Promise.reject(err.error.message)
-          } else {
-            return Promise.reject(new Error('Unknown Error'))
-          }
-        },
-      )
-    },
     [ACT_REMOVE_FILE](context, payload) {
       return deleteFile(payload.file.id).then(
         () => {
@@ -141,15 +119,32 @@ const store = {
       )
     },
     [ACT_RENAME_FILE](context, payload) {
-      return renameFile(payload.file.id, payload.filename).then(
-        () => {
-          context.commit(MUT_RENAME_FILE, {
-            idx: payload.fileindex,
-            name: payload.filename,
-          })
-          return true
+      console.log('renaming file ', payload.filename)
+      return context.dispatch(ACT_METADATA_MODIFY_FILE, {
+        fileId: payload.file.id,
+        data: {
+          filename: payload.filename,
         },
-        err => console.error(err),
+      })
+    },
+    [ACT_SHARE_FILE](context, payload) {
+      return changeObjectAcl({
+        objectHash: payload.objectHash,
+        isPublic: payload.isPublic,
+      }).then(
+        res => {
+          console.log('publish file succeeded')
+          // TODO: check object status
+          return context.commit(MUT_SHARE_FILE, {
+            idx: payload.fileIndex,
+            isPublic: payload.isPublic,
+          })
+        },
+        err => {
+          console.error('publish file failed')
+          console.error(err)
+          return err
+        },
       )
     },
   },

@@ -42,8 +42,8 @@
     <Download v-if="showPopups.downloadFile" :file="downloadingFile"></Download>
     <Get v-if="showPopups.getFile"></Get>
     <Renew v-if="showPopups.renewFile" :file="renewingFile"></Renew>
-    <Rename v-if="showPopups.renameFile" :file="renamingFile" :fileindex="renamingFileIndex"></Rename>
-    <Share v-if="showPopups.shareFile" :file="sharingFile"></Share>
+    <Rename v-if="showPopups.renameFile" :file="renamingFile" :fileIndex="renamingFileIndex"></Rename>
+    <Share v-if="showPopups.shareFile" :file="sharingFile" :fileIndex="sharingFileIndex"></Share>
   </el-container>
 </template>
 
@@ -85,6 +85,7 @@ export default {
       },
       downloadingFile: null,
       sharingFile: null,
+      sharingFileIndex: -1,
       renamingFile: null,
       renamingFileIndex: -1,
       renewingFile: null,
@@ -194,28 +195,32 @@ export default {
 
       // share file
       // open share file
-      this.$vueBus.$on(this.$events.OPEN_SHARE_FILE, file => {
-        console.log('open share file ', file)
+      this.$vueBus.$on(this.$events.OPEN_SHARE_FILE, payload => {
+        console.log('open share file ', payload.file)
         this.showPopups.shareFile = true
-        this.sharingFile = file
+        this.sharingFile = payload.file
+        this.sharingFileIndex = payload.fileIndex
       })
       // close download file
       this.$vueBus.$on(this.$events.CLOSE_SHARE_FILE, () => {
         console.log('close share file')
         this.showPopups.shareFile = false
         this.sharingFile = null
+        this.sharingFileIndex = -1
       })
       // shared file
       this.$vueBus.$on(this.$events.SHARE_FILE_DONE, () => {
         console.log('share file done')
         this.showPopups.shareFile = false
         this.sharingFile = null
+        this.sharingFileIndex = -1
       })
       // unshared file
       this.$vueBus.$on(this.$events.UNSHARE_FILE_DONE, () => {
         console.log('unshare file done')
         this.showPopups.shareFile = false
         this.sharingFile = null
+        this.sharingFileIndex = -1
       })
 
       // renew file

@@ -21,8 +21,8 @@ protocol.registerStandardSchemes(['splash'], { secure: true })
 function createSplash() {
   splashWin = new BrowserWindow({
     width: 300,
-    height: 400,
-    titleBarStyle: 'hidden',
+    height: 300,
+    frame: false,
   })
   if (isDevelopment) {
     splashWin.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}/splash.html`)

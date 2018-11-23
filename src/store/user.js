@@ -13,14 +13,14 @@ import {
 import {
   MUT_SET_USER_DATA,
   ACT_GET_USER_DATA,
-  MUT_SET_USER_META_DATA,
+  MUT_WRITE_USER_META_DATA,
   ACT_GET_USER_META_DATA,
   ACT_SET_USER_META_DATA,
-  MUT_METADATA_ADD_FILE,
+  // MUT_METADATA_ADD_FILE,
   ACT_METADATA_ADD_FILE,
-  MUT_METADATA_REMOVE_FILE,
+  // MUT_METADATA_REMOVE_FILE,
   ACT_METADATA_REMOVE_FILE,
-  MUT_METADATA_MODIFY_FILE,
+  // MUT_METADATA_MODIFY_FILE,
   ACT_METADATA_MODIFY_FILE,
   ACT_LOGIN,
   MUT_LOGIN,
@@ -54,7 +54,7 @@ const store = {
       state.balance = data.balance
       state.address = data.uid
     },
-    [MUT_SET_USER_META_DATA](state, data) {
+    [MUT_WRITE_USER_META_DATA](state, data) {
       console.log('set meta data', data)
       console.log(state)
       if (data === null) {
@@ -66,30 +66,34 @@ const store = {
       console.log(data)
       state.metadata = data
     },
-    [MUT_METADATA_ADD_FILE](state, file) {
-      // add a file and its info to metadata
-      console.log(state)
-      state.metadata.fileList[file.id] = {
-        filename: file.filename,
-        size: file.size,
-        type: file.type,
-        isSecure: file.isSecure,
-        isPublic: file.isPublic,
-      }
-    },
-    [MUT_METADATA_REMOVE_FILE](state, fileId) {
-      delete state.metadata.fileList[fileId]
-    },
+    // [MUT_METADATA_ADD_FILE](state, file) {
+    //   // add a file and its info to metadata
+    //   console.log(state)
+    //   state.metadata.fileList[file.id] = {
+    //     filename: file.filename,
+    //     size: file.size,
+    //     type: file.type,
+    //     isSecure: file.isSecure,
+    //   }
+    // },
+    // [MUT_METADATA_REMOVE_FILE](state, fileId) {
+    //   delete state.metadata.fileList[fileId]
+    // },
     /**
      * modify file info in metadata
      * @param state
      * @param payload.fileId {String} id(objectHash) of file
      * @param payload.data {Object} file info to modify
      */
-    [MUT_METADATA_MODIFY_FILE](state, payload) {
-      const fileState = state.metadata.fileList[payload.fileId]
-      state.metadata.fileList[payload.fileId] = Object.assign({}, fileState, payload.data)
-    },
+    // [MUT_METADATA_MODIFY_FILE](state, payload) {
+    //   console.log('mutation file metadata ', payload.fileId, payload.data)
+    //   const fileMetadata = state.metadata.fileList[payload.fileId]
+    //   state.metadata.fileList[payload.fileId] = Object.assign(
+    //     {},
+    //     fileMetadata,
+    //     payload.data,
+    //   )
+    // },
     [MUT_LOGIN](state) {
       state.isLogin = true
     },
@@ -147,38 +151,52 @@ const store = {
     [ACT_GET_USER_META_DATA](context) {
       return getMetadata()
         .then(res => {
-          context.commit(MUT_SET_USER_META_DATA, res)
+          context.commit(MUT_WRITE_USER_META_DATA, res)
           // refresh file list
           return context.dispatch(ACT_REFRESH_FILE_LIST)
         })
         .catch(err => {
           console.log('get metadata failed')
           console.error(err)
-          context.commit(MUT_SET_USER_META_DATA, null)
+          context.commit(MUT_WRITE_USER_META_DATA, null)
           return Promise.resolve()
         })
     },
-    [ACT_SET_USER_META_DATA](context) {
+    [ACT_SET_USER_META_DATA](context, data) {
       console.log('action set user metadata dispatched')
-      console.log(context.state.metadata)
-      return setMetadata(context.state.metadata).catch(err => {
-        console.log('set metadata failed')
-        console.error(err)
-      })
+      console.log(data)
+      return setMetadata(data)
+        .then(() => context.commit(MUT_WRITE_USER_META_DATA, data))
+        .then(() => context.dispatch(ACT_REFRESH_FILE_LIST))
+        .catch(err => {
+          console.log('set metadata failed')
+          console.error(err)
+        })
     },
     [ACT_METADATA_ADD_FILE](context, file) {
-      console.log('adding new file to metadata')
-      console.log(file)
-      context.commit(MUT_METADATA_ADD_FILE, file)
-      return context.dispatch(ACT_SET_USER_META_DATA)
+      const newMetadata = JSON.parse(JSON.stringify(context.state.metadata)) // deep clone
+      newMetadata.fileList[file.id] = {
+        filename: file.filename,
+        size: file.size,
+        type: file.type,
+        isSecure: file.isSecure,
+      }
+      return context.dispatch(ACT_SET_USER_META_DATA, newMetadata)
     },
     [ACT_METADATA_REMOVE_FILE](context, fileId) {
-      context.commit(MUT_METADATA_REMOVE_FILE, fileId)
-      return context.dispatch(ACT_SET_USER_META_DATA)
+      const newMetadata = JSON.parse(JSON.stringify(context.state.metadata)) // deep clone
+      delete newMetadata.fileList[fileId]
+      return context.dispatch(ACT_SET_USER_META_DATA, newMetadata)
     },
     [ACT_METADATA_MODIFY_FILE](context, payload) {
-      context.commit(MUT_METADATA_MODIFY_FILE, payload)
-      return context.dispatch(ACT_SET_USER_META_DATA)
+      const newMetadata = JSON.parse(JSON.stringify(context.state.metadata)) // deep clone
+      const oriFileMetadata = newMetadata.fileList[payload.fileId]
+      newMetadata.fileList[payload.fileId] = Object.assign(
+        {},
+        oriFileMetadata,
+        payload.data,
+      )
+      return context.dispatch(ACT_SET_USER_META_DATA, newMetadata)
     },
     [ACT_REFRESH_USER](context) {
       return getUserData().then(

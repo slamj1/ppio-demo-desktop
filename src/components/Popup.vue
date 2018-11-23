@@ -13,7 +13,6 @@
         </div>
         <div class="popup-footer">
           <slot name="footer"></slot>
-          <el-button class="button" v-on:click="f_confirm" size="mini" type="primary">{{ButtonTitle?ButtonTitle:'Confirm' }}</el-button>
         </div>
       </div>
     </div>
@@ -22,14 +21,9 @@
 <script>
 export default {
   name: 'popup',
-  data: () => ({}),
-  props: ['ButtonTitle'],
   methods: {
     f_close() {
       this.$emit('close')
-    },
-    f_confirm() {
-      this.$emit('confirm')
     },
   },
 }

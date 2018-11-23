@@ -34,10 +34,12 @@
             @click.native.right.prevent.stop="f_rightClickFile(idx)"
             @click.native.stop="f_selectFile(idx)"></FileItem>
         <FileItem
-            v-for="task in gettingTaskList"
+            v-for="(task, index) in gettingTaskList"
             :file="task.file"
+            :get-failed="task.status.failed"
             :key="`gettingtask_${task.file.id}`"
-            :is-getting="true"></FileItem>
+            :is-getting="true"
+            @delete="f_removeTask(index)"></FileItem>
       </div>
     </el-main>
     <router-view :file="operatingFile" @click.native.stop=""></router-view>
@@ -132,6 +134,10 @@ export default {
       } else {
         this.getStatusTimer = null
       }
+    },
+    f_removeTask(idx) {
+      console.log('remove task ', idx)
+      this.$store.dispatch(GET_TASK.ACT_CANCEL_TASK, idx)
     },
     f_getFileList() {
       if (this.fetchingData) {
@@ -234,15 +240,18 @@ export default {
         return
       }
 
-      if (this.operatingFile.isSecure) {
-        this.$notify.error({
-          title: 'Can not share secured file!',
-          duration: 2000,
-        })
-        return
-      }
+      // if (this.operatingFile.isSecure) {
+      //   this.$notify.error({
+      //     title: 'Can not share secured file!',
+      //     duration: 2000,
+      //   })
+      //   return
+      // }
 
-      this.$vueBus.$emit(this.$events.OPEN_SHARE_FILE, this.operatingFile)
+      this.$vueBus.$emit(this.$events.OPEN_SHARE_FILE, {
+        file: this.operatingFile,
+        fileIndex: this.fileList.indexOf(this.operatingFile),
+      })
     },
     f_rename() {
       if (!this.operatingFile) {

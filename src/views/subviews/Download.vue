@@ -1,5 +1,5 @@
 <template>
-  <div class="upload-page">
+  <div class="download-page">
     <step-popup
         :cur-step="curStep"
         :steps="steps"
@@ -58,7 +58,7 @@ export default {
     downloadCost: 12,
     preparingDownload: false,
   }),
-  props: ['file'], // file is a File.js object
+  props: ['file'], // file is a /store/File.js object
   components: {
     StepPopup,
     PaymentTable,

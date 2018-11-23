@@ -9,7 +9,6 @@
       <div class="step-content step-0" slot="step-0">
         <div class="inner-wrap">
           <el-input type="textarea" resize="none" :rows="4" v-model="shareCode" class="share-code-input" placeholder="Enter the share code"></el-input>
-          <el-alert v-show="errorMsg!=''" :title="errorMsg" show-icon class="error-msg" type="error" :closable="false"> </el-alert>
         </div>
       </div>
 
@@ -74,7 +73,6 @@ export default {
   name: 'get-file',
   data: () => ({
     shareCode: '',
-    errorMsg: '',
     fileInfo: null,
     curStep: 0,
     steps: ['Share Code', 'Storage Setting', 'Payment'],
@@ -157,7 +155,6 @@ export default {
           // TODO: validate sharecode
           this.$message.error('share code can not be empty')
         } else {
-          this.errorMsg = ''
           getFileInfoByShareCode(this.shareCode)
             .then(res => {
               console.log('got file info by share code', res.result)
@@ -167,7 +164,7 @@ export default {
                 size: res.result.size,
                 type: res.result.fileType || 'file',
                 isSecure: res.result.isSecure,
-                isPublic: true,
+                isPublic: false,
                 ownerId: res.result.ownerId,
               }
               return this.curStep++

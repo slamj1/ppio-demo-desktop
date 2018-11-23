@@ -2,7 +2,7 @@ export const MUT_SET_APP_MODE = 'mutation_setAppMode'
 
 export const MUT_SET_USER_DATA = 'mutation_setUserData'
 export const ACT_GET_USER_DATA = 'action_getUserData'
-export const MUT_SET_USER_META_DATA = 'mutation_setUserMetadata'
+export const MUT_WRITE_USER_META_DATA = 'mutation_setUserMetadata'
 export const ACT_GET_USER_META_DATA = 'action_getUserMetadata'
 export const ACT_SET_USER_META_DATA = 'action_setUserMetadata'
 export const MUT_METADATA_ADD_FILE = 'mutation_metadataAddFile'

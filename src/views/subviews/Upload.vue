@@ -9,7 +9,7 @@
       <div class="step-content step-0" slot="step-0">
         <img src="@/assets/img/file.png" class="file-icon" :alt="filename">
         <el-input v-model="filename" class="file-name-input"></el-input>
-        <el-select v-model="type" class="select"  placeholder="Plaese Choose">
+        <el-select v-model="type" class="select" placeholder="Please Choose">
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
         <el-alert v-show="type === options[1].value" title="You can not share secured file." show-icon class="alert-msg" type="warning" :closable="false"> </el-alert>
@@ -54,9 +54,9 @@
       </div>
 
       <template slot="footer">
-        <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini">Prev</el-button>
-        <el-button class="button" v-if="curStep < steps.length - 1" v-on:click="f_next" size="mini" type="primary">Next</el-button>
-        <el-button class="button" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">Pay</el-button>
+        <el-button class="button" v-if="curStep > 0" @click="f_prev" size="mini">Prev</el-button>
+        <el-button class="button" v-if="curStep < steps.length - 1" @click="f_next" size="mini" type="primary">Next</el-button>
+        <el-button class="button" v-if="curStep >= steps.length - 1" @click="f_confirm" size="mini" type="primary">Pay</el-button>
       </template>
     </step-popup>
   </div>
@@ -75,7 +75,7 @@ export default {
     filename: 'PPIO upload filename',
     customStorageDays: '1',
     chiPrice: 100,
-    steps: ['Choose Type', 'Storage Settings', 'Payment'],
+    steps: ['Set encryption', 'Storage Settings', 'Payment'],
     curStep: 0,
     options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
     radio: 1,
@@ -135,7 +135,6 @@ export default {
       }
     },
     taskOptions() {
-      console.log('computing task options')
       return {
         localPath: this.file ? this.file.path : '',
         isSecure: this.type === this.options[1].value,
@@ -150,13 +149,13 @@ export default {
     if (this.file) {
       this.filename = this.file.name
     }
-    // TODO: get ongoing contract from sdk, concat with persisted task queue
+    // TODO: get ongoing contract from sdk, concat with locally-persisted task queue
   },
   methods: {
     f_prev() {
       this.curStep -= 1
     },
-    async f_next() {
+    f_next() {
       if (this.curStep === 0) {
         if (this.filename.length > 0) {
           this.curStep += 1
@@ -210,7 +209,7 @@ export default {
 <style lang="scss" scoped>
 .step-content {
   text-align: center;
-  padding: 20px 20px 0px;
+  padding: 20px 20px 0;
   .inner-wrap {
     display: inline-block;
     text-align: left;

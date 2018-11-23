@@ -1,4 +1,4 @@
-import { Task, TaskStatus } from './Task'
+import { Task } from './Task'
 import {
   ACT_METADATA_ADD_FILE,
   TASK_TYPE_UPLOAD,
@@ -63,6 +63,7 @@ export default class TaskStore {
     }
 
     const m_setTaskStatus = (state, statusArr) => {
+      console.log('mutate task status')
       console.log(statusArr)
       statusArr.map((status, idx) => {
         if (status && state.taskQueue[idx]) {
@@ -110,30 +111,39 @@ export default class TaskStore {
       // const unfinishedTasks = context.state.taskQueue.filter(task => !task.finished)
       // TODO: Handle window closed case. Need to open app to finish task?
       const statusGetters = context.state.taskQueue.map(async task => {
-        // if finished, resolve empty
-        if (task.finished) {
+        // if finished/failed, resolve empty
+        console.log('1111111111')
+        console.log(task.status.failed)
+        if (task.status.finished || task.status.failed) {
           return Promise.resolve()
         }
-        try {
-          // get task status
-          const progressRes = await serviceGetTaskProgress(task.id)
-          return progressRes
-        } catch (err) {
+        // get task status
+        return serviceGetTaskProgress(task.id).catch(err => {
           // if error, resolve it
           console.error(err)
-          return Promise.resolve(err)
-        }
+          return Promise.resolve({ error: err })
+        })
       })
       return Promise.all(statusGetters).then(resArr => {
         const justFinishedTaskIdxArr = []
         const statusArr = resArr.map((res, index) => {
           console.log(res)
-          let status = new TaskStatus()
-          if (res && res[0].ContractStatus === 'US_DEAL') {
+          let status = {}
+          if (res && res[0] && res[0].ContractStatus === 'US_DEAL') {
             console.log(`task ${index} finished !`)
             status.transferringData = false
             status.transferProgress = 100
             justFinishedTaskIdxArr.push(index)
+          } else if (
+            res &&
+            res.error &&
+            res.error.message !== 'failed to get miner-segments-info'
+          ) {
+            console.log(`task ${index} failed !`)
+            status.transferringData = false
+            status.transferProgress = 100
+            status.failed = true
+            status.failMsg = res.error.message
           }
           return status
         })
@@ -148,7 +158,7 @@ export default class TaskStore {
         if (justFinishedTaskIdxArr.length > 0) {
           return Promise.all(
             justFinishedTaskIdxArr.map(idx => {
-              // mutate meta data when upload/get finished
+              // mutate meta data when upload/get task is finished
               if (taskType === TASK_TYPE_UPLOAD || taskType === TASK_TYPE_GET) {
                 console.log(`upload/get task ${idx} adding file index`)
                 statusArr[idx].addingFileIndex = true
