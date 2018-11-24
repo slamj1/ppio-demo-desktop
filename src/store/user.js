@@ -1,7 +1,5 @@
 import {
   login,
-  logout,
-  getUserData,
   getBalance,
   getFund,
   getBillingRecords,
@@ -9,6 +7,7 @@ import {
   getMetadata,
   setMetadata,
 } from '../services/user'
+import { stopDaemon } from '../services/daemon'
 
 import {
   MUT_SET_USER_DATA,
@@ -23,41 +22,40 @@ import {
   // MUT_METADATA_MODIFY_FILE,
   ACT_METADATA_MODIFY_FILE,
   ACT_LOGIN,
-  MUT_LOGIN,
   ACT_LOGOUT,
-  MUT_LOGOUT,
-  ACT_REFRESH_USER,
   MUT_SET_BILLING_RECORDS,
   ACT_GET_BILLING_RECORDS,
   ACT_REFRESH_FILE_LIST,
+  MUT_CLEAR_USER_DATA,
+  ACT_CLEAR_DATA,
 } from '../constants/store'
 
-const store = {
-  state: {
-    uid: '',
-    isLogin: true,
-    nickname: '',
-    balance: 30,
-    fund: 20,
-    billingRecords: [],
-    avatar: require('@/assets/img/avatar.png'),
-    address: '',
-    dataDir: '/Volumes/ExtCard/user6',
-    metadata: { fileList: {} },
-  },
+const initialState = () => ({
+  uid: '',
+  nickname: '',
+  balance: 0,
+  fund: 0,
+  billingRecords: [],
+  avatar: require('@/assets/img/avatar.png'),
+  address: '',
+  metadata: { fileList: {} },
+})
 
+const store = {
+  state: initialState,
   mutations: {
     [MUT_SET_USER_DATA](state, data) {
       console.log('refresh user', data)
-      state.uid = data.uid
-      state.nickname = data.nickname
-      state.balance = data.balance
-      state.address = data.uid
+      state.uid = data.uid || ''
+      state.nickname = data.nickname || ''
+      state.balance = data.balance || 0
+      state.address = data.uid || ''
     },
     [MUT_WRITE_USER_META_DATA](state, data) {
       console.log('set meta data', data)
       console.log(state)
       if (data === null) {
+        console.error('not passing metadata')
         return
       }
       if (!data.fileList) {
@@ -94,27 +92,25 @@ const store = {
     //     payload.data,
     //   )
     // },
-    [MUT_LOGIN](state) {
-      state.isLogin = true
-    },
-    [MUT_LOGOUT](state) {
-      state.isLogin = false
-      state.nickname = ''
-      state.balance = 0
-      state.uid = ''
-      state.billingRecords = []
-    },
     [MUT_SET_BILLING_RECORDS](state, records) {
-      state.billingRecords = records
+      if (!records) {
+        console.error('not passing billing records')
+        return
+      }
+      state.billingRecords = records || []
+    },
+    [MUT_CLEAR_USER_DATA](state) {
+      console.log('clearing user data')
+      const initState = initialState()
+      Object.keys(initState).forEach(key => {
+        state[key] = initState[key]
+      })
     },
   },
   actions: {
     [ACT_LOGIN](context, loginData) {
       return login(loginData).then(
-        res => {
-          context.commit(MUT_LOGIN)
-          return context.commit(MUT_SET_USER_DATA, res)
-        },
+        res => context.commit(MUT_SET_USER_DATA, res),
         err => {
           console.log('login error')
           console.log(err)
@@ -151,6 +147,8 @@ const store = {
     [ACT_GET_USER_META_DATA](context) {
       return getMetadata()
         .then(res => {
+          console.log('metadata got')
+          console.log(res)
           context.commit(MUT_WRITE_USER_META_DATA, res)
           // refresh file list
           return context.dispatch(ACT_REFRESH_FILE_LIST)
@@ -158,6 +156,11 @@ const store = {
         .catch(err => {
           console.log('get metadata failed')
           console.error(err)
+          if (err.error.message === 'user is not exists') {
+            return context
+              .dispatch(ACT_SET_USER_META_DATA, context.state.metadata)
+              .then(() => context.dispatch(ACT_REFRESH_FILE_LIST))
+          }
           context.commit(MUT_WRITE_USER_META_DATA, null)
           return Promise.resolve()
         })
@@ -198,19 +201,6 @@ const store = {
       )
       return context.dispatch(ACT_SET_USER_META_DATA, newMetadata)
     },
-    [ACT_REFRESH_USER](context) {
-      return getUserData().then(
-        res => {
-          context.commit(MUT_LOGIN)
-          return context.commit(MUT_SET_USER_DATA, res)
-        },
-        err => {
-          console.log('refresh user error')
-          console.log(err)
-          context.commit(MUT_LOGOUT)
-        },
-      )
-    },
     [ACT_GET_BILLING_RECORDS](context) {
       return getBillingRecords().then(
         res => context.commit(MUT_SET_BILLING_RECORDS, res),
@@ -221,11 +211,12 @@ const store = {
       )
     },
     [ACT_LOGOUT](context) {
-      return logout().then(
-        () => context.commit(MUT_LOGOUT),
+      return stopDaemon().then(
+        () => context.dispatch(ACT_CLEAR_DATA),
         err => {
           console.log('logout error')
           console.log(err)
+          return Promise.resolve()
         },
       )
     },

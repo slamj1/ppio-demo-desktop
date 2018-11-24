@@ -3,14 +3,16 @@
     <div class="app-global-loading" v-if="initializing">
       <p>Initializing....</p>
     </div>
-    <router-view></router-view>
+    <router-view @startApp="f_startApp"></router-view>
   </div>
 </template>
 
 <script>
+import { remote } from 'electron'
 import storage from 'localforage'
 import { APP_STATE_PERSIST_KEY } from '../constants/constants'
 import { ACT_GET_USER_DATA } from '../constants/store'
+import { startDaemon } from '../services/daemon'
 
 export default {
   name: 'app',
@@ -20,14 +22,6 @@ export default {
     }
   },
   mounted() {
-    const timer = () =>
-      new Promise(resolve => {
-        setTimeout(() => {
-          resolve()
-        }, 800)
-      })
-    const dataFetcher = () => this.$store.dispatch(ACT_GET_USER_DATA)
-
     // get persisted state from storage
     console.log('getting app state from storage')
     storage
@@ -36,27 +30,52 @@ export default {
         console.log('init app state')
         console.log(val)
         if (val) {
-          this.$store.replaceState(val)
+          if (val.dataDir.length > 0 && val.user.uid.length > 0) {
+            this.$store.replaceState(val)
+            return val
+          }
         }
-        return val
+        return Promise.reject(new Error('not login'))
       })
-      .then(() =>
-        Promise.all([timer(), dataFetcher()])
-          .then(() => {
-            console.log('data init finished')
-            this.initializing = false
-            return this.$router.push({ name: 'files' })
-          })
-          .catch(err => {
-            console.log('data init failed. unlogin')
-            console.error(err)
-            this.initializing = false
-            this.$router.push({ name: 'account' })
-          }),
-      )
+      .then(() => this.f_startApp())
       .catch(err => {
-        console.error(err)
+        console.log('data init failed.')
+        console.log(err)
+        this.initializing = false
+        remote.getCurrentWindow().setSize(1000, 670, true)
+        this.$router.push({ name: 'account/import' })
       })
+  },
+  methods: {
+    f_startApp() {
+      console.log('starting app')
+      const startPpioDaemon = () => {
+        console.log('starting daemon ', Date.now())
+        const timer = () =>
+          new Promise(resolve => {
+            setTimeout(() => {
+              resolve()
+            }, 8000)
+          })
+
+        return startDaemon(this.$store.state.dataDir).then(hasStarted => {
+          console.log('daemon started')
+          if (hasStarted) {
+            return true
+          }
+          return timer()
+        })
+      }
+
+      return startPpioDaemon()
+        .then(() => this.$store.dispatch(ACT_GET_USER_DATA))
+        .then(() => {
+          console.log('data init finished')
+          this.initializing = false
+          remote.getCurrentWindow().setSize(1000, 670, true)
+          return this.$router.push({ name: 'files' })
+        })
+    },
   },
 }
 </script>

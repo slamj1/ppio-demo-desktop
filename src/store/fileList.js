@@ -16,17 +16,21 @@ import {
   USAGE_PERCENT_GETTER,
   USAGE_STORAGE_GETTER,
   ACT_METADATA_MODIFY_FILE,
+  MUT_CLEAR_FILE_DATA,
+  ACT_METADATA_REMOVE_FILE,
 } from '../constants/store'
 import { APP_MODE_COINPOOL } from '../constants/constants'
 import { deleteFile, getObjectList, changeObjectAcl } from '../services/file'
 import File from './File'
 
+const initialState = () => ({
+  fileList: [],
+  usedStorage: 0,
+  capacity: 0,
+})
+
 const store = {
-  state: {
-    fileList: [],
-    usedStorage: 0,
-    capacity: 0,
-  },
+  state: initialState,
   getters: {
     [USAGE_PERCENT_GETTER]: (state, getters, rootState) => {
       if (rootState.appMode === APP_MODE_COINPOOL) {
@@ -38,10 +42,10 @@ const store = {
   },
   mutations: {
     [MUT_SET_FILE_LIST](state, fileList) {
-      state.fileList = fileList
+      state.fileList = fileList || []
       const usage = fileList.reduce((acc, cur) => acc + cur.size, 0)
       console.log(usage)
-      state.usedStorage = usage
+      state.usedStorage = usage || 0
     },
     [MUT_REMOVE_FILE](state, idx) {
       state.fileList.splice(idx, 1)
@@ -50,10 +54,20 @@ const store = {
     //   state.fileList[payload.idx].filename = payload.name
     // },
     [MUT_SECURE_FILE](state, payload) {
-      state.fileList[payload.idx].isSecure = payload.secure
+      if (payload.secure !== undefined) {
+        state.fileList[payload.idx].isSecure = payload.secure
+      }
     },
     [MUT_SHARE_FILE](state, payload) {
-      state.fileList[payload.idx].isPublic = payload.isPublic
+      if (payload.isPublic !== undefined) {
+        state.fileList[payload.idx].isPublic = payload.isPublic
+      }
+    },
+    [MUT_CLEAR_FILE_DATA](state) {
+      const initState = initialState()
+      Object.keys(initState).forEach(key => {
+        state[key] = initState[key]
+      })
     },
   },
   actions: {
@@ -113,7 +127,7 @@ const store = {
       return deleteFile(payload.file.id).then(
         () => {
           context.commit(MUT_REMOVE_FILE, payload.fileIndex)
-          return true
+          return context.dispatch(ACT_METADATA_REMOVE_FILE, payload.file.id)
         },
         err => console.error(err),
       )
@@ -132,8 +146,9 @@ const store = {
         objectHash: payload.objectHash,
         isPublic: payload.isPublic,
       }).then(
-        res => {
+        () => {
           console.log('publish file succeeded')
+          console.log(payload)
           // TODO: check object status
           return context.commit(MUT_SHARE_FILE, {
             idx: payload.fileIndex,

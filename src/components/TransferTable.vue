@@ -6,7 +6,7 @@
         label="File"
         width="240"
         class-name="table-column-filename">
-      <template slot-scope="scope">
+      <template scope="scope">
         <div class="file-name-wrap">
           <span class="transmit-file-icon"></span>
           <span class="transmit-filename" :show-text="false">{{scope.row.file.filename}}</span>
@@ -14,9 +14,10 @@
       </template>
     </el-table-column>
     <el-table-column prop="progress" label="Progress">
-      <template slot-scope="scope">
+      <template scope="scope">
         <el-progress
             class="transmit-progress"
+            v-if="!scope.row.status.failed"
             :stroke-width="4"
             :percentage="scope.row.status.transferProgress"
             :show-text="scope.row.status.transferringData || scope.row.status.finished"
@@ -28,8 +29,8 @@
       </template>
     </el-table-column>
     <el-table-column width="120">
-      <template slot-scope="scope">
-        <slot name="operations" :index="scope.$index"></slot>
+      <template scope="scope">
+        <slot name="operations" :index="scope.$index" :task="scope.row"></slot>
       </template>
     </el-table-column>
   </el-table>
@@ -39,6 +40,9 @@
 export default {
   name: 'transfer-list',
   props: ['tableName', 'tableData'],
+  mounted() {
+    console.log(this.tableData)
+  },
   methods: {
     f_cancel(taskIndex) {
       this.$emit('cancel', taskIndex)
@@ -105,9 +109,6 @@ export default {
     &.failed {
       color: red;
     }
-  }
-  .cancel-btn {
-    cursor: pointer;
   }
 }
 </style>

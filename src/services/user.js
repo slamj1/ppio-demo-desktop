@@ -5,10 +5,13 @@ const ppioUser = remote.getGlobal('ppioUser')
 
 export const login = seedPhrase => {
   console.log('calling login method')
+  // TODO: get user id by seedPhrase/privateKey
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (seedPhrase === 'success') {
-        resolve('success')
+        resolve(
+          '00250802122102416bc64849b47a4ce3689a4b8da2273794a287c50189cd58753cfc767b3149c9',
+        )
       } else {
         reject(new Error('fail'))
       }
@@ -18,14 +21,12 @@ export const login = seedPhrase => {
 
 export const generatePhraseSeed = () => {
   console.log('calling generatePhraseSeed method')
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     setTimeout(() => {
       resolve(randomStr())
     }, 1000)
   })
 }
-
-export const logout = () => {}
 
 export const getUserData = () => {}
 

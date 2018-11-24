@@ -4,10 +4,8 @@
       tableName="upload"
       :tableData="taskList">
     <template slot="operations" slot-scope="operationProps">
-      <span class="cancel-btn" @click="f_cancel(operationProps.index)"><i class="el-icon el-icon-delete"></i></span>
-    </template>
-    <template slot="operations">
-
+      <span class="task-operate-btn delete-btn" v-if="operationProps.task.status.failed || operationProps.task.status.finished" @click="f_delete(operationProps.index)"><i class="el-icon el-icon-delete"></i></span>
+      <span class="task-operate-btn cancel-btn" v-if="operationProps.task.status.transferringData" @click="f_cancel(operationProps.index)"><i class="el-icon el-icon-close"></i></span>
     </template>
   </TransferTable>
 </template>
@@ -42,10 +40,16 @@ export default {
     }
   },
   methods: {
-    f_cancel(taskId) {
+    f_cancel(index) {
       const toCancel = window.confirm('Are you sure to cancel the uploading?')
       if (toCancel) {
-        this.$store.dispatch(UL_TASK.ACT_CANCEL_TASK, taskId)
+        this.$store.dispatch(UL_TASK.ACT_CANCEL_TASK, index)
+      }
+    },
+    f_delete(index) {
+      const toDelete = window.confirm('Are you sure to delete the task?')
+      if (toDelete) {
+        this.$store.commit(UL_TASK.MUT_REMOVE_TASK, index)
       }
     },
     f_updateStatus() {
@@ -61,3 +65,8 @@ export default {
   },
 }
 </script>
+<style lang="scss" scoped>
+.task-operate-btn {
+  cursor: pointer;
+}
+</style>

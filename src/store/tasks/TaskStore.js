@@ -7,6 +7,7 @@ import {
   DL_TASK,
   UL_TASK,
   GET_TASK,
+  MUT_CLEAR_TASK_DATA,
 } from '../../constants/store'
 import { startUpload, cancelUpload } from '../../services/upload'
 import { startDownload, cancelDownload, exportObject } from '../../services/download'
@@ -56,10 +57,32 @@ export default class TaskStore {
       state.taskQueue.unshift(newTask)
     }
 
-    const m_removeTask = (state, index) => {
-      console.log('removing task ', index)
-      cancelTask(state.taskQueue[index])
-      state.taskQueue.splice(index, 1)
+    const m_removeTask = (state, idx) => {
+      console.log('removing task ', idx)
+      // let taskToRemove = state.finishedQueue[idx]
+      // for (let i = 0; i < state.taskQueue.length; i++) {
+      //   if (state.taskQueue[i].id === taskId) {
+      //     removeIdx = i
+      //     taskToRemove = state.taskQueue[i]
+      //     break
+      //   }
+      // }
+      // if (taskToRemove === undefined) {
+      //   for (let i = 0; i < state.finishedQueue.length; i++) {
+      //     if (state.finishedQueue[i].id === taskId) {
+      //       removeIdx = i
+      //       taskToRemove = state.finishedQueue[i]
+      //       break
+      //     }
+      //   }
+      // }
+      state.finishedQueue.splice(idx, 1)
+    }
+
+    const m_cancelTask = (state, idx) => {
+      console.log('canceling task', idx)
+      cancelTask(state.taskQueue[idx])
+      state.taskQueue.splice(idx, 1)
     }
 
     const m_setTaskStatus = (state, statusArr) => {
@@ -69,7 +92,7 @@ export default class TaskStore {
         if (status && state.taskQueue[idx]) {
           const task = state.taskQueue[idx]
           task.status = Object.assign(task.status, status)
-          if (status.finished) {
+          if (status.finished || status.failed) {
             state.finishedQueue.unshift(task)
             state.taskQueue.splice(idx, 1)
           }
@@ -101,10 +124,10 @@ export default class TaskStore {
         })
     }
 
-    const a_cancelTask = (context, idx) =>
-      serviceCancelTask(context.state.taskQueue[idx].id).then(() => {
-        console.log('res ', idx)
-        return context.commit(STORE_KEYS.MUT_REMOVE_TASK, idx)
+    const a_cancelTask = (context, taskId) =>
+      serviceCancelTask(taskId).then(() => {
+        console.log('res ', taskId)
+        return context.commit(STORE_KEYS.MUT_CANCEL_TASK, taskId)
       })
 
     const a_getTaskStatus = context => {
@@ -112,8 +135,6 @@ export default class TaskStore {
       // TODO: Handle window closed case. Need to open app to finish task?
       const statusGetters = context.state.taskQueue.map(async task => {
         // if finished/failed, resolve empty
-        console.log('1111111111')
-        console.log(task.status.failed)
         if (task.status.finished || task.status.failed) {
           return Promise.resolve()
         }
@@ -127,28 +148,29 @@ export default class TaskStore {
       return Promise.all(statusGetters).then(resArr => {
         const justFinishedTaskIdxArr = []
         const statusArr = resArr.map((res, index) => {
-          console.log(res)
+          if (!res) {
+            return undefined
+          }
           let status = {}
-          if (res && res[0] && res[0].ContractStatus === 'US_DEAL') {
+          if (res[0] && res[0].ContractStatus === 'US_DEAL') {
             console.log(`task ${index} finished !`)
             status.transferringData = false
             status.transferProgress = 100
             justFinishedTaskIdxArr.push(index)
           } else if (
-            res &&
             res.error &&
             res.error.message !== 'failed to get miner-segments-info'
           ) {
             console.log(`task ${index} failed !`)
             status.transferringData = false
-            status.transferProgress = 100
+            status.transferProgress = 0
             status.failed = true
             status.failMsg = res.error.message
           }
           return status
         })
 
-        if (statusArr.length === 0) {
+        if (statusArr.filter(status => !!status).length === 0) {
           return
         }
         // set task status
@@ -205,13 +227,24 @@ export default class TaskStore {
       })
     }
     // define store data
+    const initialState = () => ({
+      taskQueue: [], // maintains the task queue
+      finishedQueue: [], // maintains finished task queue
+    })
     const getters = {
       [STORE_KEYS.GET_TASK_COUNT]: state => state.taskQueue.length,
     }
     const mutations = {
       [STORE_KEYS.MUT_ADD_TASK]: m_addTask,
       [STORE_KEYS.MUT_REMOVE_TASK]: m_removeTask,
+      [STORE_KEYS.MUT_CANCEL_TASK]: m_cancelTask,
       [STORE_KEYS.MUT_SET_STATUS]: m_setTaskStatus,
+      [MUT_CLEAR_TASK_DATA](state) {
+        const initState = initialState()
+        Object.keys(initState).forEach(key => {
+          state[key] = initState[key]
+        })
+      },
     }
     const actions = {
       [STORE_KEYS.ACT_CREATE_TASK]: a_createTask,
@@ -219,10 +252,7 @@ export default class TaskStore {
       [STORE_KEYS.ACT_GET_STATUS]: a_getTaskStatus,
     }
 
-    this.state = {
-      taskQueue: [], // maintains the task queue
-      finishedQueue: [], // maintains finished task queue
-    }
+    this.state = initialState
     this.getters = getters
     this.mutations = mutations
     this.actions = actions

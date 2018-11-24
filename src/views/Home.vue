@@ -2,7 +2,7 @@
   <el-container class="app-page home">
     <el-aside class="app-aside" mode="vertical" width="200px">
       <el-popover class="aside-profile" v-model="showProfile">
-        <Profile :userData="userData" @check-billing="f_goBilling" @check-update="f_checkUpdate"></Profile>
+        <Profile :userData="userData" @check-billing="f_goBilling" @check-update="f_checkUpdate" @logout="f_logout"></Profile>
         <div class="profile-wrapper" slot="reference">
           <img class="profile-avatar" :src="userData.avatar" />
           <div class="profile-userinfo">
@@ -55,8 +55,8 @@ import {
   DL_TASK,
   UL_TASK,
   USAGE_PERCENT_GETTER,
-  ACT_GET_USER_DATA,
   USAGE_STORAGE_GETTER,
+  ACT_LOGOUT,
 } from '../constants/store'
 
 import Profile from '../components/Profile'
@@ -122,9 +122,6 @@ export default {
     this.f_initEventBus()
   },
   methods: {
-    f_initUserData() {
-      return this.$store.dispatch(ACT_GET_USER_DATA)
-    },
     f_goBilling() {
       this.showProfile = false
       this.$vueBus.$emit(this.$events.OPEN_BILLING_RECORDS)
@@ -249,7 +246,7 @@ export default {
         console.log('open rename file ', payload.file)
         this.showPopups.renameFile = true
         this.renamingFile = payload.file
-        this.renamingFileIndex = payload.fileindex
+        this.renamingFileIndex = payload.fileIndex
       })
       // close rename file
       this.$vueBus.$on(this.$events.CLOSE_RENAME_FILE, () => {
@@ -274,6 +271,14 @@ export default {
         console.log('close billing records')
         this.showPopups.billingRecords = false
       })
+    },
+    f_logout() {
+      this.$store
+        .dispatch(ACT_LOGOUT)
+        .then(() => this.$router.push({ name: 'account/import' }))
+        .catch(err => {
+          console.error(err)
+        })
     },
   },
 }

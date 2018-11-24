@@ -1,53 +1,54 @@
 'use strict'
 const { app, protocol, BrowserWindow } = require('electron')
 const { createProtocol } = require('vue-cli-plugin-electron-builder/lib')
+const ppioUser = require('./ppiosdk')
 
 global.shareObject = {
   test: 'Hello world!',
 }
 
-global.ppioUser = require('./ppiosdk')
+global.ppioUser = ppioUser
+
+global.daemonStarted = false
+
+global.startDaemon = params => {
+  if (global.daemonStarted) {
+    return Promise.resolve(true)
+  }
+  return ppioUser.daemonStart(params).then(() => {
+    global.daemonStarted = true
+    return false
+  })
+}
+
+global.stopDaemon = params =>
+  ppioUser.daemonStop(params).then(() => {
+    global.daemonStarted = false
+    return true
+  })
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let splashWin, win
+let win
 
 // Standard scheme must be registered before the app is ready
 protocol.registerStandardSchemes(['app'], { secure: true })
 protocol.registerStandardSchemes(['splash'], { secure: true })
 
-function createSplash() {
-  splashWin = new BrowserWindow({
-    width: 300,
-    height: 300,
-    frame: false,
-  })
-  if (isDevelopment) {
-    splashWin.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}/splash.html`)
-    if (!process.env.IS_TEST) splashWin.webContents.openDevTools()
-  } else {
-    createProtocol('splash')
-    splashWin.loadFile('splash.html')
-  }
-
-  splashWin.on('closed', () => {
-    splashWin = null
-  })
-}
-
 function createWindow() {
   win = new BrowserWindow({
-    width: 1000,
-    height: 670,
-    minHeight: 670,
-    minWidth: 1000,
+    width: 300,
+    height: 300,
+    // frame: false,
+    // width: 1000,
+    // height: 670,
     titleBarStyle: 'hidden',
   })
 
   if (isDevelopment) {
-    win.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}#/`)
+    win.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}#/splash`)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
@@ -59,23 +60,6 @@ function createWindow() {
   })
 }
 
-function startPpioDaemon() {
-  const timer = () =>
-    new Promise(resolve => {
-      setTimeout(() => {
-        resolve()
-      }, 3000)
-    })
-
-  const startDaemon = () =>
-    global.ppioUser.daemonStart().then(res => {
-      console.log('daemon started ')
-      console.log(res)
-      return true
-    })
-  return Promise.all([timer(), startDaemon()])
-}
-
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
@@ -84,16 +68,7 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   if (win === null) {
-    createSplash()
-    startPpioDaemon()
-      .then(() => {
-        console.log('daemon started')
-        splashWin.close()
-        return createWindow()
-      })
-      .catch(err => {
-        console.error(err)
-      })
+    return createWindow()
   }
 })
 
@@ -105,16 +80,7 @@ app.on('ready', async () => {
     // Install Vue Devtools
     // await installVueDevtools()
   }
-  createSplash()
-  startPpioDaemon()
-    .then(() => {
-      console.log('daemon started')
-      splashWin.close()
-      return createWindow()
-    })
-    .catch(err => {
-      console.error(err)
-    })
+  return createWindow()
 })
 
 // Exit cleanly on request from parent process in development mode.

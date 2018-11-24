@@ -259,7 +259,7 @@ export default {
       }
       this.$vueBus.$emit(this.$events.OPEN_RENAME_FILE, {
         file: this.operatingFile,
-        fileindex: this.fileList.indexOf(this.operatingFile),
+        fileIndex: this.fileList.indexOf(this.operatingFile),
       })
     },
     f_renew() {

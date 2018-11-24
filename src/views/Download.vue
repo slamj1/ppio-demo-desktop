@@ -4,7 +4,9 @@
       tableName="download"
       :tableData="taskList">
     <template slot="operations" slot-scope="operationProps">
-      <span class="open-btn" @click="f_open(operationProps.index)"><i class="app-icon icon-open"></i></span>
+      <span class="task-operate-btn open-btn" v-if="operationProps.task.status.finished" @click="f_open(operationProps.index)"><i class="app-icon icon-open"></i></span>
+      <span class="task-operate-btn delete-btn" v-if="operationProps.task.status.failed || operationProps.task.status.finished" @click="f_delete(operationProps.index)"><i class="el-icon el-icon-delete"></i></span>
+      <span class="task-operate-btn cancel-btn" v-if="operationProps.task.status.transferringData" @click="f_cancel(operationProps.index)"><i class="el-icon el-icon-close"></i></span>
     </template>
   </TransferTable>
 </template>
@@ -41,6 +43,18 @@ export default {
     }
   },
   methods: {
+    f_cancel(index) {
+      const toCancel = window.confirm('Are you sure to cancel the uploading?')
+      if (toCancel) {
+        this.$store.dispatch(DL_TASK.ACT_CANCEL_TASK, index)
+      }
+    },
+    f_delete(index) {
+      const toDelete = window.confirm('Are you sure to delete the task?')
+      if (toDelete) {
+        this.$store.commit(DL_TASK.MUT_REMOVE_TASK, index)
+      }
+    },
     f_open(index) {
       console.log('opening file ', index)
       console.log(this.taskList[index].exportPath)
@@ -62,12 +76,12 @@ export default {
 
 <style lang="scss">
 .download-task-manager {
-  .open-btn {
+  .task-operate-btn {
     cursor: pointer;
+  }
 
-    .app-icon {
-      vertical-align: middle;
-    }
+  .app-icon {
+    vertical-align: middle;
   }
 }
 </style>

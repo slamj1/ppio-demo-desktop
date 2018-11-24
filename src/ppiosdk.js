@@ -17,7 +17,6 @@ if (process.env.NODE_ENV === 'production') {
 console.log(user.ppioExe)
 
 const baseParams = {
-  datadir: '/Volumes/ExtCard/user6',
   bindip: '0.0.0.0',
   gatewayrpchost: '192.168.50.220',
 }
@@ -47,10 +46,6 @@ for (let key in user) {
       proxyUser[key] = user[key]
     }
   }
-}
-
-proxyUser.setDataDir = dataDir => {
-  baseParams.datadir = dataDir
 }
 
 module.exports = proxyUser

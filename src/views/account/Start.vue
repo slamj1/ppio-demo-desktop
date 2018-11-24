@@ -5,7 +5,7 @@
       <p class="name">PPDISK-demo</p>
     </div>
     <div class="right-content">
-      <router-view></router-view>
+      <router-view @startApp="$emit('startApp')"></router-view>
     </div>
   </div>
 </template>

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Splash from '../views/Splash'
 import Home from '../views/Home'
 import Files from '../views/Files'
 import DownloadList from '../views/Download'
@@ -7,11 +8,17 @@ import UploadList from '../views/Upload'
 import Start from '../views/account/Start'
 import ImportAccount from '../views/account/Import'
 import CreateAccount from '../views/account/Create'
+import ChooseDir from '../views/account/ChooseDir'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/splash',
+      name: 'splash',
+      component: Splash,
+    },
     {
       path: '/home',
       name: 'home',
@@ -52,6 +59,11 @@ export default new Router({
           path: 'create',
           name: 'account/create',
           component: CreateAccount,
+        },
+        {
+          path: 'choose-dir',
+          name: 'account/choose-dir',
+          component: ChooseDir,
         },
       ],
     },

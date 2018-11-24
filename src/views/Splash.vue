@@ -5,7 +5,11 @@
     <span class="loading"><img src="../assets/img/splash-loading.svg" alt=""></span>
   </div>
 </template>
-
+<script>
+export default {
+  mounted() {},
+}
+</script>
 <style lang="scss">
 @import '../assets/css/base';
 
