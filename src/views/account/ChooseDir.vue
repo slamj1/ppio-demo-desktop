@@ -19,6 +19,7 @@
 import fs from 'fs'
 import { remote } from 'electron'
 import { MUT_SET_DATA_DIR } from '../../constants/store'
+import { initDaemon } from '../../services/daemon'
 
 export default {
   data() {
@@ -56,7 +57,11 @@ export default {
 
       this.startingApp = true
       this.$store.commit(MUT_SET_DATA_DIR, this.dataDir)
-      this.$emit('startApp')
+      initDaemon(this.dataDir)
+        .then(() => this.$emit('startApp'))
+        .catch(err => {
+          console.error('init daemon failed, ', err)
+        })
     },
   },
 }

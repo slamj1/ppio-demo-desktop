@@ -1,7 +1,7 @@
 <template>
   <el-container class="app-page home">
     <el-aside class="app-aside" mode="vertical" width="200px">
-      <el-popover class="aside-profile" v-model="showProfile">
+      <el-popover class="aside-profile" v-model="showProfile" @show="onProfileShow">
         <Profile :userData="userData" @check-billing="f_goBilling" @check-update="f_checkUpdate" @logout="f_logout"></Profile>
         <div class="profile-wrapper" slot="reference">
           <img class="profile-avatar" :src="userData.avatar" />
@@ -57,6 +57,8 @@ import {
   USAGE_PERCENT_GETTER,
   USAGE_STORAGE_GETTER,
   ACT_LOGOUT,
+  ACT_START_POLLING_CHI_PRICE,
+  ACT_GET_USER_BALANCE,
 } from '../constants/store'
 
 import Profile from '../components/Profile'
@@ -120,8 +122,12 @@ export default {
   },
   mounted() {
     this.f_initEventBus()
+    this.$store.dispatch(ACT_START_POLLING_CHI_PRICE)
   },
   methods: {
+    onProfileShow() {
+      this.$store.dispatch(ACT_GET_USER_BALANCE)
+    },
     f_goBilling() {
       this.showProfile = false
       this.$vueBus.$emit(this.$events.OPEN_BILLING_RECORDS)

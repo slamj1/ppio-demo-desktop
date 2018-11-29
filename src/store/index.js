@@ -15,8 +15,13 @@ import {
   MUT_CLEAR_USER_DATA,
   MUT_CLEAR_FILE_DATA,
   MUT_SET_DATA_DIR,
+  MUT_SET_RPC_PORT,
+  MUT_SET_USER_PHRASE,
+  MUT_SET_CHI_PRICE,
+  ACT_START_POLLING_CHI_PRICE,
 } from '../constants/store'
 import { APP_MODE_NON_COINPOOL, USER_STATE_PERSIST_KEY } from '../constants/constants'
+import { getChiPrice } from '../services/user'
 
 Vue.config.devtools = true
 Vue.use(Vuex)
@@ -41,6 +46,9 @@ const initialState = () => ({
   curPage: '',
   appVersion: '1.0',
   dataDir: '', // directory to store objects
+  rpcPort: 0,
+  phrase: '',
+  recChiPrice: 100,
 })
 
 export default new Vuex.Store({
@@ -58,14 +66,24 @@ export default new Vuex.Store({
     [MUT_SET_APP_MODE](state, mode) {
       state.appMode = mode || APP_MODE_NON_COINPOOL
     },
-    [MUT_SET_DATA_DIR](state, dir) {
-      state.dataDir = dir || ''
+    [MUT_SET_DATA_DIR](state, dataDir) {
+      state.dataDir = dataDir
+    },
+    [MUT_SET_RPC_PORT](state, port) {
+      state.rpcPort = port
+    },
+    [MUT_SET_USER_PHRASE](state, phrase) {
+      // used for local storage key
+      state.phrase = phrase
+    },
+    [MUT_SET_CHI_PRICE](state, chiPrice) {
+      state.recChiPrice = chiPrice
     },
   },
   actions: {
     [ACT_CLEAR_DATA](context) {
       storage
-        .setItem(`${USER_STATE_PERSIST_KEY}_${context.state.user.uid}`, context.state)
+        .setItem(`${USER_STATE_PERSIST_KEY}_${context.state.phrase}`, context.state)
         .then(() => {
           context.commit(MUT_CLEAR_DATA)
           context.commit(MUT_CLEAR_USER_DATA)
@@ -76,6 +94,25 @@ export default new Vuex.Store({
         .catch(err => {
           console.error(err)
         })
+    },
+    [ACT_START_POLLING_CHI_PRICE]({ commit }) {
+      console.log('start polling chi price')
+      const chiPricePolling = () => {
+        console.log('refreshing chi price')
+        getChiPrice()
+          .then(price => {
+            console.log('current chi price: ', price)
+            commit(MUT_SET_CHI_PRICE, price)
+            setTimeout(chiPricePolling, 1000 * 30)
+            return price
+          })
+          .catch(err => {
+            console.log('get chi price failed')
+            console.error(err)
+            setTimeout(chiPricePolling, 1000 * 30)
+          })
+      }
+      chiPricePolling()
     },
   },
   modules: {

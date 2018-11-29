@@ -33,16 +33,16 @@
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
-            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input>
-            <span>chi</span>
+            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input><span>gchi</span>
+            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}}</span>
           </div>
           <div class="line-wrap">
-            <label class="line-label">Chi Limit:</label>
-            <span>{{chiLimit}}</span>
+            <label class="line-label">Total Chi:</label>
+            <span>{{totalChi}}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Expected Cost:</label>
-            <span>{{estimatedCost}} PPCOIN</span>
+            <span>{{totalCost}} PPCoin</span>
           </div>
         </div>
       </div>
@@ -66,7 +66,8 @@ import filesize from 'filesize'
 import StepPopup from '@/components/StepPopup'
 import PaymentTable from '@/components/PaymentTable'
 import { UL_TASK } from '../../constants/store'
-import { importObject } from '../../services/upload'
+import { importObject, getEstimateCost } from '../../services/upload'
+import { gchiToPPCoin } from '../../utils/units'
 
 export default {
   name: 'upload',
@@ -80,10 +81,9 @@ export default {
     options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
     radio: 1,
     copyCount: 1,
-    estimatedCost: 123,
-    chiLimit: 12332,
-    storageCost: 123,
-    uploadCost: 12,
+    totalChi: 0,
+    storageChi: 0,
+    uploadChi: 0,
     preparingUpload: false,
   }),
   props: ['file'], // file is a Web File object
@@ -92,6 +92,18 @@ export default {
     PaymentTable,
   },
   computed: {
+    recChiPrice() {
+      return this.$store.state.recChiPrice
+    },
+    totalCost: function() {
+      return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)
+    },
+    storageCost: function() {
+      return gchiToPPCoin(this.storageChi * this.chiPrice).toFixed(4)
+    },
+    uploadCost: function() {
+      return gchiToPPCoin(this.uploadChi * this.chiPrice).toFixed(4)
+    },
     paymentData: function() {
       return {
         list: [
@@ -104,7 +116,7 @@ export default {
             fee: `${this.storageCost} PPCoin(Fund)`,
           },
         ],
-        totalCost: this.storageCost + this.uploadCost,
+        totalCost: this.totalCost,
       }
     },
     fileSizeStr() {
@@ -144,18 +156,49 @@ export default {
       }
     },
   },
+  watch: {
+    copyCount: function() {
+      this.f_estimateCost()
+    },
+    'taskOptions.storageTime': function() {
+      this.f_estimateCost()
+    },
+  },
   mounted() {
     this.preparingUpload = false
     if (this.file) {
       this.filename = this.file.name
+      this.f_estimateCost()
     }
     // TODO: get ongoing contract from sdk, concat with locally-persisted task queue
   },
   methods: {
+    f_estimateCost() {
+      if (!this.file || this.copyCount === 0 || this.taskOptions.storageTime === 0) {
+        return
+      }
+      return getEstimateCost({
+        size: this.file.size,
+        copyCount: this.copyCount,
+        storageTime: this.taskOptions.storageTime,
+      }).then(costs => {
+        console.log(costs)
+        this.totalChi = costs.reduce((acc, cur) => cur + acc, 0)
+        this.storageChi = costs[0]
+        this.uploadChi = costs[1] + costs[2]
+        return costs
+      })
+    },
     f_prev() {
+      if (this.preparingUpload) {
+        return
+      }
       this.curStep -= 1
     },
     f_next() {
+      if (this.preparingUpload) {
+        return
+      }
       if (this.curStep === 0) {
         if (this.filename.length > 0) {
           this.curStep += 1
@@ -168,6 +211,9 @@ export default {
       }
     },
     f_close() {
+      if (this.preparingUpload) {
+        return
+      }
       this.$vueBus.$emit(this.$events.CLOSE_UPLOAD_FILE)
     },
     async f_confirm() {
@@ -262,6 +308,17 @@ export default {
       .copy-input {
         width: 100px;
         margin-right: 8px;
+      }
+      .recommend-chiprice {
+        margin-left: 10px;
+        font-size: 12px;
+
+        &.too-low {
+          color: red;
+        }
+        &.safe {
+          color: green;
+        }
       }
     }
   }

@@ -1,31 +1,29 @@
 import {
   login,
   getBalance,
-  getFund,
+  getFunds,
   getBillingRecords,
   getWalletAddress,
   getMetadata,
   setMetadata,
 } from '../services/user'
 import { stopDaemon } from '../services/daemon'
-
 import {
   MUT_SET_USER_DATA,
   ACT_GET_USER_DATA,
+  ACT_GET_USER_BALANCE,
   MUT_WRITE_USER_META_DATA,
   ACT_GET_USER_META_DATA,
   ACT_SET_USER_META_DATA,
-  // MUT_METADATA_ADD_FILE,
   ACT_METADATA_ADD_FILE,
-  // MUT_METADATA_REMOVE_FILE,
   ACT_METADATA_REMOVE_FILE,
-  // MUT_METADATA_MODIFY_FILE,
   ACT_METADATA_MODIFY_FILE,
   ACT_LOGIN,
+  MUT_SET_USER_PHRASE,
   ACT_LOGOUT,
   MUT_SET_BILLING_RECORDS,
   ACT_GET_BILLING_RECORDS,
-  ACT_REFRESH_FILE_LIST,
+  ACT_ADD_FILE_METADATA,
   MUT_CLEAR_USER_DATA,
   ACT_CLEAR_DATA,
 } from '../constants/store'
@@ -45,11 +43,15 @@ const store = {
   state: initialState,
   mutations: {
     [MUT_SET_USER_DATA](state, data) {
-      console.log('refresh user', data)
-      state.uid = data.uid || ''
-      state.nickname = data.nickname || ''
-      state.balance = data.balance || 0
-      state.address = data.uid || ''
+      console.log('setting user data', data)
+      state = Object.assign(state, data)
+      state.address = state.uid
+      console.log(state)
+      // state.uid = data.uid || ''
+      // state.nickname = data.nickname || ''
+      // state.balance = data.balance || 0
+      // state.fund = data.fund || 0
+      // state.address = data.uid || ''
     },
     [MUT_WRITE_USER_META_DATA](state, data) {
       console.log('set meta data', data)
@@ -64,34 +66,6 @@ const store = {
       console.log(data)
       state.metadata = data
     },
-    // [MUT_METADATA_ADD_FILE](state, file) {
-    //   // add a file and its info to metadata
-    //   console.log(state)
-    //   state.metadata.fileList[file.id] = {
-    //     filename: file.filename,
-    //     size: file.size,
-    //     type: file.type,
-    //     isSecure: file.isSecure,
-    //   }
-    // },
-    // [MUT_METADATA_REMOVE_FILE](state, fileId) {
-    //   delete state.metadata.fileList[fileId]
-    // },
-    /**
-     * modify file info in metadata
-     * @param state
-     * @param payload.fileId {String} id(objectHash) of file
-     * @param payload.data {Object} file info to modify
-     */
-    // [MUT_METADATA_MODIFY_FILE](state, payload) {
-    //   console.log('mutation file metadata ', payload.fileId, payload.data)
-    //   const fileMetadata = state.metadata.fileList[payload.fileId]
-    //   state.metadata.fileList[payload.fileId] = Object.assign(
-    //     {},
-    //     fileMetadata,
-    //     payload.data,
-    //   )
-    // },
     [MUT_SET_BILLING_RECORDS](state, records) {
       if (!records) {
         console.error('not passing billing records')
@@ -108,9 +82,9 @@ const store = {
     },
   },
   actions: {
-    [ACT_LOGIN](context, loginData) {
-      return login(loginData).then(
-        res => context.commit(MUT_SET_USER_DATA, res),
+    [ACT_LOGIN](context, seedPhrase) {
+      return login(seedPhrase).then(
+        () => context.commit(MUT_SET_USER_PHRASE, seedPhrase),
         err => {
           console.log('login error')
           console.log(err)
@@ -120,29 +94,38 @@ const store = {
     [ACT_GET_USER_DATA](context) {
       console.log('init user data')
       // wrap sdk calls with catch-resolve to prevent errors from interrupting Promise.all()
-      const dataGetters = [getWalletAddress, getBalance, getFund].map(func =>
-        func()
-          .then(res => res)
-          .catch(err => {
-            console.error(err)
-            return Promise.resolve('')
-          }),
-      )
-      return Promise.all(dataGetters)
-        .then(values => {
-          console.log(values)
-          // TODO: handle unlogin case
-          return context.commit(MUT_SET_USER_DATA, {
-            uid: values[0],
-            balance: values[1],
-            fund: values[2],
+      return getWalletAddress()
+        .then(address => {
+          context.commit(MUT_SET_USER_DATA, {
+            uid: address,
           })
+          return context.dispatch(ACT_GET_USER_BALANCE)
         })
         .then(() => context.dispatch(ACT_GET_USER_META_DATA))
         .catch(err => {
           console.error(err)
           return Promise.reject(err)
         })
+    },
+    [ACT_GET_USER_BALANCE](context) {
+      // get balance and funds
+      const dataGetters = [getBalance, getFunds].map(func =>
+        func(context.state.uid)
+          .then(res => res)
+          .catch(err => {
+            console.error(err)
+            return Promise.resolve('')
+          }),
+      )
+      return Promise.all(dataGetters).then(values => {
+        console.log('balance and funds got: ')
+        console.log(values)
+        // TODO: handle unlogin case
+        return context.commit(MUT_SET_USER_DATA, {
+          balance: values[0],
+          fund: values[1],
+        })
+      })
     },
     [ACT_GET_USER_META_DATA](context) {
       return getMetadata()
@@ -151,15 +134,15 @@ const store = {
           console.log(res)
           context.commit(MUT_WRITE_USER_META_DATA, res)
           // refresh file list
-          return context.dispatch(ACT_REFRESH_FILE_LIST)
+          return context.dispatch(ACT_ADD_FILE_METADATA)
         })
         .catch(err => {
           console.log('get metadata failed')
           console.error(err)
-          if (err.error.message === 'user is not exists') {
+          if (err.error && err.error.message === 'user is not exists') {
             return context
               .dispatch(ACT_SET_USER_META_DATA, context.state.metadata)
-              .then(() => context.dispatch(ACT_REFRESH_FILE_LIST))
+              .then(() => context.dispatch(ACT_ADD_FILE_METADATA))
           }
           context.commit(MUT_WRITE_USER_META_DATA, null)
           return Promise.resolve()
@@ -170,7 +153,7 @@ const store = {
       console.log(data)
       return setMetadata(data)
         .then(() => context.commit(MUT_WRITE_USER_META_DATA, data))
-        .then(() => context.dispatch(ACT_REFRESH_FILE_LIST))
+        .then(() => context.dispatch(ACT_ADD_FILE_METADATA))
         .catch(err => {
           console.log('set metadata failed')
           console.error(err)
@@ -202,7 +185,7 @@ const store = {
       return context.dispatch(ACT_SET_USER_META_DATA, newMetadata)
     },
     [ACT_GET_BILLING_RECORDS](context) {
-      return getBillingRecords().then(
+      return getBillingRecords(context.state.uid).then(
         res => context.commit(MUT_SET_BILLING_RECORDS, res),
         err => {
           console.log('get billing records error')

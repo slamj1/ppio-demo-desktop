@@ -10,16 +10,16 @@
         <div class="inner-wrap">
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
-            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input>
-            <span>chi</span>
+            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input><span>gchi</span>
+            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}} gchi</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Limit:</label>
-            <span>{{chiLimit}}</span>
+            <span>{{totalChi}}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Expected Cost:</label>
-            <span>{{estimatedCost}} PPCOIN</span>
+            <span>{{totalCost}} PPCoin</span>
           </div>
         </div>
       </div>
@@ -43,6 +43,8 @@ import filesize from 'filesize'
 import StepPopup from '@/components/StepPopup'
 import PaymentTable from '@/components/PaymentTable'
 import { DL_TASK } from '../../constants/store'
+import { getEstimateCost } from '../../services/download'
+import { gchiToPPCoin } from '../../utils/units'
 
 export default {
   name: 'download',
@@ -52,10 +54,9 @@ export default {
     steps: ['Settings', 'Payment'],
     options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
     radio: 1,
-    estimatedCost: 123,
     chiPrice: 100,
-    chiLimit: 12332,
-    downloadCost: 12,
+    totalChi: 0,
+    downloadChi: 0,
     preparingDownload: false,
   }),
   props: ['file'], // file is a /store/File.js object
@@ -64,8 +65,17 @@ export default {
     PaymentTable,
   },
   computed: {
+    recChiPrice() {
+      return this.$store.state.recChiPrice
+    },
     fileSizeStr() {
       return filesize(this.file.size)
+    },
+    totalCost: function() {
+      return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)
+    },
+    downloadCost: function() {
+      return gchiToPPCoin(this.downloadChi * this.chiPrice).toFixed(4)
     },
     paymentData() {
       return {
@@ -75,14 +85,32 @@ export default {
             fee: `${this.downloadCost} PPCoin`,
           },
         ],
-        totalCost: this.downloadCost,
+        totalCost: this.totalCost,
       }
+    },
+  },
+  watch: {
+    file: function() {
+      this.f_estimateCost()
     },
   },
   mounted() {
     this.preparingDownload = false
+    this.f_estimateCost()
   },
   methods: {
+    f_estimateCost() {
+      if (!this.file) {
+        return
+      }
+      return getEstimateCost({
+        size: this.file.size,
+      }).then(costs => {
+        this.totalChi = costs.reduce((acc, cur) => cur + acc, 0)
+        this.downloadChi = costs.reduce((acc, cur) => cur + acc, 0)
+        return costs
+      })
+    },
     f_prev() {
       this.curStep -= 1
     },
@@ -164,6 +192,18 @@ export default {
       .copy-input {
         width: 100px;
         margin-right: 8px;
+      }
+
+      .recommend-chiprice {
+        margin-left: 10px;
+        font-size: 12px;
+
+        &.too-low {
+          color: red;
+        }
+        &.safe {
+          color: green;
+        }
       }
     }
   }

@@ -13,5 +13,12 @@ export default class File {
     this.type = fileData.type || 'file'
     this.isSecure = !!fileData.isSecure
     this.isPublic = !!fileData.isPublic
+    this.startTime = fileData.startTime || 0
+    this.duration = fileData.duration || 0
+    if (this.startTime && this.duration) {
+      this.daysLeft = Math.ceil(
+        (this.startTime + this.duration - Math.round(Date.now() / 1000)) / 86400,
+      )
+    }
   }
 }

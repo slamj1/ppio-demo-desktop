@@ -10,7 +10,7 @@
     "test:unit": "vue-cli-service test:unit",
     "inspect-webpack": "vue-cli-service inspect > webpack.output.js",
     "rebuild": "electron-rebuild",
-    "electron:build": "vue-cli-service electron:build",
+    "electron:build": "vue-cli-service electron:build -mwl",
     "electron:serve": "vue-cli-service electron:serve"
   },
   "gitHooks": {
@@ -28,13 +28,14 @@
   },
   "main": "background.js",
   "dependencies": {
-    "electron-updater": "^3.1.6",
+    "bignumber.js": "^8.0.1",
+    "electron-updater": "^4.0.4",
     "element-ui": "^2.4.5",
     "filesize": "^3.6.1",
     "localforage": "^1.7.3",
     "lodash.clonedeep": "^4.5.0",
     "moment": "^2.22.2",
-    "ppio_sdk_npm": "^1.0.1-alpha.9",
+    "ppio_sdk_npm": "^1.0.1-alpha.10",
     "sanitize.css": "^8.0.0",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",

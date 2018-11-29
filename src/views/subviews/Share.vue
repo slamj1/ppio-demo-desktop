@@ -196,6 +196,8 @@ export default {
       margin-top: 20px;
       font-size: 12px;
       text-align: left;
+      margin-left: auto;
+      margin-right: auto;
     }
     .select {
       width: 120px;

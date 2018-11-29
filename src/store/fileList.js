@@ -7,7 +7,7 @@ import {
   MUT_SHARE_FILE,
   // MUT_GET_FILE,
   ACT_GET_FILE_LIST,
-  ACT_REFRESH_FILE_LIST,
+  ACT_ADD_FILE_METADATA,
   ACT_REMOVE_FILE,
   ACT_RENAME_FILE,
   // ACT_SECURE_FILE,
@@ -84,15 +84,7 @@ const store = {
               filename = item.id
               isSecure = item.isSecure // false
             }
-            const fileInfo = {
-              id: item.id,
-              filename,
-              size: item.size,
-              type: item.type || 'file',
-              isSecure,
-              isPublic: item.isPublic,
-            }
-            return new File(fileInfo)
+            return new File(Object.assign({}, { filename, isSecure }, item))
           })
           console.log(fileList)
           return context.commit(MUT_SET_FILE_LIST, fileList)
@@ -104,10 +96,10 @@ const store = {
       )
     },
     /**
-     * refresh file list when metadata changes
+     * add file metadata
      * @param context
      */
-    [ACT_REFRESH_FILE_LIST](context) {
+    [ACT_ADD_FILE_METADATA](context) {
       console.log('refreshing file list')
       const metaData = context.rootState.user.metadata
       const newList = context.state.fileList.map(file => {

@@ -201,7 +201,11 @@ export default class TaskStore {
                   isSecure: task.file.isSecure,
                 })
                   .then(res => ({ idx, res }))
-                  .catch(err => Promise.resolve({ idx, error: err }))
+                  .catch(err => {
+                    console.error('exporting object failed')
+                    console.error(err)
+                    return Promise.resolve({ idx, error: err })
+                  })
               }
             }),
           ).then(resultArr => {
@@ -209,10 +213,14 @@ export default class TaskStore {
               statusArr[result.idx].finished = true
               statusArr[result.idx].addingFileIndex = false
               statusArr[result.idx].exportingFile = false
+              console.log('task result :')
+              console.log(result)
               if (result.error) {
+                statusArr[result.idx].succeeded = false
                 statusArr[result.idx].failed = true
-                statusArr[result.idx].failMsg = result.error.toString()
+                statusArr[result.idx].failMsg = result.error.message.toString()
               } else {
+                statusArr[result.idx].succeeded = true
                 statusArr[result.idx].failed = false
                 statusArr[result.idx].failMsg = ''
               }

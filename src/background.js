@@ -1,31 +1,86 @@
 'use strict'
-const { app, protocol, BrowserWindow } = require('electron')
-const { createProtocol } = require('vue-cli-plugin-electron-builder/lib')
-const ppioUser = require('./ppiosdk')
+import fs from 'fs'
+import path from 'path'
+import { app, protocol, BrowserWindow } from 'electron'
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+import ppioUser, { setRpcPort } from './ppiosdk'
+import { RPC_PORT, GATEWAY_HOST } from './constants/ports'
 
-global.shareObject = {
-  test: 'Hello world!',
-}
+const genPort = () => RPC_PORT
 
 global.ppioUser = ppioUser
 
-global.daemonStarted = false
+// TODO: Support multi-user
+global.runningRPCPort = 0
+
+global.initDaemon = dataDir =>
+  // TODO: dynamically allocation rpcport
+  ppioUser.initDatadir({ datadir: dataDir }).then(configFilePath => {
+    try {
+      const ppioConfig = JSON.parse(fs.readFileSync(configFilePath))
+      const newRPCPort = genPort()
+      ppioConfig.RPCPort = newRPCPort
+      ppioConfig.Net.TCPPort = ppioConfig.Net.UDPPort = parseInt(
+        newRPCPort.toString().slice(1),
+      )
+      ppioConfig.Bootstrap.IP = GATEWAY_HOST
+      console.log('new config generated')
+      console.log(ppioConfig)
+      fs.writeFileSync(configFilePath, JSON.stringify(ppioConfig))
+    } catch (err) {
+      console.log('init daemon failed')
+      console.err(err)
+      return Promise.reject(err)
+    }
+    return true
+  })
 
 global.startDaemon = params => {
-  if (global.daemonStarted) {
-    return Promise.resolve(true)
+  if (global.runningRPCPort !== 0) {
+    console.log('daemon already started')
+    return Promise.resolve(global.runningRPCPort)
   }
-  return ppioUser.daemonStart(params).then(() => {
-    global.daemonStarted = true
-    return false
+
+  // const timer = () =>
+  //   new Promise(resolve => {
+  //     setTimeout(() => {
+  //       resolve()
+  //     }, 0)
+  //   })
+
+  return ppioUser.daemonStart(Object.assign(params, { bindip: '0.0.0.0' })).then(() => {
+    const datadirFiles = fs.readdirSync(params.datadir)
+    if (datadirFiles.length > 0 && datadirFiles.indexOf('ppio.conf') > -1) {
+      const configFilePath = path.join(params.datadir, './ppio.conf')
+      const ppioConfig = JSON.parse(fs.readFileSync(configFilePath))
+      let rpcPort = ppioConfig.RPCPort
+      global.runningRPCPort = rpcPort
+      setRpcPort(rpcPort)
+      console.log('Daemon restarted on port: ', rpcPort)
+      return rpcPort
+    }
+    global.runningRPCPort = 0
+    return Promise.reject(new Error('config file not found, daemon start failed!'))
   })
 }
 
-global.stopDaemon = params =>
-  ppioUser.daemonStop(params).then(() => {
-    global.daemonStarted = false
-    return true
-  })
+global.stopDaemon = () => {
+  if (global.runningRPCPort === 0) {
+    console.log('No daemon running!')
+    return Promise.resolve()
+  }
+  console.log('stopping daemon for ', global.runningRPCPort)
+  return ppioUser
+    .daemonStop({ rpcport: global.runningRPCPort })
+    .then(() => {
+      global.runningRPCPort = 0
+      return Promise.resolve()
+    })
+    .catch(() => {
+      global.runningRPCPort = 0
+      return Promise.resolve()
+    })
+}
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 

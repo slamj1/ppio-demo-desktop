@@ -34,11 +34,11 @@
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Limit:</label>
-            <span>{{chiLimit}}</span>
+            <span>{{totalChi}}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Expected Cost:</label>
-            <span>{{estimatedCost}} PPCOIN</span>
+            <span>{{estimatedCost}} PPCoin</span>
           </div>
         </div>
       </div>
@@ -47,27 +47,6 @@
         <div class="inner-wrap">
           <PaymentTable :payment-data="paymentData"></PaymentTable>
         </div>
-        <!--<div class="inner-wrap">-->
-          <!--<div class="line-wrap">-->
-            <!--<label class="line-label">Product:</label>-->
-            <!--<span class="text-1">Free</span>-->
-          <!--</div>-->
-          <!--<div class="line-wrap">-->
-            <!--<label class="line-label">Upload:</label>-->
-            <!--<span class="text-1">3.1G</span>-->
-            <!--<span class="text-2">34.12 PPCoin</span>-->
-          <!--</div>-->
-          <!--<div class="line-wrap">-->
-            <!--<label class="line-label">Storage:</label>-->
-            <!--<span class="text-1">3.1G/12Days</span>-->
-            <!--<span class="text-2">234.122 PPCoin(Fund)</span>-->
-          <!--</div>-->
-          <!--<div class="line"></div>-->
-          <!--<div class="line-wrap">-->
-            <!--<label class="line-label">Gas Limit:</label>-->
-            <!--<span class="text-2">268.122 PPCoin(Fund)</span>-->
-          <!--</div>-->
-        <!--</div>-->
       </div>
 
       <template slot="footer">
@@ -83,6 +62,7 @@ import filesize from 'filesize'
 import StepPopup from '@/components/StepPopup'
 import PaymentTable from '@/components/PaymentTable'
 import { renewFile } from '../../services/file'
+import { getEstimateCost } from '../../services/upload'
 
 export default {
   name: 'renew',
@@ -96,7 +76,7 @@ export default {
     radio: 1,
     copyCount: 5,
     estimatedCost: 123,
-    chiLimit: 12332,
+    totalChi: 0,
     storageCost: 123,
     renewing: false,
   }),
@@ -153,6 +133,22 @@ export default {
     this.renewing = false
   },
   methods: {
+    f_estimateCost() {
+      if (!this.file || this.copyCount === 0 || this.taskOptions.storageTime === 0) {
+        return
+      }
+      return getEstimateCost({
+        size: this.file.size,
+        copyCount: this.copyCount,
+        storageTime: this.taskOptions.storageTime,
+      }).then(costs => {
+        console.log(costs)
+        this.totalChi = costs.reduce((acc, cur) => cur + acc, 0)
+        this.storageChi = costs[0]
+        this.uploadChi = costs[1] + costs[2]
+        return costs
+      })
+    },
     f_prev() {
       this.curStep -= 1
     },

@@ -11,10 +11,10 @@ export const getFileInfoByShareCode = code =>
     // TODO: get file info from share code
     resolve({
       result: {
-        hashCode: 'd22bf98693531795ca8b13ec766df9b70af82581001e82d6c73a1a3629ba56ad',
+        hashCode: 'fb643353d6cb6012d81e9e5f8ffce281c2df0eae3e844078f95750c3c22305f6',
         ownerId:
           '0025080212210302ac7cd300d311299ef1fd4a4c7ccdda413271afa44a14eee94414aa5e63942b',
-        filename: '111.sketch',
+        filename: 'Hopper.4.3.3.dmg',
         fileType: 'plain',
         encryptKey: APP_SECURE_KEY,
         size: parseInt(Math.random() * 10000000),

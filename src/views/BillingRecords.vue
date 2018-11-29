@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     f_getTime(timestamp) {
-      return moment(timestamp).format('YYYY/MM/DD hh:mm')
+      return moment(timestamp).format('YYYY/MM/DD hh:mm:ss')
     },
     f_close() {
       this.$vueBus.$emit(this.$events.CLOSE_BILLING_RECORDS)

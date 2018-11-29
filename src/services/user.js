@@ -8,10 +8,8 @@ export const login = seedPhrase => {
   // TODO: get user id by seedPhrase/privateKey
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (seedPhrase === 'success') {
-        resolve(
-          '00250802122102416bc64849b47a4ce3689a4b8da2273794a287c50189cd58753cfc767b3149c9',
-        )
+      if (seedPhrase.length > 0) {
+        resolve(seedPhrase.replace(' ', ''))
       } else {
         reject(new Error('fail'))
       }
@@ -36,9 +34,15 @@ export const getWalletAddress = () =>
     return res
   })
 
-export const getBalance = () => Promise.resolve()
+export const getBalance = walletId => {
+  console.log('getting balance for ', walletId)
+  return ppioUser.walletBalance({ walletId }).then(res => parseInt(res))
+}
 
-export const getFund = () => Promise.resolve()
+export const getFunds = walletId => {
+  console.log('getting funds for ', walletId)
+  return ppioUser.walletFunds({ walletId }).then(res => parseInt(res))
+}
 
 export const getMetadata = () =>
   ppioUser.metadataGet().then(res => {
@@ -72,30 +76,24 @@ export const setMetadata = data => {
   })
 }
 
-export const getBillingRecords = () =>
-  new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve([
-        {
-          timestamp: 1541141825775,
-          product: 'Storage fee - 12.00G - 1000Days',
-          transaction: '-100.00PPCoin',
-        },
-        {
-          timestamp: 1541132025775,
-          product: 'Download fee - 4M',
-          transaction: '-10.00PPCoin',
-        },
-        {
-          timestamp: 1541131825775,
-          product: 'Storage fee - 100.00G - 50Days',
-          transaction: '-500.00PPCoin',
-        },
-        {
-          timestamp: 1541111525775,
-          product: 'Storage fee - 1.00G - 1000Days',
-          transaction: '-50.00PPCoin',
-        },
-      ])
-    }, 1000)
+export const getBillingRecords = walletId =>
+  //   Timestamp: '2018-11-23T21:36:35+08:00',
+  //   Type: 'deposit',
+  //   From:
+  //   '00250802122102416bc64849b47a4ce3689a4b8da2273794a287c50189cd58753cfc767b3149c9',
+  //     To:
+  //   '002508021221036e583cb64b75cb6fd7d8ea6f8f952c65813177fa4d69f05a881b57963a4538b5',
+  //     Amount: 1000000000,
+  //   Gain: true,
+  //   Memo: ''
+  ppioUser.purchaseRecords({ walletId }).then(res => {
+    console.log('purchase records got: ')
+    console.log(res)
+    return res.map(item => ({
+      timestamp: new Date(item.Timestamp).getTime(),
+      product: `${item.Memo || ''} - ${item.Type}`,
+      transaction: `${item.Amount}PPCoin`,
+    }))
   })
+
+export const getChiPrice = () => ppioUser.chiPrice().then(res => parseInt(res))

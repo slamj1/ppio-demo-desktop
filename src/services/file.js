@@ -3,50 +3,50 @@ import { remote } from 'electron'
 const ppioUser = remote.getGlobal('ppioUser')
 
 export const getObjectList = () =>
-  ppioUser
-    .objectList()
-    .then(res => {
-      console.log('get file list')
-      console.log(res)
-      if (res) {
-        const objectList = res.map(file => {
-          const fileInfo = file.ObjectBasicInfo
-          return {
-            id: fileInfo.ObjectHash,
-            filename: fileInfo.ObjectHash,
-            size: fileInfo.ObjectLength,
-            type: 'file',
-            isSecure: false,
-            isPublic: fileInfo.ObjectAclType === 'Public',
-          }
-        })
+  ppioUser.objectList().then(res => {
+    console.log('get file list')
+    console.log(res)
+    if (res) {
+      const objectList = res.map(file => {
+        const fileInfo = file.ObjectBasicInfo
+        // File.js
+        return {
+          id: fileInfo.ObjectHash,
+          filename: fileInfo.ObjectHash,
+          size: fileInfo.ObjectLength,
+          type: 'file',
+          isSecure: false,
+          isPublic: fileInfo.ObjectAclType === 'Public',
+        }
+      })
 
-        const getDetailsReqArr = objectList.map(file =>
-          getObjectStatus(file.id)
-            .then(res => {
-              console.log('get object details success')
-              console.log(res)
-              return Object.assign({}, file, {
-                isDeal: res[0].ContractStatus === 'US_DEAL',
-              })
+      const getDetailsReqArr = objectList.map(file =>
+        getObjectStatus(file.id)
+          .then(res => {
+            console.log('get object details success')
+            console.log(res)
+            // File.js
+            return Object.assign({}, file, {
+              isDeal: res[0].ContractStatus === 'US_DEAL',
+              contractId: res[0].ContractId,
+              startTime: res[0].StartTime,
+              duration: res[0].Duration,
             })
-            .catch(err => {
-              console.log('get object details error')
-              console.error(err)
-              return Promise.resolve(Object.assign({}, file))
-            }),
-        )
+          })
+          .catch(err => {
+            console.log('get object details error')
+            console.error(err)
+            return Promise.resolve(Object.assign({}, file))
+          }),
+      )
 
-        return Promise.all(getDetailsReqArr).then(detailedObjectList => {
-          console.log(detailedObjectList)
-          return detailedObjectList.filter(res => res.isDeal)
-        })
-      }
-      return []
-    })
-    .catch(err => {
-      console.error(err)
-    })
+      return Promise.all(getDetailsReqArr).then(detailedObjectList => {
+        console.log(detailedObjectList)
+        return detailedObjectList.filter(res => res.isDeal)
+      })
+    }
+    return []
+  })
 
 export const getObjectStatus = async objectHash => {
   console.log('get object status')

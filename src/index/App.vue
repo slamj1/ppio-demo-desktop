@@ -8,10 +8,11 @@
 </template>
 
 <script>
+import fs from 'fs'
 import { remote } from 'electron'
 import storage from 'localforage'
 import { APP_STATE_PERSIST_KEY } from '../constants/constants'
-import { ACT_GET_USER_DATA } from '../constants/store'
+import { ACT_GET_USER_DATA, MUT_SET_RPC_PORT, ACT_LOGOUT } from '../constants/store'
 import { startDaemon } from '../services/daemon'
 
 export default {
@@ -30,7 +31,7 @@ export default {
         console.log('init app state')
         console.log(val)
         if (val) {
-          if (val.dataDir.length > 0 && val.user.uid.length > 0) {
+          if (val.dataDir.length > 0 && val.phrase.length > 0) {
             this.$store.replaceState(val)
             return val
           }
@@ -42,38 +43,39 @@ export default {
         console.log('data init failed.')
         console.log(err)
         this.initializing = false
-        remote.getCurrentWindow().setSize(1000, 670, true)
-        this.$router.push({ name: 'account/import' })
+        this.$store
+          .dispatch(ACT_LOGOUT)
+          .then(() => {
+            remote.getCurrentWindow().setSize(1000, 670, true)
+            return this.$router.push({ name: 'account/import' })
+          })
+          .catch(() => {})
       })
   },
   methods: {
     f_startApp() {
-      console.log('starting app')
-      const startPpioDaemon = () => {
-        console.log('starting daemon ', Date.now())
-        const timer = () =>
-          new Promise(resolve => {
-            setTimeout(() => {
-              resolve()
-            }, 8000)
-          })
-
-        return startDaemon(this.$store.state.dataDir).then(hasStarted => {
-          console.log('daemon started')
-          if (hasStarted) {
-            return true
-          }
-          return timer()
-        })
+      console.log('starting app at ', this.$store.state.dataDir)
+      try {
+        fs.readdirSync(this.$store.state.dataDir)
+      } catch (err) {
+        return Promise.reject(err)
       }
-
-      return startPpioDaemon()
-        .then(() => this.$store.dispatch(ACT_GET_USER_DATA))
+      return startDaemon(this.$store.state.dataDir)
+        .then(port => {
+          this.$store.commit(MUT_SET_RPC_PORT, port)
+          return this.$store.dispatch(ACT_GET_USER_DATA)
+        })
         .then(() => {
           console.log('data init finished')
           this.initializing = false
           remote.getCurrentWindow().setSize(1000, 670, true)
-          return this.$router.push({ name: 'files' })
+          if (this.$store.state.phrase.length > 0) {
+            return this.$router.push({ name: 'files' })
+          }
+          console.log('get user data failed, redirecting to import account page')
+          return this.$store
+            .dispatch(ACT_LOGOUT)
+            .then(() => this.$router.push({ name: 'account/import' }))
         })
     },
   },

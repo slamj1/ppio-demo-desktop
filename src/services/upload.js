@@ -23,6 +23,16 @@ export const importObject = async params => {
   }
 }
 
+export const getEstimateCost = params => {
+  console.log('request upload file cost')
+  console.log(params)
+  return ppioUser.putCost({
+    size: params.size,
+    copies: params.copyCount,
+    duration: params.storageTime,
+  })
+}
+
 export const startUpload = async params => {
   console.log('start upload service')
   console.log(params)

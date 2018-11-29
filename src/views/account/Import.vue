@@ -10,7 +10,7 @@
     <div class="form-wrap">
       <p class="title">Enter your Private Key</p>
       <el-input type="textarea" :autofocus="true" :rows="4" resize="none" placeholder="enter your Private Key" v-model="seedPhrase" class="seed-phrase-input"> </el-input>
-      <el-alert v-show="errorMsg != ''" :title="errorMsg" type="error" :closable="false"></el-alert>
+      <el-alert v-show="errorMsg !== ''" :title="errorMsg" type="error" :closable="false"></el-alert>
       <el-button :loading="logingLoading" class="login-button" type="primary" @click="f_import">Confirm</el-button>
       <p>Don't have an Private Key? <a class="wallet-link" @click="f_goWallet">Generate one</a></p>
     </div>
@@ -20,7 +20,7 @@
 import electron from 'electron'
 import storage from 'localforage'
 import { walletUrl, USER_STATE_PERSIST_KEY } from '../../constants/constants'
-import { login } from '../../services/user'
+import { ACT_LOGIN } from '../../constants/store'
 
 export default {
   name: 'AccountImport',
@@ -32,16 +32,17 @@ export default {
   methods: {
     f_import() {
       this.logingLoading = true
-      login(this.seedPhrase)
-        .then(uid => {
-          console.log(uid)
-          return storage.getItem(`${USER_STATE_PERSIST_KEY}_${uid}`)
+      this.$store
+        .dispatch(ACT_LOGIN, this.seedPhrase)
+        .then(() => {
+          console.log(`${USER_STATE_PERSIST_KEY}_${this.seedPhrase}`)
+          return storage.getItem(`${USER_STATE_PERSIST_KEY}_${this.seedPhrase}`)
         })
         .then(val => {
           console.log('restore app state')
           console.log(val)
           if (val) {
-            if (val.dataDir.length > 0 && val.user.uid.length > 0) {
+            if (val.dataDir.length > 0 && val.phrase.length > 0) {
               this.$store.replaceState(val)
               return this.$emit('startApp')
             }

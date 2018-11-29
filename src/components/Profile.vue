@@ -5,7 +5,7 @@
     </div>
     <div class="profile-data">
       <el-table
-          class="profile-table"
+          class="ppio-plain-table profile-table"
           :data="profileData"
           :show-header="false"
           :row-class-name="getRowClassName"
@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import { gchiToPPCoin } from '../utils/units'
+
 export default {
   props: ['userData'],
   computed: {
@@ -36,12 +38,12 @@ export default {
         {
           key: 'balance',
           label: 'Balance',
-          val: this.userData.balance,
+          val: `${gchiToPPCoin(this.userData.balance).toFixed(2)} PPCoin`,
         },
         {
           key: 'func',
           label: 'Fund',
-          val: this.userData.fund,
+          val: `${gchiToPPCoin(this.userData.fund).toFixed(2)} PPCoin`,
         },
         {
           key: 'record',

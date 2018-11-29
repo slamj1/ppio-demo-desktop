@@ -34,7 +34,7 @@
   </div>
 </template>
 <script>
-import { generatePhraseSeed, login } from '@/services/user'
+import { generatePhraseSeed, login } from '../../services/user'
 
 const { clipboard } = require('electron')
 const { dialog } = require('electron').remote
@@ -98,9 +98,9 @@ export default {
         this.confirmLoading = true
         login(this.seedPhrase)
           .then(
-            data => {
+            seedPhrase => {
               this.$router.replace('/home')
-              return console.log(data)
+              return console.log(seedPhrase)
             },
             err => {
               this.errorMsg = err.toString()

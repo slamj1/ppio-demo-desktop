@@ -17,6 +17,7 @@
         </svg>
       </template>
     </p>
+    <p class="days-left" v-if="!isGetting && !getFailed">{{file.daysLeft}} days left</p>
   </div>
 </template>
 <script>
@@ -131,6 +132,11 @@ $file-item-width: 105px;
 
   &.selected .filename {
     color: $primary-color;
+  }
+
+  .days-left {
+    color: #bfbfbf;
+    font-size: 12px;
   }
 }
 </style>

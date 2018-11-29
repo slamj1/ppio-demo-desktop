@@ -51,6 +51,7 @@ import { remote } from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
 import {
   ACT_GET_FILE_LIST,
+  ACT_ADD_FILE_METADATA,
   ACT_GET_FILE,
   ACT_REMOVE_FILE,
   GET_TASK,
@@ -103,6 +104,20 @@ export default {
 
   activated() {
     this.f_getFileList()
+      .then(() => {
+        for (let i = 0; i < this.fileList.length; i++) {
+          if (this.fileList[i].daysLeft < 2) {
+            this.$message.info(
+              'There are some files about to expire. RENEW to save them from being deleted.',
+            )
+            break
+          }
+        }
+        return true
+      })
+      .catch(() => {
+        this.$message.error('Get file list failed')
+      })
     console.log('files page activated')
     console.log(this.gettingTaskList)
     this.f_updateGetStatus()
@@ -111,6 +126,7 @@ export default {
   methods: {
     ...mapActions({
       getFileList: ACT_GET_FILE_LIST,
+      addFileMetadata: ACT_ADD_FILE_METADATA,
       getFile: ACT_GET_FILE,
     }),
     f_updateGetStatus() {
@@ -152,7 +168,7 @@ export default {
       return this.getFileList()
         .then(() => {
           this.fetchingData = false
-          return ''
+          return this.addFileMetadata()
         })
         .catch(err => {
           this.fetchingData = false

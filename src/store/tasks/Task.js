@@ -23,6 +23,7 @@ export class TaskStatus {
     this.addingFileIndex = false // adding file to metadata after upload
     this.exportingFile = false // exporting file after download
     this.finished = false
+    this.succeeded = false
     this.failed = false
     this.failMsg = ''
   }

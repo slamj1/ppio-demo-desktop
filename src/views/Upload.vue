@@ -5,7 +5,7 @@
       :tableData="taskList">
     <template slot="operations" slot-scope="operationProps">
       <span class="task-operate-btn delete-btn" v-if="operationProps.task.status.failed || operationProps.task.status.finished" @click="f_delete(operationProps.index)"><i class="el-icon el-icon-delete"></i></span>
-      <span class="task-operate-btn cancel-btn" v-if="operationProps.task.status.transferringData" @click="f_cancel(operationProps.index)"><i class="el-icon el-icon-close"></i></span>
+      <!--<span class="task-operate-btn cancel-btn" v-if="operationProps.task.status.transferringData" @click="f_cancel(operationProps.index)"><i class="el-icon el-icon-close"></i></span>-->
     </template>
   </TransferTable>
 </template>
@@ -49,7 +49,8 @@ export default {
     f_delete(index) {
       const toDelete = window.confirm('Are you sure to delete the task?')
       if (toDelete) {
-        this.$store.commit(UL_TASK.MUT_REMOVE_TASK, index)
+        const cancelIdx = index - this.$store.state.uploadTask.taskQueue.length
+        this.$store.commit(UL_TASK.MUT_REMOVE_TASK, cancelIdx)
       }
     },
     f_updateStatus() {
