@@ -26,8 +26,8 @@ export const getFile = async params => {
   console.log('get file service fired')
   console.log(params)
 
-  try {
-    await ppioUser.objectCopy({
+  return ppioUser
+    .objectCopy({
       copies: params.copies,
       duration: params.duration,
       gasprice: params.chiPrice,
@@ -36,15 +36,7 @@ export const getFile = async params => {
       owner: params.ownerId,
       auth: '',
     })
-
-    return {
-      taskId: params.objectHash,
-    }
-  } catch (err) {
-    console.error('get object error')
-    console.error(err)
-    return err
-  }
+    .then(() => ({ taskId: params.objectHash }))
 }
 
 export const cancelGet = taskId => Promise.resolve(taskId)

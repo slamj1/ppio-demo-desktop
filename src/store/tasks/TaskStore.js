@@ -46,7 +46,8 @@ export default class TaskStore {
 
     // mutation methods
     const m_addTask = (state, data) => {
-      console.log('adding new task')
+      console.log('adding new task ', taskType)
+      console.log(data)
       const newTask = new Task({
         type: taskType,
         ...data,
@@ -119,8 +120,9 @@ export default class TaskStore {
           return context.commit(STORE_KEYS.MUT_ADD_TASK, newTask)
         })
         .catch(err => {
-          console.log(err)
-          return Promise.reject(new Error(err))
+          console.error('create task error')
+          console.error(err)
+          return Promise.reject(err)
         })
     }
 

@@ -204,8 +204,9 @@ export default {
           return this.$vueBus.$emit(this.$events.GET_FILE_DONE)
         })
         .catch(err => {
-          this.$notify.error({ title: err.toString(), duration: 2000 })
-          console.error(err.toString())
+          console.log(err)
+          this.$notify.error({ title: err.message, duration: 2000 })
+          console.error(err.message)
         })
     },
   },
