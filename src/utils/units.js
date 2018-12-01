@@ -4,8 +4,8 @@
 import { BigNumber } from 'bignumber.js'
 
 const conversion = {
-  chi2ppcoin: BigNumber('10e-18'),
-  ppcoin2chi: BigNumber('10e18'),
+  chi2ppcoin: BigNumber('1e-18'),
+  ppcoin2chi: BigNumber('1e18'),
 }
 
 export const chiToPPCoin = chi => conversion.chi2ppcoin.times(chi)
