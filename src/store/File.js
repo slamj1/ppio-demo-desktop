@@ -1,4 +1,5 @@
 // TODO: refactor File to PPFile to distinct from javascript File
+// TODO: add multiple file types to determine from real-file/shown-in-list/download/upload etc.
 // Cannot call instance method to mutate its props
 // Must be in vuex mutations
 

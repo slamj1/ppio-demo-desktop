@@ -13,31 +13,21 @@ import {
   // ACT_SECURE_FILE,
   ACT_SHARE_FILE,
   // ACT_GET_FILE,
-  USAGE_PERCENT_GETTER,
   USAGE_STORAGE_GETTER,
   ACT_METADATA_MODIFY_FILE,
   MUT_CLEAR_FILE_DATA,
   ACT_METADATA_REMOVE_FILE,
 } from '../constants/store'
-import { APP_MODE_COINPOOL } from '../constants/constants'
 import { deleteFile, getObjectList, changeObjectAcl } from '../services/file'
-import File from './File'
 
 const initialState = () => ({
   fileList: [],
   usedStorage: 0,
-  capacity: 0,
 })
 
 const store = {
   state: initialState,
   getters: {
-    [USAGE_PERCENT_GETTER]: (state, getters, rootState) => {
-      if (rootState.appMode === APP_MODE_COINPOOL) {
-        return (state.usedStorage / state.capacity) * 100
-      }
-      return 0
-    },
     [USAGE_STORAGE_GETTER]: state => filesize(state.usedStorage),
   },
   mutations: {
@@ -73,25 +63,14 @@ const store = {
   actions: {
     [ACT_GET_FILE_LIST](context) {
       return getObjectList().then(
-        res => {
-          const fileList = res.map(item => {
-            let fileMetadata, filename, isSecure
-            // TODO: Unstable. Sometimes cannot get filename
-            if ((fileMetadata = context.rootState.user.metadata.fileList[item.id])) {
-              filename = fileMetadata.filename
-              isSecure = fileMetadata.isSecure
-            } else {
-              filename = item.id
-              isSecure = item.isSecure // false
-            }
-            return new File(Object.assign({}, { filename, isSecure }, item))
-          })
+        fileList => {
           console.log(fileList)
           return context.commit(MUT_SET_FILE_LIST, fileList)
         },
         err => {
           console.log('set file list error')
           console.log(err)
+          return Promise.reject(err)
         },
       )
     },
@@ -121,7 +100,10 @@ const store = {
           context.commit(MUT_REMOVE_FILE, payload.fileIndex)
           return context.dispatch(ACT_METADATA_REMOVE_FILE, payload.file.id)
         },
-        err => console.error(err),
+        err => {
+          console.error(err)
+          return Promise.reject(err)
+        },
       )
     },
     [ACT_RENAME_FILE](context, payload) {
@@ -150,7 +132,7 @@ const store = {
         err => {
           console.error('publish file failed')
           console.error(err)
-          return err
+          return Promise.reject(err)
         },
       )
     },

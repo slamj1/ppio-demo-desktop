@@ -26,16 +26,19 @@
       "git add"
     ]
   },
-  "main": "background.js",
+  "main": "background/background.js",
   "dependencies": {
     "bignumber.js": "^8.0.1",
+    "bip39": "^2.5.0",
     "electron-updater": "^4.0.4",
     "element-ui": "^2.4.5",
     "filesize": "^3.6.1",
     "localforage": "^1.7.3",
     "lodash.clonedeep": "^4.5.0",
     "moment": "^2.22.2",
+    "portscanner": "^2.2.0",
     "ppio_sdk_npm": "^1.0.1-alpha.10",
+    "safe-buffer": "^5.1.2",
     "sanitize.css": "^8.0.0",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",

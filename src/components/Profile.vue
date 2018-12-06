@@ -23,44 +23,79 @@
         </el-table-column>
       </el-table>
     </div>
+    <div class="cpool-renew" @click="f_renew">Renew service</div>
     <div class="logout-btn" @click="f_logout">Log out</div>
   </div>
 </template>
 
 <script>
+import moment from 'moment'
 import { gchiToPPCoin } from '../utils/units'
+import { APP_MODE_NON_COINPOOL, APP_MODE_COINPOOL } from '../constants/constants'
 
 export default {
-  props: ['userData'],
   computed: {
-    profileData() {
-      return [
-        {
-          key: 'balance',
-          label: 'Balance',
-          val: `${gchiToPPCoin(this.userData.balance).toFixed(2)} PPCoin`,
-        },
-        {
-          key: 'func',
-          label: 'Fund',
-          val: `${gchiToPPCoin(this.userData.fund).toFixed(2)} PPCoin`,
-        },
-        {
-          key: 'record',
-          label: 'Record',
-          val: '',
-        },
-        {
-          key: 'version',
-          label: 'Version',
-          val: `Demo(v${this.$store.state.appVersion})`,
-        },
-        {
-          key: 'checkupdate',
-          label: 'Check update',
-          val: '',
-        },
-      ]
+    userData: function() {
+      return this.$store.state.user
+    },
+    profileData: function() {
+      if (this.$store.state.appMode === APP_MODE_NON_COINPOOL) {
+        return [
+          {
+            key: 'balance',
+            label: 'Balance',
+            val: `${gchiToPPCoin(this.userData.balance).toFixed(2)} PPCoin`,
+          },
+          {
+            key: 'func',
+            label: 'Fund',
+            val: `${gchiToPPCoin(this.userData.fund).toFixed(2)} PPCoin`,
+          },
+          {
+            key: 'record',
+            label: 'Record',
+            val: '',
+          },
+          {
+            key: 'version',
+            label: 'Version',
+            val: `Demo(v${this.$store.state.appVersion})`,
+          },
+          {
+            key: 'checkupdate',
+            label: 'Check update',
+            val: '',
+          },
+        ]
+      } else if (this.$store.state.appMode === APP_MODE_COINPOOL) {
+        return [
+          {
+            key: 'cpool',
+            label: 'My coin pool',
+            val: this.userData.cpoolData.cpoolName,
+          },
+          {
+            key: 'plan',
+            label: 'Plan',
+            val: this.userData.cpoolData.planName,
+          },
+          {
+            key: 'expires',
+            label: 'Expire date',
+            val: moment(this.userData.cpoolData.expires).format('YYYY/MM/DD'),
+          },
+          {
+            key: 'version',
+            label: 'Version',
+            val: `Demo(v${this.$store.state.appVersion})`,
+          },
+          {
+            key: 'checkupdate',
+            label: 'Check update',
+            val: '',
+          },
+        ]
+      }
     },
   },
   methods: {
@@ -127,6 +162,20 @@ export default {
   }
 
   .logout-btn {
+    text-align: center;
+    height: 34px;
+    line-height: 34px;
+    font-size: 14px;
+    border-top: 1px solid #dcdfe6;
+    color: #f56c6c;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #f5f7fa;
+    }
+  }
+
+  .cpool-renew {
     text-align: center;
     height: 34px;
     line-height: 34px;

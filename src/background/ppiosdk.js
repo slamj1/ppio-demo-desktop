@@ -1,6 +1,6 @@
 import path from 'path'
 import ppio from 'ppio-sdk'
-import { GATEWAY_URL } from './constants/ports'
+import { GATEWAY_URL } from '../constants/ports'
 
 /* -------------sdk----------- */
 if (process.env.NODE_ENV === 'production') {
@@ -17,7 +17,8 @@ const baseParams = {
 }
 
 export function setRpcPort(port) {
-  baseParams.rpcport = port
+  // baseParams.rpcport = port
+  ppio.setGlobalRpcPort(port)
 }
 
 const proxySdk = {}

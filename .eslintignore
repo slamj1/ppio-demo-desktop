@@ -40,6 +40,7 @@ package-lock.json
 yarn.lock
 package.json
 /webpack.output.js
+ppwallet
 
 .idea
 npm-debug.log.*

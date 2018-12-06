@@ -3,7 +3,7 @@ import { remote } from 'electron'
 const ppioUser = remote.getGlobal('ppioUser')
 
 export const getObjectList = () =>
-  ppioUser.objectList().then(res => {
+  ppioUser.listObjects().then(res => {
     console.log('get file list')
     console.log(res)
     if (res) {
@@ -11,32 +11,41 @@ export const getObjectList = () =>
         const fileInfo = file.ObjectBasicInfo
         // File.js
         return {
-          id: fileInfo.ObjectHash,
-          filename: fileInfo.ObjectHash,
-          size: fileInfo.ObjectLength,
-          type: 'file',
-          isSecure: false,
-          isPublic: fileInfo.ObjectAclType === 'Public',
+          id: fileInfo.key,
+          isSecure: true, // all files are encrypted in demo verison
         }
       })
 
-      const getDetailsReqArr = objectList.map(file =>
-        getObjectStatus(file.id)
+      const getDetailsReqArr = objectList.map(object =>
+        getObjectStatus(object.id)
           .then(res => {
-            console.log('get object details success')
+            console.log('get contract details success')
             console.log(res)
             // File.js
-            return Object.assign({}, file, {
+            return Object.assign({}, object, {
               isDeal: res[0].ContractStatus === 'US_DEAL',
               contractId: res[0].ContractId,
               startTime: res[0].StartTime,
               duration: res[0].Duration,
             })
           })
+          .then(object => headObject(object.id))
+          .then(res => {
+            console.log('get object info success')
+            console.log(res)
+            if (!res.Metadata.filename) {
+              console.log('no file name for ', object.id)
+            }
+            return Object.assign({}, object, {
+              size: res.ContentLength,
+              metadata: res.Metadata,
+              filename: res.Metadata.filename || '',
+            })
+          })
           .catch(err => {
             console.log('get object details error')
             console.error(err)
-            return Promise.resolve(Object.assign({}, file))
+            return Promise.resolve(Object.assign({}, object))
           }),
       )
 
@@ -48,30 +57,19 @@ export const getObjectList = () =>
     return []
   })
 
-export const getObjectStatus = async objectHash => {
+export const getObjectStatus = objectKey => {
   console.log('get object status')
-  console.log(objectHash)
-  return ppioUser.objectStatus({ objectHash: [objectHash] }).then(
-    res => res,
-    err => {
-      console.error('get upload object status error')
-      console.error(err)
-      return err
-    },
-  )
+  console.log(objectKey)
+  return ppioUser.objectStatus({ key: objectKey }).catch(err => {
+    console.error('get upload object status error')
+    console.error(err)
+    return Promise.reject(err)
+  })
 }
 
-export const getStorageStatus = async objectHash => {
-  console.log('get storage status')
-  console.log(objectHash)
-  return ppioUser.storageObject({ objectHash: [objectHash] }).then(
-    res => res,
-    err => {
-      console.error('get upload object status error')
-      console.error(err)
-      return err
-    },
-  )
+export const headObject = objectKey => {
+  console.log('getting object metadata')
+  return ppioUser.headObject({ key: objectKey })
 }
 
 export const changeObjectAcl = params => {
@@ -100,9 +98,9 @@ export const renameFile = id =>
     }
   })
 
-export const deleteFile = objectHash => {
+export const deleteFile = objectKey => {
   console.log('delete file service fired')
-  return ppioUser.objectDelete({ objectHash })
+  return ppioUser.deleteObject({ key: objectKey })
 }
 
 export const renewFile = params => {

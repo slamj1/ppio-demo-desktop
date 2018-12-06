@@ -31,7 +31,7 @@ export default {
         console.log('init app state')
         console.log(val)
         if (val) {
-          if (val.dataDir.length > 0 && val.phrase.length > 0) {
+          if (val.dataDir.length > 0 && val.address.length > 0) {
             this.$store.replaceState(val)
             return val
           }
@@ -53,14 +53,17 @@ export default {
       })
   },
   methods: {
-    f_startApp() {
-      console.log('starting app at ', this.$store.state.dataDir)
+    f_startApp(account) {
       try {
         fs.readdirSync(this.$store.state.dataDir)
       } catch (err) {
         return Promise.reject(err)
       }
-      return startDaemon(this.$store.state.dataDir)
+      const privKey = account.getPrivateKeyString()
+      console.log(
+        `starting app at ${this.$store.state.dataDir}, with private key: ${privKey}`,
+      )
+      return startDaemon(this.$store.state.dataDir, privKey)
         .then(port => {
           this.$store.commit(MUT_SET_RPC_PORT, port)
           return this.$store.dispatch(ACT_GET_USER_DATA)
@@ -69,7 +72,7 @@ export default {
           console.log('data init finished')
           this.initializing = false
           remote.getCurrentWindow().setSize(1000, 670, true)
-          if (this.$store.state.phrase.length > 0) {
+          if (this.$store.state.address.length > 0) {
             return this.$router.push({ name: 'files' })
           }
           console.log('get user data failed, redirecting to import account page')

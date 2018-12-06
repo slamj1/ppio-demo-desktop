@@ -61,6 +61,7 @@ export default {
         .then(() => this.$emit('startApp'))
         .catch(err => {
           console.error('init daemon failed, ', err)
+          this.$message.error('App start failed')
         })
     },
   },

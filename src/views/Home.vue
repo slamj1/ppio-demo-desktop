@@ -2,17 +2,17 @@
   <el-container class="app-page home">
     <el-aside class="app-aside" mode="vertical" width="200px">
       <el-popover class="aside-profile" v-model="showProfile" @show="onProfileShow">
-        <Profile :userData="userData" @check-billing="f_goBilling" @check-update="f_checkUpdate" @logout="f_logout"></Profile>
+        <Profile @check-billing="f_goBilling" @check-update="f_checkUpdate" @logout="f_logout"></Profile>
         <div class="profile-wrapper" slot="reference">
           <img class="profile-avatar" :src="userData.avatar" />
           <div class="profile-userinfo">
             <span class="profile-username">{{userData.address}}</span>
             <template v-if="appMode === APP_MODE_COINPOOL">
               <el-progress class="usage-progress" :percentage="usagePercent" :show-text="false"></el-progress>
-              <span class="usage-number with-progress">{{userData.usedStorage}}G/{{userData.capacity}}G</span>
+              <span class="usage-number with-progress">{{usedStorageStr}}/{{userData.capacity}}</span>
             </template>
             <template v-else>
-              <span class="usage-number">Used: {{usedStorage}}</span>
+              <span class="usage-number">Used: {{usedStorageStr}}</span>
             </template>
           </div>
         </div>
@@ -54,7 +54,6 @@ import { APP_MODE_COINPOOL } from '../constants/constants'
 import {
   DL_TASK,
   UL_TASK,
-  USAGE_PERCENT_GETTER,
   USAGE_STORAGE_GETTER,
   ACT_LOGOUT,
   ACT_START_POLLING_CHI_PRICE,
@@ -98,13 +97,17 @@ export default {
     ...mapState({
       userData: state => state.user,
       appMode: state => state.appMode,
-      usedStorage: state => state.file.usedStorage,
+      usagePercent: state => {
+        if (state.appMode === APP_MODE_COINPOOL) {
+          return (state.file.usedStorage / state.user.cpoolData.capacity) * 100
+        }
+        return 0
+      },
     }),
     ...mapGetters({
       downloadCount: DL_TASK.GET_TASK_COUNT,
       uploadCount: UL_TASK.GET_TASK_COUNT,
-      usagePercent: USAGE_PERCENT_GETTER,
-      usedStorage: USAGE_STORAGE_GETTER,
+      usedStorageStr: USAGE_STORAGE_GETTER, // in file size string
     }),
     curRoutePath() {
       return this.$route.path.split('/').slice(-1)[0]
@@ -135,6 +138,14 @@ export default {
     f_checkUpdate() {
       this.showProfile = false
       electron.shell.openExternal('https://pp.io')
+    },
+    f_logout() {
+      this.$store
+        .dispatch(ACT_LOGOUT)
+        .then(() => this.$router.push({ name: 'account/import' }))
+        .catch(err => {
+          console.error(err)
+        })
     },
     f_initEventBus() {
       // open get file
@@ -277,14 +288,6 @@ export default {
         console.log('close billing records')
         this.showPopups.billingRecords = false
       })
-    },
-    f_logout() {
-      this.$store
-        .dispatch(ACT_LOGOUT)
-        .then(() => this.$router.push({ name: 'account/import' }))
-        .catch(err => {
-          console.error(err)
-        })
     },
   },
 }

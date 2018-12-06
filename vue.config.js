@@ -2,6 +2,11 @@ module.exports = {
   pages: {
     index: 'src/index/main.js',
   },
+  configureWebpack: {
+    resolve: {
+      symlinks: false,
+    },
+  },
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
@@ -9,8 +14,8 @@ module.exports = {
         // asar: false,
         asarUnpack: [
           '**/node_modules/ppio_sdk_npm/*',
-          '**/src/background.js',
-          '**/src/ppiosdk.js',
+          '**/src/background/background.js',
+          '**/src/background/ppiosdk.js',
         ],
       },
     },

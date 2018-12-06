@@ -5,7 +5,7 @@
       <p class="name">PPDISK-demo</p>
     </div>
     <div class="right-content">
-      <router-view @startApp="$emit('startApp')"></router-view>
+      <router-view @startApp="f_startApp"></router-view>
     </div>
   </div>
 </template>
@@ -19,8 +19,8 @@ export default {
     console.log('test', this.$remote.getGlobal('shareObject'))
   },
   methods: {
-    goPath(path) {
-      this.$router.replace(path)
+    f_startApp(account) {
+      this.$emit('startApp', account)
     },
   },
 }

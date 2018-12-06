@@ -1,8 +1,8 @@
 import { remote } from 'electron'
 
-export const startDaemon = dataDir => {
+export const startDaemon = (dataDir, privateKey) => {
   console.log('starting daemon service')
-  return remote.getGlobal('startDaemon')({ datadir: dataDir })
+  return remote.getGlobal('startDaemon')({ datadir: dataDir, privateKey })
 }
 
 export const stopDaemon = () => {

@@ -1,32 +1,53 @@
 import { remote } from 'electron'
-import { randomStr } from '../utils/functions'
+import ppwallet from 'ppwallet'
+import bip39 from 'bip39'
+import safeBuffer from 'safe-buffer'
 
 const ppioUser = remote.getGlobal('ppioUser')
 
 export const login = seedPhrase => {
   console.log('calling login method')
-  // TODO: get user id by seedPhrase/privateKey
   return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (seedPhrase.length > 0) {
-        resolve(seedPhrase.replace(' ', ''))
-      } else {
-        reject(new Error('fail'))
-      }
-    }, 1000)
+    try {
+      const oriKey = bip39.mnemonicToSeedHex(seedPhrase)
+      console.log(oriKey)
+      const privKey = oriKey
+        .split('')
+        .filter((char, idx) => !!(idx % 2))
+        .join('')
+      console.log(privKey)
+      const account = new ppwallet.Account(safeBuffer.Buffer.from(privKey, 'hex'))
+      console.log(account)
+      console.log(account.getPrivateKeyString())
+      resolve(account)
+    } catch (err) {
+      console.error('login failed')
+      console.error(err)
+      reject(err)
+    }
   })
 }
 
 export const generatePhraseSeed = () => {
   console.log('calling generatePhraseSeed method')
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(randomStr())
-    }, 1000)
-  })
-}
+  const mnemonic = bip39.generateMnemonic()
+  console.log(mnemonic)
+  const oriKey = bip39.mnemonicToSeedHex(mnemonic)
+  console.log(oriKey)
+  const privKey = oriKey
+    .split('')
+    .filter((char, idx) => !!(idx % 2))
+    .join('')
+  console.log(privKey)
 
-export const getUserData = () => {}
+  const account = ppwallet.Account.NewAccount(privKey)
+  console.log(account)
+  const address = account.getAddress()
+  console.log(address)
+  account.getPrivateKey()
+  account.mnemonic = mnemonic
+  return account
+}
 
 export const getWalletAddress = () =>
   ppioUser.walletId().then(res => {
@@ -44,19 +65,19 @@ export const getFunds = walletId => {
   return ppioUser.walletFunds({ walletId }).then(res => parseInt(res))
 }
 
-export const getMetadata = () =>
-  ppioUser.metadataGet().then(res => {
-    console.log('metadata got')
+export const getIndexData = () =>
+  ppioUser.getIndexData().then(res => {
+    console.log('user index data got')
     console.log(res)
     if (res.length > 0) {
-      let metadata
+      let indexData
       try {
-        metadata = JSON.parse(res)
-        // metadata must be an object
-        if (typeof metadata !== 'object') {
+        indexData = JSON.parse(res)
+        // index data must be an object
+        if (typeof indexData !== 'object') {
           return null
         }
-        return metadata
+        return indexData
       } catch (err) {
         console.log(err)
         return null

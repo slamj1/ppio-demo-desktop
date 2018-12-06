@@ -12,6 +12,15 @@ export const getEstimateCost = params => {
   })
 }
 
+/**
+ * start download
+ * @param {object} params
+ * @param {String} params.objectHash
+ * @param {number} params.chiPrice
+ * @param {string} [params.auth = ''] - auth information
+ * @param {string} [params.owner = ''] - the file owner's id
+ * @returns {Promise<PromiseLike<{taskId: string} | never> | Promise<{taskId: *} | never> | *>}
+ */
 export const startDownload = async params => {
   console.log('start download service')
   console.log(params)
@@ -19,8 +28,8 @@ export const startDownload = async params => {
     .objectGet({
       objectHash: params.objectHash,
       gasprice: params.chiPrice,
-      auth: params.auth,
-      owner: params.owner,
+      auth: params.auth || '',
+      owner: params.owner || '',
     })
     .then(
       () => ({

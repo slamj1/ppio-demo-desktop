@@ -3,18 +3,16 @@
     <div class="tip-wrap">
       <p class="title">Sign up</p>
       <div class="attention-wrap">
-        <!-- <p class="attention-title">Attention:</p> -->
         <p>The Encryption Key is VERY IMPORTANT. Once it's lost, so are your files. Please keep it safe and secret!</p>
       </div>
     </div>
     <div class="form-wrap">
-      <template v-if="step==1">
-        <p class="title">Step1.Generate your Encryption Key!</p>
-        <code>{{seedPhrase}}</code>
+      <template v-if="step === 1">
+        <p class="title">Step1. Generate your Encryption Key!</p>
+        <code>{{privateKey}}</code>
         <div class="button-wrap">
           <el-button-group class="button-group">
-            <el-button size="mini" @click="f_generate_phrase_seed">ReGenarate Key</el-button>
-            <el-button size="mini" @click="f_save">Download</el-button>
+            <el-button size="mini" @click="f_generatePhraseSeed">ReGenarate</el-button>
             <el-button size="mini" @click="f_copy">Copy</el-button>
           </el-button-group>
           <el-button type="primary" class="button confirm-button" @click="f_go_step(2)">I have written my Encryption key!</el-button>
@@ -22,39 +20,44 @@
       </template>
       <template v-else>
         <p class="title">Step2.Repeat Your Encryption Key</p>
-        <el-input type="textarea" :autofocus="true" :rows="4" resize="none" placeholder="enter your Encryption Key" v-model="repeatSeedPhrase" class="seed-phrase-input"> </el-input>
-        <el-alert v-show="errorMsg != ''" :title="errorMsg" type="error" :closable="false"></el-alert>
+        <el-input type="textarea" :autofocus="true" :rows="4" resize="none" placeholder="enter your Encryption Key" v-model="repeatPrivateKey" class="seed-phrase-input"> </el-input>
+        <el-alert v-show="errorMsg !== ''" :title="errorMsg" type="error" :closable="false"></el-alert>
         <div class="button-wrap" style="text-align: left;">
           <el-button type="primary" class="back-button" plain @click="f_go_step(1)">Back</el-button>
           <el-button :loading="confirmLoading" type="primary" class="repeat-button" @click="f_confirm">Confirm</el-button>
         </div>
       </template>
-      <p>Already have an Encryption Key? <router-link :to="{ name: 'account/import'}">Log in</router-link> </p>
+      <p>Already have an Encryption Key? <router-link :to="{ name: 'account/import' }">Log in</router-link></p>
     </div>
   </div>
 </template>
 <script>
-import { generatePhraseSeed, login } from '../../services/user'
+import fs from 'fs'
+import { clipboard, remote } from 'electron'
+import { ACT_LOGIN } from '../../constants/store'
+import storage from 'localforage'
 
-const { clipboard } = require('electron')
-const { dialog } = require('electron').remote
-const fs = require('fs')
+import { USER_STATE_PERSIST_KEY } from '../../constants/constants'
+import { generatePhraseSeed } from '../../services/user'
+
+const dialog = remote.dialog
 
 export default {
-  name: 'AccountCreate',
+  name: 'create-account',
   data: () => ({
-    seedPhrase: '',
-    repeatSeedPhrase: '',
+    account: {},
+    privateKey: '',
+    repeatPrivateKey: '',
     step: 1,
     errorMsg: '',
     confirmLoading: false,
   }),
   mounted() {
-    this.f_generate_phrase_seed()
+    this.f_generatePhraseSeed()
   },
   methods: {
     f_copy() {
-      clipboard.writeText(this.seedPhrase)
+      clipboard.writeText(this.privateKey)
       this.$notify.success({
         title: 'Copy Encryption Key success!',
         duration: 2000,
@@ -63,7 +66,7 @@ export default {
     f_save() {
       dialog.showSaveDialog(this.$remote.getCurrentWindow(), {}, filename => {
         if (filename !== undefined) {
-          fs.writeFile(filename, this.seedPhrase, err => {
+          fs.writeFile(filename, this.privateKey, err => {
             if (err) {
               console.log(err)
             } else {
@@ -76,37 +79,37 @@ export default {
         }
       })
     },
-    f_generate_phrase_seed() {
-      generatePhraseSeed()
-        .then(
-          data => {
-            console.log(data)
-            return (this.seedPhrase = data)
-          },
-          err => console.log(err),
-        )
-        .catch(err => {
-          console.log(err)
-        })
+    f_generatePhraseSeed() {
+      const newAccount = generatePhraseSeed()
+      this.account = newAccount
+      this.privateKey = newAccount.getPrivateKeyString()
     },
     f_go_step(step) {
       this.step = step
       this.errorMsg = ''
     },
     f_confirm() {
-      if (this.repeatSeedPhrase === this.seedPhrase) {
+      if (this.repeatPrivateKey === this.privateKey) {
         this.confirmLoading = true
-        login(this.seedPhrase)
-          .then(
-            seedPhrase => {
-              this.$router.replace('/home')
-              return console.log(seedPhrase)
-            },
-            err => {
-              this.errorMsg = err.toString()
-              return console.log(err)
-            },
-          )
+        this.$store
+          .dispatch(ACT_LOGIN, this.privateKey)
+          .then(account => {
+            const address = account.getAddressString()
+            console.log(`${USER_STATE_PERSIST_KEY}_${address}`)
+            return storage.getItem(`${USER_STATE_PERSIST_KEY}_${address}`)
+          })
+          .then(val => {
+            console.log('restore app state')
+            console.log(val)
+            if (val) {
+              if (val.dataDir.length > 0 && val.address.length > 0) {
+                this.$store.replaceState(val)
+                return this.$emit('startApp')
+              }
+            }
+            console.log('init user')
+            return this.$router.push({ name: 'account/choose-dir' })
+          })
           .finally(() => {
             this.confirmLoading = false
           })

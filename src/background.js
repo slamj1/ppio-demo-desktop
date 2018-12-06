@@ -1,24 +1,26 @@
 'use strict'
 import fs from 'fs'
 import path from 'path'
+// import portscanner from 'portscanner'
 import { app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
-import ppioUser, { setRpcPort } from './ppiosdk'
+import ppioUser, { setRpcPort } from './background/ppiosdk'
 import { RPC_PORT, GATEWAY_HOST } from './constants/ports'
 
-const genPort = () => RPC_PORT
+// const genPort = () => portscanner.findAPortNotInUse(18000, 19000)
+const genPort = () => Promise.resolve(RPC_PORT)
 
 global.ppioUser = ppioUser
 
 // TODO: Support multi-user
 global.runningRPCPort = 0
 
-global.initDaemon = dataDir =>
+global.initDaemon = (dataDir, privateKey) =>
   // TODO: dynamically allocation rpcport
-  ppioUser.initDatadir({ datadir: dataDir }).then(configFilePath => {
+  ppioUser.initDatadir({ datadir: dataDir }).then(async configFilePath => {
     try {
       const ppioConfig = JSON.parse(fs.readFileSync(configFilePath))
-      const newRPCPort = genPort()
+      const newRPCPort = await genPort()
       ppioConfig.RPCPort = newRPCPort
       ppioConfig.Net.TCPPort = ppioConfig.Net.UDPPort = parseInt(
         newRPCPort.toString().slice(1),
@@ -40,13 +42,6 @@ global.startDaemon = params => {
     console.log('daemon already started')
     return Promise.resolve(global.runningRPCPort)
   }
-
-  // const timer = () =>
-  //   new Promise(resolve => {
-  //     setTimeout(() => {
-  //       resolve()
-  //     }, 0)
-  //   })
 
   return ppioUser.daemonStart(Object.assign(params, { bindip: '0.0.0.0' })).then(() => {
     const datadirFiles = fs.readdirSync(params.datadir)

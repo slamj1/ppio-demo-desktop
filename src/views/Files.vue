@@ -97,7 +97,7 @@ export default {
     this.$vueBus.$on(this.$events.GET_FILE_DONE, () => {
       console.log('Files page get file listener')
       if (this.getStatusTimer === null) {
-        this.f_updateGetStatus()
+        // this.f_updateGetStatus()
       }
     })
   },
@@ -120,7 +120,7 @@ export default {
       })
     console.log('files page activated')
     console.log(this.gettingTaskList)
-    this.f_updateGetStatus()
+    // this.f_updateGetStatus()
   },
 
   methods: {
@@ -168,7 +168,7 @@ export default {
       return this.getFileList()
         .then(() => {
           this.fetchingData = false
-          return this.addFileMetadata()
+          return true
         })
         .catch(err => {
           this.fetchingData = false
@@ -255,14 +255,6 @@ export default {
       if (!this.operatingFile) {
         return
       }
-
-      // if (this.operatingFile.isSecure) {
-      //   this.$notify.error({
-      //     title: 'Can not share secured file!',
-      //     duration: 2000,
-      //   })
-      //   return
-      // }
 
       this.$vueBus.$emit(this.$events.OPEN_SHARE_FILE, {
         file: this.operatingFile,
