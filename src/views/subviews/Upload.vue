@@ -9,10 +9,10 @@
       <div class="step-content step-0" slot="step-0">
         <img src="@/assets/img/file.png" class="file-icon" :alt="filename">
         <el-input v-model="filename" class="file-name-input"></el-input>
-        <el-select v-model="type" class="select" placeholder="Please Choose">
+        <el-select v-model="securityOption" class="select" placeholder="Please Choose">
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
-        <el-alert v-show="type === options[1].value" title="You can not share secured file." show-icon class="alert-msg" type="warning" :closable="false"> </el-alert>
+        <!--<el-alert v-show="type === options[1].value" title="You can not share secured file." show-icon class="alert-msg" type="warning" :closable="false"> </el-alert>-->
       </div>
 
       <div class="step-content step-1" slot="step-1">
@@ -23,7 +23,7 @@
               <el-radio :label="1">1 Year(365 days)</el-radio> <br>
               <el-radio :label="2">1 Month(30 days)</el-radio> <br>
               <el-radio :label="3" @change="$refs.customStorageDaysInput.focus()">
-                <el-input class="storage-day-input" ref="customStorageDaysInput" type="number" size="mini" v-model="customStorageDays" @focus="radio = 3"></el-input>  <span>Days</span>
+                <el-input class="storage-day-input" ref="customStorageDaysInput" type="number" size="mini" v-model="customStorageDays" @focus="radio = 3"></el-input> <span>Days</span>
               </el-radio>
             </el-radio-group>
           </div>
@@ -66,21 +66,21 @@ import filesize from 'filesize'
 import StepPopup from '@/components/StepPopup'
 import PaymentTable from '@/components/PaymentTable'
 import { UL_TASK } from '../../constants/store'
-import { importObject, getEstimateCost } from '../../services/upload'
+import { getEstimateCost } from '../../services/upload'
 import { gchiToPPCoin } from '../../utils/units'
 
 export default {
   name: 'upload',
   data: () => ({
-    type: '1',
     filename: 'PPIO upload filename',
     customStorageDays: '1',
     chiPrice: 100,
     steps: ['Set encryption', 'Storage Settings', 'Payment'],
     curStep: 0,
-    options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
+    options: [{ value: 1, label: 'Normal' }, { value: 2, label: 'Secure' }],
+    securityOption: 2,
     radio: 1,
-    copyCount: 1,
+    copyCount: 5,
     totalChi: 0,
     storageChi: 0,
     uploadChi: 0,
@@ -104,6 +104,9 @@ export default {
     uploadCost: function() {
       return gchiToPPCoin(this.uploadChi * this.chiPrice).toFixed(4)
     },
+    fileSizeStr() {
+      return filesize(this.file.size)
+    },
     paymentData: function() {
       return {
         list: [
@@ -118,9 +121,6 @@ export default {
         ],
         totalCost: this.totalCost,
       }
-    },
-    fileSizeStr() {
-      return filesize(this.file.size)
     },
     storageDays() {
       let days = 0
@@ -149,7 +149,7 @@ export default {
     taskOptions() {
       return {
         localPath: this.file ? this.file.path : '',
-        isSecure: this.type === this.options[1].value,
+        isSecure: this.securityOption === this.options[1].value,
         storageTime: this.storageDays * 24 * 3600,
         copyCount: parseInt(this.copyCount),
         chiPrice: parseInt(this.chiPrice),
@@ -181,12 +181,12 @@ export default {
         size: this.file.size,
         copyCount: this.copyCount,
         storageTime: this.taskOptions.storageTime,
-      }).then(costs => {
-        console.log(costs)
-        this.totalChi = costs.reduce((acc, cur) => cur + acc, 0)
-        this.storageChi = costs[0]
-        this.uploadChi = costs[1] + costs[2]
-        return costs
+      }).then(res => {
+        console.log(res)
+        this.totalChi = res.totalCost
+        this.storageChi = res.storageCost
+        this.uploadChi = res.uploadCost
+        return res
       })
     },
     f_prev() {
@@ -225,16 +225,17 @@ export default {
       const options = this.taskOptions
       console.log(options)
       try {
-        const objectHash = await importObject(options)
+        // TODO: What do we need to store in metadata?
         const putParams = {
           file: {
-            id: objectHash,
+            id: this.filename,
             filename: this.filename,
             size: this.file.size,
             isSecure: options.isSecure,
             isPublic: false,
           },
-          objectHash,
+          cpoolId: this.$store.state.user.cpoolData.cpoolId,
+          objectKey: this.filename,
           ...options,
         }
         await this.$store.dispatch(UL_TASK.ACT_CREATE_TASK, putParams)

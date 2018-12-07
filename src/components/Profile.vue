@@ -39,7 +39,7 @@ export default {
       return this.$store.state.user
     },
     profileData: function() {
-      if (this.$store.state.appMode === APP_MODE_NON_COINPOOL) {
+      if (this.$store.getters.appMode === APP_MODE_NON_COINPOOL) {
         return [
           {
             key: 'balance',
@@ -67,7 +67,7 @@ export default {
             val: '',
           },
         ]
-      } else if (this.$store.state.appMode === APP_MODE_COINPOOL) {
+      } else if (this.$store.getters.appMode === APP_MODE_COINPOOL) {
         return [
           {
             key: 'cpool',

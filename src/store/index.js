@@ -10,7 +10,6 @@ import UploadTaskStore from './tasks/UploadTaskStore'
 import GetTaskStore from './tasks/GetTaskStore'
 import statePersistence from './plugins/persistence'
 import {
-  MUT_SET_APP_MODE,
   ACT_CLEAR_DATA,
   MUT_CLEAR_DATA,
   MUT_CLEAR_TASK_DATA,
@@ -22,7 +21,11 @@ import {
   MUT_SET_CHI_PRICE,
   ACT_START_POLLING_CHI_PRICE,
 } from '../constants/store'
-import { APP_MODE_NON_COINPOOL, USER_STATE_PERSIST_KEY } from '../constants/constants'
+import {
+  APP_MODE_COINPOOL,
+  APP_MODE_NON_COINPOOL,
+  USER_STATE_PERSIST_KEY,
+} from '../constants/constants'
 import { getChiPrice } from '../services/user'
 
 Vue.config.devtools = true
@@ -44,7 +47,6 @@ const logger = createLogger({
 })
 
 const initialState = () => ({
-  appMode: APP_MODE_NON_COINPOOL, // TODO: add app mode switch (coinpool/non-coinpool)
   curPage: '',
   appVersion: '1.0',
   dataDir: '', // directory to store objects
@@ -64,6 +66,10 @@ export default new Vuex.Store({
     downloadTask: new DownloadTaskStore(),
     getTask: new GetTaskStore(),
   },
+  getters: {
+    appMode: state =>
+      state.user.cpoolData.cpoolId.length > 0 ? APP_MODE_COINPOOL : APP_MODE_NON_COINPOOL,
+  },
   mutations: {
     [MUT_CLEAR_DATA](state) {
       console.log('clearing app data')
@@ -71,9 +77,6 @@ export default new Vuex.Store({
       Object.keys(initState).forEach(key => {
         state[key] = initState[key]
       })
-    },
-    [MUT_SET_APP_MODE](state, mode) {
-      state.appMode = mode || APP_MODE_NON_COINPOOL
     },
     [MUT_SET_DATA_DIR](state, dataDir) {
       state.dataDir = dataDir

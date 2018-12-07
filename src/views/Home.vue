@@ -42,7 +42,7 @@
     <Download v-if="showPopups.downloadFile" :file="downloadingFile"></Download>
     <Get v-if="showPopups.getFile"></Get>
     <Renew v-if="showPopups.renewFile" :file="renewingFile"></Renew>
-    <Rename v-if="showPopups.renameFile" :file="renamingFile" :fileIndex="renamingFileIndex"></Rename>
+    <Rename v-if="showPopups.renameFile" :file="renamingFile"></Rename>
     <Share v-if="showPopups.shareFile" :file="sharingFile" :fileIndex="sharingFileIndex"></Share>
   </el-container>
 </template>
@@ -88,7 +88,6 @@ export default {
       sharingFile: null,
       sharingFileIndex: -1,
       renamingFile: null,
-      renamingFileIndex: -1,
       renewingFile: null,
       uploadingFile: null,
     }
@@ -96,15 +95,15 @@ export default {
   computed: {
     ...mapState({
       userData: state => state.user,
-      appMode: state => state.appMode,
-      usagePercent: state => {
-        if (state.appMode === APP_MODE_COINPOOL) {
+      usagePercent(state) {
+        if (this.$store.getters.appMode === APP_MODE_COINPOOL) {
           return (state.file.usedStorage / state.user.cpoolData.capacity) * 100
         }
         return 0
       },
     }),
     ...mapGetters({
+      appMode: 'appMode',
       downloadCount: DL_TASK.GET_TASK_COUNT,
       uploadCount: UL_TASK.GET_TASK_COUNT,
       usedStorageStr: USAGE_STORAGE_GETTER, // in file size string
@@ -263,7 +262,6 @@ export default {
         console.log('open rename file ', payload.file)
         this.showPopups.renameFile = true
         this.renamingFile = payload.file
-        this.renamingFileIndex = payload.fileIndex
       })
       // close rename file
       this.$vueBus.$on(this.$events.CLOSE_RENAME_FILE, () => {

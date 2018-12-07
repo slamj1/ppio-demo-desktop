@@ -14,9 +14,9 @@ import {
   ACT_SHARE_FILE,
   // ACT_GET_FILE,
   USAGE_STORAGE_GETTER,
-  ACT_METADATA_MODIFY_FILE,
+  // ACT_METADATA_MODIFY_FILE,
   MUT_CLEAR_FILE_DATA,
-  ACT_METADATA_REMOVE_FILE,
+  ACT_MODIFY_FILE_METADATA,
 } from '../constants/store'
 import { deleteFile, getObjectList, changeObjectAcl } from '../services/file'
 
@@ -61,21 +61,34 @@ const store = {
     },
   },
   actions: {
+    /**
+     * get file list: listObject -> objectStatus -> headObject
+     * @param context
+     * @commits Array<File>
+     */
     [ACT_GET_FILE_LIST](context) {
-      return getObjectList().then(
-        fileList => {
+      return getObjectList()
+        .then(fileList => {
           console.log(fileList)
           return context.commit(MUT_SET_FILE_LIST, fileList)
-        },
-        err => {
+        })
+        .catch(err => {
           console.log('set file list error')
           console.log(err)
           return Promise.reject(err)
-        },
-      )
+        })
+    },
+    /**
+     * modify file metadata
+     * @param context
+     */
+    [ACT_MODIFY_FILE_METADATA](context) {
+      // TODO: modify file metadata
+      return Promise.resolve()
     },
     /**
      * add file metadata
+     * @deprecated
      * @param context
      */
     [ACT_ADD_FILE_METADATA](context) {
@@ -94,27 +107,47 @@ const store = {
       })
       return context.commit(MUT_SET_FILE_LIST, newList)
     },
+    /**
+     * delete file
+     * @param context
+     * @param payload
+     * @param payload.file {File} file to be deleted
+     * @param payload.fileIndex {Number} file index
+     * @returns {PromiseLike<T | never> | Promise<T | never>}
+     */
     [ACT_REMOVE_FILE](context, payload) {
       return deleteFile(payload.file.id).then(
-        () => {
-          context.commit(MUT_REMOVE_FILE, payload.fileIndex)
-          return context.dispatch(ACT_METADATA_REMOVE_FILE, payload.file.id)
-        },
+        () => context.commit(MUT_REMOVE_FILE, payload.fileIndex),
+        // return context.dispatch(ACT_METADATA_REMOVE_FILE, payload.file.id)
         err => {
           console.error(err)
           return Promise.reject(err)
         },
       )
     },
+    /**
+     * rename file
+     * @param context
+     * @param payload
+     * @returns {*|void|Promise<any>}
+     */
     [ACT_RENAME_FILE](context, payload) {
       console.log('renaming file ', payload.filename)
-      return context.dispatch(ACT_METADATA_MODIFY_FILE, {
-        fileId: payload.file.id,
-        data: {
-          filename: payload.filename,
-        },
-      })
+      return context.dispatch(ACT_MODIFY_FILE_METADATA)
+      // return context.dispatch(ACT_METADATA_MODIFY_FILE, {
+      //   fileId: payload.file.id,
+      //   data: {
+      //     filename: payload.filename,
+      //   },
+      // })
     },
+    /**
+     * set file to public
+     * @deprecated
+     * @param context
+     * @param payload
+     * @returns {PromiseLike<T | never> | Promise<T | never>}
+     */
     [ACT_SHARE_FILE](context, payload) {
       return changeObjectAcl({
         objectHash: payload.objectHash,

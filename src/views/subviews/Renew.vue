@@ -14,7 +14,8 @@
       <div class="step-content step-1" slot="step-1">
         <div class="inner-wrap">
           <div class="line-wrap">
-            <label class="line-label">Storage Time:</label>
+            <label class="line-label">Renew Storage Time:</label>
+            <p>The storage time will be added to your current storage duration</p>
             <el-radio-group class="radio-group" v-model="radio">
               <el-radio :label="1">1 Year(365 days)</el-radio> <br>
               <el-radio :label="2">1 Month(30 days)</el-radio> <br>
@@ -29,16 +30,16 @@
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
-            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input>
-            <span>chi</span>
+            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input> <span>gchi</span>
+            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}}</span>
           </div>
           <div class="line-wrap">
-            <label class="line-label">Chi Limit:</label>
+            <label class="line-label">Total Chi:</label>
             <span>{{totalChi}}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Expected Cost:</label>
-            <span>{{estimatedCost}} PPCoin</span>
+            <span>{{totalCost}} PPCoin</span>
           </div>
         </div>
       </div>
@@ -59,25 +60,23 @@
 </template>
 <script>
 import filesize from 'filesize'
-import StepPopup from '@/components/StepPopup'
-import PaymentTable from '@/components/PaymentTable'
+import StepPopup from '../../components/StepPopup'
+import PaymentTable from '../../components/PaymentTable'
 import { renewFile } from '../../services/file'
 import { getEstimateCost } from '../../services/upload'
+import { gchiToPPCoin } from '../../utils/units'
 
 export default {
   name: 'renew',
   data: () => ({
-    type: '1',
-    customStorageDays: '1',
-    chiPrice: 100,
     steps: ['File', 'Storage Setting', 'Payment'],
     curStep: 0,
-    options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
     radio: 1,
+    customStorageDays: '1',
+    chiPrice: 100,
     copyCount: 5,
-    estimatedCost: 123,
     totalChi: 0,
-    storageCost: 123,
+    storageChi: 0,
     renewing: false,
   }),
   props: ['file'],
@@ -86,15 +85,27 @@ export default {
     PaymentTable,
   },
   computed: {
+    recChiPrice() {
+      return this.$store.state.recChiPrice
+    },
+    totalCost: function() {
+      return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)
+    },
+    storageCost: function() {
+      return gchiToPPCoin(this.storageChi * this.chiPrice).toFixed(4)
+    },
+    fileSizeStr() {
+      return filesize(this.file.size)
+    },
     paymentData: function() {
       return {
         list: [
           {
-            product: `Storage: ${filesize(this.file.size)}/${this.storageTimeStr}`,
+            product: `Storage: ${this.fileSizeStr}/${this.storageTimeStr}`,
             fee: `${this.storageCost} PPCoin(Fund)`,
           },
         ],
-        totalCost: this.storageCost,
+        totalCost: this.totalCost,
       }
     },
     storageDays() {
@@ -141,18 +152,23 @@ export default {
         size: this.file.size,
         copyCount: this.copyCount,
         storageTime: this.taskOptions.storageTime,
-      }).then(costs => {
-        console.log(costs)
-        this.totalChi = costs.reduce((acc, cur) => cur + acc, 0)
-        this.storageChi = costs[0]
-        this.uploadChi = costs[1] + costs[2]
-        return costs
+      }).then(res => {
+        console.log(res)
+        this.totalChi = res.totalCost
+        this.storageChi = res.storageCost
+        return res
       })
     },
     f_prev() {
+      if (this.renewing) {
+        return
+      }
       this.curStep -= 1
     },
     f_next() {
+      if (this.renewing) {
+        return
+      }
       if (this.curStep === 0) {
         this.curStep += 1
       } else if (this.curStep === 1) {
@@ -163,6 +179,9 @@ export default {
       }
     },
     f_close() {
+      if (this.renewing) {
+        return
+      }
       this.$vueBus.$emit(this.$events.CLOSE_RENEW_FILE)
     },
     f_confirm() {
@@ -171,8 +190,9 @@ export default {
       }
       this.renewing = true
       renewFile({
-        objectHash: this.file.id,
-        isPublic: this.file.isPublic,
+        objectKey: this.file.id,
+        isSecure: true,
+        cpoolId: this.$store.state.user.cpoolData.cpoolId,
         ...this.taskOptions,
       })
         .then(() => {

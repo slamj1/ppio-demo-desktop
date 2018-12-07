@@ -11,7 +11,8 @@
 </template>
 <script>
 import { UL_TASK } from '../constants/store'
-import TransferTable from '@/components/TransferTable'
+import { TASK_GET_PROGRESS_INTERVAL } from '../constants/constants'
+import TransferTable from '../components/TransferTable'
 
 export default {
   name: 'upload-list',
@@ -60,7 +61,7 @@ export default {
       if (this.taskList.length > 0) {
         this.getStatusTimer = setTimeout(() => {
           this.f_updateStatus()
-        }, 2000)
+        }, TASK_GET_PROGRESS_INTERVAL)
       }
     },
   },

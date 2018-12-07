@@ -32,16 +32,16 @@
       <template slot="footer">
         <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini">Prev</el-button>
         <el-button class="button" v-if="curStep < steps.length - 1" v-on:click="f_next" size="mini" type="primary">Next</el-button>
-        <el-button class="button" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">Pay</el-button>
+        <el-button class="button" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">Download</el-button>
       </template>
     </step-popup>
   </div>
 </template>
 <script>
-import { remote } from 'electron'
 import filesize from 'filesize'
-import StepPopup from '@/components/StepPopup'
-import PaymentTable from '@/components/PaymentTable'
+import { remote } from 'electron'
+import StepPopup from '../../components/StepPopup'
+import PaymentTable from '../../components/PaymentTable'
 import { DL_TASK } from '../../constants/store'
 import { getEstimateCost } from '../../services/download'
 import { gchiToPPCoin } from '../../utils/units'
@@ -105,16 +105,22 @@ export default {
       }
       return getEstimateCost({
         size: this.file.size,
-      }).then(costs => {
-        this.totalChi = costs.reduce((acc, cur) => cur + acc, 0)
-        this.downloadChi = costs.reduce((acc, cur) => cur + acc, 0)
-        return costs
+      }).then(res => {
+        this.totalChi = res.totalCost
+        this.downloadChi = res.downloadCost
+        return res
       })
     },
     f_prev() {
+      if (this.preparingDownload) {
+        return
+      }
       this.curStep -= 1
     },
     f_next() {
+      if (this.preparingDownload) {
+        return
+      }
       if (this.curStep === 0) {
         if (this.chiPrice > 0) {
           this.curStep += 1
@@ -122,6 +128,9 @@ export default {
       }
     },
     f_close() {
+      if (this.preparingDownload) {
+        return
+      }
       this.$vueBus.$emit(this.$events.CLOSE_DOWNLOAD_FILE)
     },
     f_confirm() {
@@ -144,7 +153,7 @@ export default {
           }
           const getParams = {
             file: this.file,
-            objectHash: this.file.id,
+            objectKey: this.file.id,
             chiPrice: parseInt(this.chiPrice),
             exportPath: filePath,
           }
@@ -157,7 +166,7 @@ export default {
             .catch(err => {
               console.error(err)
               this.preparingDownload = false
-              this.$notify.error({ title: JSON.stringify(err), duration: 2000 })
+              this.$notify.error({ title: err.message, duration: 2000 })
             })
         },
       )

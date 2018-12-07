@@ -1,4 +1,5 @@
 import { remote } from 'electron'
+import moment from 'moment'
 
 const ppioUser = remote.getGlobal('ppioUser')
 
@@ -107,18 +108,26 @@ export const renewFile = params => {
   console.log('renew object')
   return ppioUser
     .objectRenew({
-      objectHash: params.objectHash,
+      key: params.objectKey,
+      chiprice: params.chiPrice,
       copies: params.copyCount,
-      duration: params.storageTime,
-      gasprice: params.chiPrice,
-      acl: params.isPublic ? 'Public' : 'Private',
+      expires: moment(Date.now() + params.storageTime).format('YYYY-MM-DD'),
+      encrypt: params.isSecure,
+      'cpool-id': params.cpoolId,
     })
-    .then(
-      res => res,
-      err => {
-        console.error('get upload object status error')
-        console.error(err)
-        return err
-      },
-    )
+    .then(res => res)
+    .catch(err => {
+      console.error('get upload object status error')
+      console.error(err)
+      return err
+    })
 }
+
+export const getShareCode = objectKey =>
+  ppioUser
+    .shareObject({ key: objectKey })
+    .then(res => res['share-code'])
+    .catch(err => {
+      console.error(err)
+      return Promise.reject(err)
+    })

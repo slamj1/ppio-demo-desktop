@@ -49,13 +49,7 @@
 import { mapState, mapActions } from 'vuex'
 import { remote } from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
-import {
-  ACT_GET_FILE_LIST,
-  ACT_ADD_FILE_METADATA,
-  ACT_GET_FILE,
-  ACT_REMOVE_FILE,
-  GET_TASK,
-} from '../constants/store'
+import { ACT_GET_FILE_LIST, ACT_REMOVE_FILE, GET_TASK } from '../constants/store'
 import FileItem from '@/components/FileItem'
 
 const { Menu, MenuItem, dialog } = remote
@@ -126,8 +120,8 @@ export default {
   methods: {
     ...mapActions({
       getFileList: ACT_GET_FILE_LIST,
-      addFileMetadata: ACT_ADD_FILE_METADATA,
-      getFile: ACT_GET_FILE,
+      // addFileMetadata: ACT_ADD_FILE_METADATA,
+      // getFile: ACT_GET_FILE,
     }),
     f_updateGetStatus() {
       if (this.gettingTaskList.length > 0) {
@@ -267,7 +261,6 @@ export default {
       }
       this.$vueBus.$emit(this.$events.OPEN_RENAME_FILE, {
         file: this.operatingFile,
-        fileIndex: this.fileList.indexOf(this.operatingFile),
       })
     },
     f_renew() {

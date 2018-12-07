@@ -30,13 +30,8 @@ import {
   ACT_ADD_FILE_METADATA,
   MUT_CLEAR_USER_DATA,
   ACT_CLEAR_DATA,
-  MUT_SET_APP_MODE,
 } from '../constants/store'
-import {
-  APP_MODE_NON_COINPOOL,
-  APP_MODE_COINPOOL,
-  APP_BUCKET_NAME,
-} from '../constants/constants'
+import { APP_BUCKET_NAME } from '../constants/constants'
 
 const initialState = () => ({
   uid: '',
@@ -175,11 +170,9 @@ const store = {
     [ACT_GET_USER_CPOOL](context) {
       return getCpool(context.state.address).then(res => {
         if (res) {
-          context.commit(MUT_SET_APP_MODE, APP_MODE_COINPOOL)
           context.commit(MUT_SET_USER_CPOOL, res)
           return res
         }
-        context.commit(MUT_SET_APP_MODE, APP_MODE_NON_COINPOOL)
         context.commit(MUT_SET_USER_CPOOL, null)
         return null
       })

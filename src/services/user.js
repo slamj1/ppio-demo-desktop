@@ -117,4 +117,5 @@ export const getBillingRecords = walletId =>
     }))
   })
 
+// TODO: what is the unit of chi price? kwei? gwei?
 export const getChiPrice = () => ppioUser.chiPrice().then(res => parseInt(res))
