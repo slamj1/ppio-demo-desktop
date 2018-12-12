@@ -11,7 +11,7 @@
     <div class="dir-wrap">
       <el-button class="choose-btn" type="primary" @click="f_chooseDataDir">Choose</el-button>
       <p v-show="dataDir.length > 0" class="dir"><b>Your directory: </b>{{dataDir}}</p>
-      <el-button :loading="startingApp" class="start-button" type="primary" @click="f_start">Start</el-button>
+      <el-button :loading="subStartingApp || startingApp" class="start-button" type="primary" @click="f_start">Start</el-button>
     </div>
   </div>
 </template>
@@ -25,9 +25,10 @@ export default {
   data() {
     return {
       dataDir: '',
-      startingApp: false,
+      subStartingApp: false,
     }
   },
+  props: ['startingApp'],
   methods: {
     f_chooseDataDir() {
       remote.dialog.showOpenDialog(
@@ -55,13 +56,17 @@ export default {
         return this.$message.error('Please select your data directory')
       }
 
-      this.startingApp = true
+      this.subStartingApp = true
       this.$store.commit(MUT_SET_DATA_DIR, this.dataDir)
       initDaemon(this.dataDir)
-        .then(() => this.$emit('startApp'))
+        .then(() => {
+          this.subStartingApp = false
+          return this.$emit('startApp')
+        })
         .catch(err => {
           console.error('init daemon failed, ', err)
           this.$message.error('App start failed')
+          this.subStartingApp = false
         })
     },
   },

@@ -24,12 +24,16 @@ export const getEstimateCost = params => {
       size: params.size,
       copies: params.copyCount,
       duration: params.storageTime,
+      chiPrice: 100, // TODO: ????
     })
     .then(costs => {
       // The total upload cost contains two parts: storage and upload
-      const totalCost = costs.reduce((acc, cur) => cur + acc, 0)
-      const storageCost = costs[0]
-      const uploadCost = totalCost - storageCost
+      // const totalCost = costs.reduce((acc, cur) => cur + acc, 0)
+      // const storageCost = costs[0]
+      // const uploadCost = totalCost - storageCost
+      const totalCost = parseInt(costs) / 100
+      const storageCost = parseInt(costs) / 100
+      const uploadCost = parseInt(costs) / 100
       return { totalCost, storageCost, uploadCost }
     })
     .catch(err => {
@@ -76,13 +80,15 @@ export const startUpload = async params => {
 export const pauseUpload = params => {
   console.log('pausing upload')
   console.log(params)
-  return ppioUser.pauseUpload()
+  // return ppioUser.pauseUpload()
+  return Promise.resolve()
 }
 
 export const resumeUpload = params => {
   console.log('resuming upload')
   console.log(params)
-  return ppioUser.resumeUpload()
+  // return ppioUser.resumeUpload()
+  return Promise.resolve()
 }
 
 export const cancelUpload = taskId => ({

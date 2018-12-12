@@ -10,7 +10,7 @@ export const listBuckets = () => {
     .then(res => {
       console.log('user buckets: ')
       console.log(res)
-      return res
+      return res || []
     })
     .catch(err => {
       console.error('list bucket failed')

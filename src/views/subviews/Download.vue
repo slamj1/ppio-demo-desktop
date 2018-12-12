@@ -1,6 +1,17 @@
 <template>
   <div class="download-page">
+    <popup v-if="isCpoolMode" class="popup" @close="f_close">
+      <span slot="header">Download File</span>
+      <div class="content" slot="content">
+        <img src="@/assets/img/file.png" class="file-icon" :alt="file && file.filename">
+        <p class="file-name">{{file && file.filename}}</p>
+      </div>
+      <template slot="footer">
+        <el-button class="button" @click="f_confirm" size="mini" type="primary">Download</el-button>
+      </template>
+    </popup>
     <step-popup
+        v-else
         :cur-step="curStep"
         :steps="steps"
         @close="f_close"
@@ -8,6 +19,10 @@
       <span slot="header">Download File</span>
       <div class="step-content step-0" slot="step-0">
         <div class="inner-wrap">
+          <div class="line-wrap">
+            <img src="@/assets/img/file.png" class="file-icon" :alt="file && file.filename">
+            <p class="file-name">{{file && file.filename}}</p>
+          </div>
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
             <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input><span>gchi</span>
@@ -30,9 +45,9 @@
       </div>
 
       <template slot="footer">
-        <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini">Prev</el-button>
-        <el-button class="button" v-if="curStep < steps.length - 1" v-on:click="f_next" size="mini" type="primary">Next</el-button>
-        <el-button class="button" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">Download</el-button>
+        <el-button class="button" v-if="curStep > 0" @click="f_prev" size="mini">Prev</el-button>
+        <el-button class="button" v-if="curStep < steps.length - 1" @click="f_next" size="mini" type="primary">Next</el-button>
+        <el-button class="button" v-if="curStep >= steps.length - 1" @click="f_confirm" size="mini" type="primary">Download</el-button>
       </template>
     </step-popup>
   </div>
@@ -43,6 +58,7 @@ import { remote } from 'electron'
 import StepPopup from '../../components/StepPopup'
 import PaymentTable from '../../components/PaymentTable'
 import { DL_TASK } from '../../constants/store'
+import { APP_MODE_COINPOOL } from '../../constants/constants'
 import { getEstimateCost } from '../../services/download'
 import { gchiToPPCoin } from '../../utils/units'
 
@@ -52,8 +68,6 @@ export default {
     type: '1',
     curStep: 0,
     steps: ['Settings', 'Payment'],
-    options: [{ value: '1', label: 'Normal' }, { value: '2', label: 'Secure' }],
-    radio: 1,
     chiPrice: 100,
     totalChi: 0,
     downloadChi: 0,
@@ -65,6 +79,9 @@ export default {
     PaymentTable,
   },
   computed: {
+    isCpoolMode() {
+      return this.$store.getters.appMode === APP_MODE_COINPOOL
+    },
     recChiPrice() {
       return this.$store.state.recChiPrice
     },
@@ -186,6 +203,16 @@ export default {
     .line-wrap {
       position: relative;
       padding: 6px 0 6px 130px;
+
+      .file-icon {
+        width: 60px;
+      }
+      .file-name {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        font-size: 14px;
+      }
+
       .line-label {
         position: absolute;
         top: 6px;

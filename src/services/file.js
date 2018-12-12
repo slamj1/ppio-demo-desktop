@@ -131,3 +131,19 @@ export const getShareCode = objectKey =>
       console.error(err)
       return Promise.reject(err)
     })
+
+export const getTaskProgress = objectKey =>
+  ppioUser
+    .getJobProgress({ key: objectKey })
+    .then(res => {
+      console.log('task progress got')
+      return {
+        transferred: res[0],
+        whole: res[1],
+      }
+    })
+    .catch(err => {
+      console.error('get task progress error')
+      console.error(err)
+      return Promise.reject(err)
+    })

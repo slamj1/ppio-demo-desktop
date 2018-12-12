@@ -86,7 +86,7 @@ describe('Home.vue', () => {
             isLogin: true,
             nickname: '',
             balance: 30,
-            fund: 20,
+            funds: 20,
             billingRecords: [],
             avatar: require('@/assets/img/avatar.png'),
             address: 'fdsafeILHULHUIfwe235feILHULfeILHUL',

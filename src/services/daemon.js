@@ -2,7 +2,10 @@ import { remote } from 'electron'
 
 export const startDaemon = (dataDir, privateKey) => {
   console.log('starting daemon service')
-  return remote.getGlobal('startDaemon')({ datadir: dataDir, privateKey })
+  return remote.getGlobal('startDaemon')({
+    datadir: dataDir,
+    'wallet-key': `0x${privateKey}`,
+  })
 }
 
 export const stopDaemon = () => {

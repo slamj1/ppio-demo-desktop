@@ -9,9 +9,9 @@
       <div class="step-content step-0" slot="step-0">
         <img src="@/assets/img/file.png" class="file-icon" :alt="filename">
         <el-input v-model="filename" class="file-name-input"></el-input>
-        <el-select v-model="securityOption" class="select" placeholder="Please Choose">
-          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-        </el-select>
+        <!--<el-select v-model="securityOption" class="select" placeholder="Please Choose">-->
+          <!--<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>-->
+        <!--</el-select>-->
         <!--<el-alert v-show="type === options[1].value" title="You can not share secured file." show-icon class="alert-msg" type="warning" :closable="false"> </el-alert>-->
       </div>
 
@@ -68,6 +68,7 @@ import PaymentTable from '@/components/PaymentTable'
 import { UL_TASK } from '../../constants/store'
 import { getEstimateCost } from '../../services/upload'
 import { gchiToPPCoin } from '../../utils/units'
+import { APP_MODE_COINPOOL } from '../../constants/constants'
 
 export default {
   name: 'upload',
@@ -75,7 +76,6 @@ export default {
     filename: 'PPIO upload filename',
     customStorageDays: '1',
     chiPrice: 100,
-    steps: ['Set encryption', 'Storage Settings', 'Payment'],
     curStep: 0,
     options: [{ value: 1, label: 'Normal' }, { value: 2, label: 'Secure' }],
     securityOption: 2,
@@ -92,6 +92,13 @@ export default {
     PaymentTable,
   },
   computed: {
+    steps() {
+      if (this.$store.getters.appMode === APP_MODE_COINPOOL) {
+        return ['Upload']
+      } else {
+        return ['Upload', 'Storage Settings', 'Payment']
+      }
+    },
     recChiPrice() {
       return this.$store.state.recChiPrice
     },
@@ -116,7 +123,7 @@ export default {
           },
           {
             product: `Storage: ${this.fileSizeStr}/${this.storageTimeStr}`,
-            fee: `${this.storageCost} PPCoin(Fund)`,
+            fee: `${this.storageCost} PPCoin(Funds)`,
           },
         ],
         totalCost: this.totalCost,
@@ -216,7 +223,7 @@ export default {
       }
       this.$vueBus.$emit(this.$events.CLOSE_UPLOAD_FILE)
     },
-    async f_confirm() {
+    f_confirm() {
       if (this.preparingUpload) {
         return
       }
@@ -224,31 +231,34 @@ export default {
       console.log('upload confirm')
       const options = this.taskOptions
       console.log(options)
-      try {
-        // TODO: What do we need to store in metadata?
-        const putParams = {
-          file: {
-            id: this.filename,
-            filename: this.filename,
-            size: this.file.size,
-            isSecure: options.isSecure,
-            isPublic: false,
-          },
-          cpoolId: this.$store.state.user.cpoolData.cpoolId,
-          objectKey: this.filename,
-          ...options,
-        }
-        await this.$store.dispatch(UL_TASK.ACT_CREATE_TASK, putParams)
-        this.preparingUpload = false
-        this.$vueBus.$emit(this.$events.UPLOAD_FILE_DONE)
-      } catch (err) {
-        console.error(err)
-        this.preparingUpload = false
-        if (parseInt(err.code) === 2017) {
-          return this.$message.error('Object existed')
-        }
-        return this.$message.error('Object import failed!')
+
+      // TODO: What do we need to store in metadata?
+      const putParams = {
+        file: {
+          id: this.filename,
+          filename: this.filename,
+          size: this.file.size,
+          isSecure: options.isSecure,
+          isPublic: false,
+        },
+        cpoolId: this.$store.state.user.cpoolData.cpoolId,
+        objectKey: this.filename,
+        ...options,
       }
+      return this.$store
+        .dispatch(UL_TASK.ACT_CREATE_TASK, putParams)
+        .then(() => {
+          this.preparingUpload = false
+          return this.$vueBus.$emit(this.$events.UPLOAD_FILE_DONE)
+        })
+        .catch(err => {
+          console.error(err)
+          this.preparingUpload = false
+          if (parseInt(err.code) === 2017) {
+            return this.$message.error('Object existed')
+          }
+          return this.$message.error('Object import failed!')
+        })
     },
   },
 }

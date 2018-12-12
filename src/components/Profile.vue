@@ -48,8 +48,8 @@ export default {
           },
           {
             key: 'func',
-            label: 'Fund',
-            val: `${gchiToPPCoin(this.userData.fund).toFixed(2)} PPCoin`,
+            label: 'Funds',
+            val: `${gchiToPPCoin(this.userData.funds).toFixed(2)} PPCoin`,
           },
           {
             key: 'record',
@@ -110,6 +110,9 @@ export default {
       if (row.key === 'checkupdate') {
         this.$emit('check-update')
       }
+    },
+    f_renew() {
+      console.log('renew cpool service')
     },
   },
 }

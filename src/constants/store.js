@@ -5,12 +5,13 @@ export const MUT_SET_RPC_PORT = 'mutation_setRPCPort'
 export const MUT_SET_USER_ADDRESS = 'mutation_setUserPhrase'
 export const MUT_SET_CHI_PRICE = 'mutation_setChiPrice'
 export const ACT_START_POLLING_CHI_PRICE = 'action_startPollingChiPrice'
+export const MUT_SET_PRIV_KEY = 'mutation_setPrivateKey'
 
 export const MUT_SET_USER_DATA = 'mutation_setUserData'
 export const ACT_GET_USER_DATA = 'action_getUserData'
 export const ACT_GET_USER_CPOOL = 'action_getUserCpool'
 export const MUT_SET_USER_CPOOL = 'mutation_setUserCpool'
-export const ACT_GET_USER_BALANCE = 'action_getUserBalance'
+export const ACT_GET_ACCOUNT_DETAILS = 'action_getUserBalance'
 export const MUT_WRITE_USER_META_DATA = 'mutation_setUserMetadata'
 export const ACT_GET_USER_META_DATA = 'action_getUserMetadata'
 export const ACT_SET_USER_META_DATA = 'action_setUserMetadata'
@@ -40,33 +41,54 @@ export const MUT_CLEAR_FILE_DATA = 'mutation_clearFileData'
 export const DL_TASK = {
   MUT_ADD_TASK: 'mutation_addDownloadTask',
   ACT_CREATE_TASK: 'action_createDownloadTask',
+  ACT_PAUSE_TASK: 'action_pauseDownloadTask',
+  MUT_PAUSE_TASK: 'mutation_pauseDownloadTask',
+  ACT_RESUME_TASK: 'action_resumeDownloadTask',
+  MUT_RESUME_TASK: 'mutation_resumeDownloadTask',
+  MUT_FINISH_TASK: 'mutation_finishDownloadTask',
+  MUT_FAIL_TASK: 'mutation_failDownloadTask',
   MUT_REMOVE_TASK: 'mutation_removeDownloadTask',
   MUT_CANCEL_TASK: 'mutation_cancelDownloadTask',
   ACT_CANCEL_TASK: 'action_cancelDownloadTask',
   MUT_SET_STATUS: 'mutation_setDownloadStatus',
-  ACT_GET_STATUS: 'action_getDownloadStatus',
+  MUT_SET_PROGRESS: 'mutation_setDownloadProgress',
+  ACT_GET_PROGRESS: 'action_getDownloadStatus',
   GET_TASK_COUNT: 'getter_downloadTaskCount',
 }
 
 export const UL_TASK = {
   MUT_ADD_TASK: 'mutation_addUploadTask',
   ACT_CREATE_TASK: 'action_createUploadTask',
+  ACT_PAUSE_TASK: 'action_pauseUploadTask',
+  MUT_PAUSE_TASK: 'mutation_pauseUploadTask',
+  ACT_RESUME_TASK: 'action_resumeUploadTask',
+  MUT_RESUME_TASK: 'mutation_resumeUploadTask',
+  MUT_FINISH_TASK: 'mutation_finishUploadTask',
+  MUT_FAIL_TASK: 'mutation_failUploadTask',
   MUT_REMOVE_TASK: 'mutation_removeUploadTask',
   MUT_CANCEL_TASK: 'mutation_cancelUploadTask',
   ACT_CANCEL_TASK: 'action_cancelUploadTask',
   MUT_SET_STATUS: 'mutation_setUploadStatus',
-  ACT_GET_STATUS: 'action_getUploadStatus',
+  MUT_SET_PROGRESS: 'mutation_setUploadProgress',
+  ACT_GET_PROGRESS: 'action_getUploadProgress',
   GET_TASK_COUNT: 'getter_uploadTaskCount',
 }
 
 export const GET_TASK = {
   MUT_ADD_TASK: 'mutation_addGetTask',
   ACT_CREATE_TASK: 'action_createGetTask',
+  ACT_PAUSE_TASK: 'action_pauseGetTask',
+  MUT_PAUSE_TASK: 'mutation_pauseGetTask',
+  ACT_RESUME_TASK: 'action_resumeGetTask',
+  MUT_RESUME_TASK: 'mutation_resumeGetTask',
+  MUT_FINISH_TASK: 'mutation_finishGetTask',
+  MUT_FAIL_TASK: 'mutation_failGetTask',
   MUT_REMOVE_TASK: 'mutation_removeGetTask',
   MUT_CANCEL_TASK: 'mutation_cancelGetTask',
   ACT_CANCEL_TASK: 'action_cancelGetTask',
   MUT_SET_STATUS: 'mutation_setGetStatus',
-  ACT_GET_STATUS: 'action_getGetStatus',
+  MUT_SET_PROGRESS: 'mutation_setGetProgress',
+  ACT_GET_PROGRESS: 'action_getGetStatus',
   GET_TASK_COUNT: 'getter_getTaskCount',
 }
 

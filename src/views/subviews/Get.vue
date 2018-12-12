@@ -55,6 +55,7 @@ import StepPopup from '../../components/StepPopup'
 import PaymentTable from '../../components/PaymentTable'
 import { getFileInfoByShareCode } from '../../services/getFile'
 import { DL_TASK } from '../../constants/store'
+import { APP_MODE_COINPOOL } from '../../constants/constants'
 import { getEstimateCost } from '../../services/download'
 import { gchiToPPCoin } from '../../utils/units'
 
@@ -64,7 +65,6 @@ export default {
     shareCode: '',
     fileInfo: null,
     curStep: 0,
-    steps: ['Share Code', 'Storage Setting', 'Payment'],
     radio: 1,
     chiPrice: 100,
     totalChi: 0,
@@ -77,6 +77,13 @@ export default {
     PaymentTable,
   },
   computed: {
+    steps() {
+      if (this.$store.getters.appMode === APP_MODE_COINPOOL) {
+        return ['Share Code']
+      } else {
+        return ['Share Code', 'Storage Settings', 'Payment']
+      }
+    },
     recChiPrice() {
       return this.$store.state.recChiPrice
     },

@@ -102,7 +102,7 @@ export default {
         list: [
           {
             product: `Storage: ${this.fileSizeStr}/${this.storageTimeStr}`,
-            fee: `${this.storageCost} PPCoin(Fund)`,
+            fee: `${this.storageCost} PPCoin(Funds)`,
           },
         ],
         totalCost: this.totalCost,

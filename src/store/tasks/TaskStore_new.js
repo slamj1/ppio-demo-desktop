@@ -1,44 +1,45 @@
-import { Task } from './Task'
-import {
-  TASK_TYPE_UPLOAD,
-  TASK_TYPE_DOWNLOAD,
-  TASK_TYPE_GET,
-  DL_TASK,
-  UL_TASK,
-  GET_TASK,
-  MUT_CLEAR_TASK_DATA,
-} from '../../constants/store'
+import { DL_TASK, UL_TASK, GET_TASK, MUT_CLEAR_TASK_DATA } from '../../constants/store'
 
 export default class TaskStore {
   constructor(storeType) {
     // assign keys and sdk methods by store type
-    let STORE_KEYS, taskType
+    let STORE_KEYS
     if (storeType === 'upload') {
       STORE_KEYS = UL_TASK
-      taskType = TASK_TYPE_UPLOAD
     }
     if (storeType === 'download') {
       STORE_KEYS = DL_TASK
-      taskType = TASK_TYPE_DOWNLOAD
     }
 
     if (storeType === 'get') {
       STORE_KEYS = GET_TASK
-      taskType = TASK_TYPE_GET
     }
 
-    // mutation methods
-    const m_addTask = (state, data) => {
-      console.log('adding new task ', taskType)
-      console.log(data)
-      const newTask = new Task({
-        type: taskType,
-        ...data,
-      })
-      newTask.status.transferringData = true
-      newTask.status.finished = false
-      newTask.status.transferProgress = 0
-      state.taskQueue.unshift(newTask)
+    const m_setTaskProgress = (state, payload) => {
+      state.taskQueue[payload.idx].transferredData = payload.transferredData
+      state.taskQueue[payload.idx].wholeDataLenth = payload.wholeDataLenth
+    }
+
+    const m_pauseTask = (state, idx) => {
+      state.taskQueue[idx].pause()
+    }
+
+    const m_resumeTask = (state, idx) => {
+      state.taskQueue[idx].resume()
+    }
+
+    const m_failTask = (state, payload) => {
+      const taskToFail = state.taskQueue[payload.idx]
+      taskToFail.fail(payload.msg)
+      state.finishedQueue.unshift(taskToFail)
+      state.taskQueue.splice(payload.idx, 1)
+    }
+
+    const m_finishTask = (state, idx) => {
+      const taskToFinish = state.taskQueue[idx]
+      taskToFinish.finish()
+      state.finishedQueue.unshift(taskToFinish)
+      state.taskQueue.splice(idx, 1)
     }
 
     const m_removeTask = (state, idx) => {
@@ -76,7 +77,11 @@ export default class TaskStore {
       [STORE_KEYS.GET_TASK_COUNT]: state => state.taskQueue.length,
     }
     this.mutations = {
-      [STORE_KEYS.MUT_ADD_TASK]: m_addTask,
+      [STORE_KEYS.MUT_SET_PROGRESS]: m_setTaskProgress,
+      [STORE_KEYS.MUT_PAUSE_TASK]: m_pauseTask,
+      [STORE_KEYS.MUT_FINISH_TASK]: m_finishTask,
+      [STORE_KEYS.MUT_FAIL_TASK]: m_failTask,
+      [STORE_KEYS.MUT_RESUME_TASK]: m_resumeTask,
       [STORE_KEYS.MUT_REMOVE_TASK]: m_removeTask,
       [STORE_KEYS.MUT_CANCEL_TASK]: m_cancelTask,
       [STORE_KEYS.MUT_SET_STATUS]: m_setTaskStatus,

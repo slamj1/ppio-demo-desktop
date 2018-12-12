@@ -15,6 +15,7 @@ import {
   Row,
   Col,
   Input,
+  Checkbox,
   Alert,
   Steps,
   Step,
@@ -51,6 +52,7 @@ Vue.use(Progress)
 Vue.use(Row)
 Vue.use(Col)
 Vue.use(Input)
+Vue.use(Checkbox)
 Vue.use(Alert)
 Vue.use(Steps)
 Vue.use(Step)

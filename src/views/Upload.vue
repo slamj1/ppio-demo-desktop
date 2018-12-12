@@ -55,7 +55,7 @@ export default {
       }
     },
     f_updateStatus() {
-      this.$store.dispatch(UL_TASK.ACT_GET_STATUS).catch(err => {
+      this.$store.dispatch(UL_TASK.ACT_GET_PROGRESS).catch(err => {
         console.error(err)
       })
       if (this.taskList.length > 0) {

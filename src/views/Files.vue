@@ -11,7 +11,7 @@
               </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item :loading="preparingRename" @click.native="f_rename">Rename</el-dropdown-item>
-              <el-dropdown-item :loading="preparingRenew" @click.native="f_renew">Renew</el-dropdown-item>
+              <el-dropdown-item v-if="isCpoolMode" :loading="preparingRenew" @click.native="f_renew">Renew</el-dropdown-item>
               <el-dropdown-item :loading="preparingDel" @click.native="f_delete">Delete</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -25,7 +25,11 @@
       <el-button class="refresh-btn" icon="el-icon-refresh" circle @click="f_refreshList"></el-button>
     </el-header>
     <el-main class="app-main">
-      <div class="file-container" v-loading="refreshingData">
+      <div v-if="fileList.length === 0" class="empty">
+        <img src="../assets/img/files-empty.png" alt="empty">
+        <p>You haven't uploaded any file yet.</p>
+      </div>
+      <div v-else class="file-container" v-loading="refreshingData">
         <FileItem
             v-for="(file, idx) in fileList"
             :selected="selectedFileId === file.id"
@@ -33,13 +37,13 @@
             :file="file"
             @click.native.right.prevent.stop="f_rightClickFile(idx)"
             @click.native.stop="f_selectFile(idx)"></FileItem>
-        <FileItem
-            v-for="(task, index) in gettingTaskList"
-            :file="task.file"
-            :get-failed="task.status.failed"
-            :key="`gettingtask_${task.file.id}`"
-            :is-getting="true"
-            @delete="f_removeTask(index)"></FileItem>
+        <!--<FileItem-->
+            <!--v-for="(task, index) in gettingTaskList"-->
+            <!--:file="task.file"-->
+            <!--:get-failed="task.status.failed"-->
+            <!--:key="`gettingtask_${task.file.id}`"-->
+            <!--:is-getting="true"-->
+            <!--@delete="f_removeTask(index)"></FileItem>-->
       </div>
     </el-main>
     <router-view :file="operatingFile" @click.native.stop=""></router-view>
@@ -79,6 +83,9 @@ export default {
       fileList: state => state.file.fileList,
       gettingTaskList: state => state.getTask.taskQueue, // TODO: move gettingTaskList into fileList, to make finished file retain its position
     }),
+    isCpoolMode() {
+      return this.$store.getters.appMode === APP_MODE_COINPOOL
+    },
   },
   components: {
     FileItem,
@@ -127,7 +134,7 @@ export default {
       if (this.gettingTaskList.length > 0) {
         console.log('updating get status')
         this.$store
-          .dispatch(GET_TASK.ACT_GET_STATUS)
+          .dispatch(GET_TASK.ACT_GET_PROGRESS)
           .then(taskStatusArr => {
             // if any task finished, refresh file list from sdk
             if (taskStatusArr.filter(status => status.finished).length > 0) {
@@ -393,6 +400,16 @@ export default {
 
 .app-main {
   background-color: #fff;
+
+  .empty {
+    margin-top: 100px;
+    text-align: center;
+
+    img {
+      width: 240px;
+      margin-bottom: 20px;
+    }
+  }
 
   .file-container {
     display: flex;

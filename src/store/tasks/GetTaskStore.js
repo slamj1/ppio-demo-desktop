@@ -1,4 +1,9 @@
+/**
+ * @deprecated
+ */
+
 import TaskStore from './TaskStore_new'
+import { GetTask } from './Task'
 import { ACT_METADATA_ADD_FILE, GET_TASK } from '../../constants/store'
 import { getFile as startGet, cancelGet } from '../../services/getFile'
 import { getObjectStatus as getProgress } from '../../services/file'
@@ -7,6 +12,15 @@ import File from '../File'
 export default class GetTaskStore extends TaskStore {
   constructor() {
     super('get')
+
+    // add new task to queue
+    this.mutations[GET_TASK.MUT_ADD_TASK] = (state, data) => {
+      console.log('adding new get task')
+      console.log(data)
+      const newTask = new GetTask(data)
+      state.taskQueue.unshift(newTask)
+    }
+
     // action methods
     /**
      * create a new download task
@@ -126,7 +140,7 @@ export default class GetTaskStore extends TaskStore {
     this.actions = {
       [GET_TASK.ACT_CREATE_TASK]: a_createTask,
       [GET_TASK.ACT_CANCEL_TASK]: a_cancelTask,
-      [GET_TASK.ACT_GET_STATUS]: a_getTaskStatus,
+      [GET_TASK.ACT_GET_PROGRESS]: a_getTaskStatus,
     }
   }
 }

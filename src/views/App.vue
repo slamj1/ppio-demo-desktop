@@ -12,7 +12,12 @@ import fs from 'fs'
 import { remote } from 'electron'
 import storage from 'localforage'
 import { APP_STATE_PERSIST_KEY } from '../constants/constants'
-import { ACT_GET_USER_DATA, MUT_SET_RPC_PORT, ACT_LOGOUT } from '../constants/store'
+import {
+  ACT_GET_USER_DATA,
+  MUT_SET_PRIV_KEY,
+  MUT_SET_RPC_PORT,
+  ACT_LOGOUT,
+} from '../constants/store'
 import { startDaemon } from '../services/daemon'
 
 export default {
@@ -38,10 +43,16 @@ export default {
         }
         return Promise.reject(new Error('not login'))
       })
-      .then(() => this.f_startApp())
+      .then(persistedState => {
+        if (persistedState.privateKey.length > 0) {
+          console.log(persistedState.privateKey)
+          return this.f_startApp(persistedState.privateKey)
+        }
+        return Promise.reject(new Error('not login'))
+      })
       .catch(err => {
         console.log('data init failed.')
-        console.log(err)
+        console.error(err)
         this.initializing = false
         this.$store
           .dispatch(ACT_LOGOUT)
@@ -59,13 +70,19 @@ export default {
       } catch (err) {
         return Promise.reject(err)
       }
-      const privKey = account.getPrivateKeyString()
+      let privKey
+      if (typeof account === 'string') {
+        privKey = account
+      } else if (account.getPrivateKeyString) {
+        privKey = account.getPrivateKeyString()
+      }
       console.log(
         `starting app at ${this.$store.state.dataDir}, with private key: ${privKey}`,
       )
       return startDaemon(this.$store.state.dataDir, privKey)
         .then(port => {
           this.$store.commit(MUT_SET_RPC_PORT, port)
+          this.$store.commit(MUT_SET_PRIV_KEY, privKey)
           return this.$store.dispatch(ACT_GET_USER_DATA)
         })
         .then(() => {

@@ -1,7 +1,7 @@
 import { remote } from 'electron'
 import ppwallet from 'ppwallet'
 import bip39 from 'bip39'
-import safeBuffer from 'safe-buffer'
+// import safeBuffer from 'safe-buffer'
 
 const ppioUser = remote.getGlobal('ppioUser')
 
@@ -16,7 +16,7 @@ export const login = seedPhrase => {
         .filter((char, idx) => !!(idx % 2))
         .join('')
       console.log(privKey)
-      const account = new ppwallet.Account(safeBuffer.Buffer.from(privKey, 'hex'))
+      const account = new ppwallet.Account(privKey)
       console.log(account)
       console.log(account.getPrivateKeyString())
       resolve(account)
@@ -50,19 +50,21 @@ export const generatePhraseSeed = () => {
 }
 
 export const getWalletAddress = () =>
-  ppioUser.walletId().then(res => {
+  ppioUser.walletAccount().then(res => {
     console.log(res)
     return res
   })
 
-export const getBalance = walletId => {
-  console.log('getting balance for ', walletId)
-  return ppioUser.walletBalance({ walletId }).then(res => parseInt(res))
-}
-
-export const getFunds = walletId => {
-  console.log('getting funds for ', walletId)
-  return ppioUser.walletFunds({ walletId }).then(res => parseInt(res))
+export const getAccountDetails = walletId => {
+  console.log('getting account details for', walletId)
+  return ppioUser.accountDetails({ walletId }).then(res => {
+    console.log('account detail got')
+    return {
+      balance: res.Balance,
+      funds: res.LockedBalance,
+      spent: res.SpentBalance,
+    }
+  })
 }
 
 export const getIndexData = () =>
@@ -118,4 +120,5 @@ export const getBillingRecords = walletId =>
   })
 
 // TODO: what is the unit of chi price? kwei? gwei?
-export const getChiPrice = () => ppioUser.chiPrice().then(res => parseInt(res))
+export const getChiPrice = () =>
+  ppioUser.chiPrice().then(res => parseInt(res.DownloadChiPrice))

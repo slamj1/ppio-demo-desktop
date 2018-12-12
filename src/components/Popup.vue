@@ -53,6 +53,7 @@ export default {
   width: 100%;
   z-index: 10;
   background-color: rgba(0, 0, 0, 0.7);
+  -webkit-app-region: no-drag;
   .popup-wrap {
     left: 50%;
     top: 50%;
@@ -65,6 +66,7 @@ export default {
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;
+    -webkit-app-region: no-drag;
   }
   .popup-close {
     position: absolute;

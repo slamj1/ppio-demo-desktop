@@ -57,7 +57,7 @@ import {
   USAGE_STORAGE_GETTER,
   ACT_LOGOUT,
   ACT_START_POLLING_CHI_PRICE,
-  ACT_GET_USER_BALANCE,
+  ACT_GET_ACCOUNT_DETAILS,
 } from '../constants/store'
 
 import Profile from '../components/Profile'
@@ -128,7 +128,7 @@ export default {
   },
   methods: {
     onProfileShow() {
-      this.$store.dispatch(ACT_GET_USER_BALANCE)
+      this.$store.dispatch(ACT_GET_ACCOUNT_DETAILS)
     },
     f_goBilling() {
       this.showProfile = false

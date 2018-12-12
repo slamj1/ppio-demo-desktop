@@ -259,7 +259,7 @@ export default class TaskStore {
     const actions = {
       [STORE_KEYS.ACT_CREATE_TASK]: a_createTask,
       [STORE_KEYS.ACT_CANCEL_TASK]: a_cancelTask,
-      [STORE_KEYS.ACT_GET_STATUS]: a_getTaskStatus,
+      [STORE_KEYS.ACT_GET_PROGRESS]: a_getTaskStatus,
     }
 
     this.state = initialState

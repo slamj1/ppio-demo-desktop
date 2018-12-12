@@ -1,7 +1,6 @@
 import {
   login,
-  getBalance,
-  getFunds,
+  getAccountDetails,
   getBillingRecords,
   getWalletAddress,
   getIndexData,
@@ -13,7 +12,7 @@ import { checkDefaultBucket } from '../services/bucket'
 import {
   MUT_SET_USER_DATA,
   ACT_GET_USER_DATA,
-  ACT_GET_USER_BALANCE,
+  ACT_GET_ACCOUNT_DETAILS,
   ACT_GET_USER_CPOOL,
   MUT_SET_USER_CPOOL,
   MUT_WRITE_USER_META_DATA,
@@ -37,7 +36,7 @@ const initialState = () => ({
   uid: '',
   nickname: '',
   balance: 0,
-  fund: 0,
+  funds: 0,
   billingRecords: [],
   bucket: '',
   avatar: require('@/assets/img/avatar.png'),
@@ -65,10 +64,21 @@ const store = {
     [MUT_SET_USER_CPOOL](state, cpoolData) {
       console.log('setting user cpool ')
       console.log(cpoolData)
-      state.cpoolData.cpoolId = cpoolData.cpoolId
-      state.cpoolData.usage = cpoolData.usage
-      state.cpoolData.capacity = cpoolData.capacity
-      state.cpoolData.expires = cpoolData.expires
+      if (cpoolData) {
+        state.cpoolData.cpoolId = cpoolData.cpoolId
+        state.cpoolData.usage = cpoolData.usage
+        state.cpoolData.capacity = cpoolData.capacity
+        state.cpoolData.expires = cpoolData.expires
+      } else {
+        state.cpoolData = {
+          cpoolId: '',
+          cpoolName: '',
+          planName: '',
+          usage: 0,
+          capacity: 0,
+          expires: 0,
+        }
+      }
     },
     [MUT_WRITE_USER_META_DATA](state, data) {
       console.log('set meta data', data)
@@ -125,7 +135,7 @@ const store = {
         })
         .then(res => {
           if (!res) {
-            return context.dispatch(ACT_GET_USER_BALANCE)
+            return context.dispatch(ACT_GET_ACCOUNT_DETAILS)
           }
           return true
         })
@@ -142,23 +152,15 @@ const store = {
      * @param context
      * @returns {Promise<((T | string)[] | string)[] | never>}
      */
-    [ACT_GET_USER_BALANCE](context) {
+    [ACT_GET_ACCOUNT_DETAILS](context) {
       // get balance and funds
-      const dataGetters = [getBalance, getFunds].map(func =>
-        func(context.state.uid)
-          .then(res => res)
-          .catch(err => {
-            console.error(err)
-            return Promise.resolve('')
-          }),
-      )
-      return Promise.all(dataGetters).then(values => {
+      return getAccountDetails(context.state.uid).then(res => {
         console.log('balance and funds got: ')
-        console.log(values)
+        console.log(res)
         // TODO: handle unlogin case
         return context.commit(MUT_SET_USER_DATA, {
-          balance: values[0],
-          fund: values[1],
+          balance: res.balance,
+          funds: res.funds,
         })
       })
     },

@@ -45,8 +45,8 @@ global.startDaemon = params => {
 
   return ppioUser.daemonStart(Object.assign(params, { bindip: '0.0.0.0' })).then(() => {
     const datadirFiles = fs.readdirSync(params.datadir)
-    if (datadirFiles.length > 0 && datadirFiles.indexOf('ppio.conf') > -1) {
-      const configFilePath = path.join(params.datadir, './ppio.conf')
+    if (datadirFiles.length > 0 && datadirFiles.indexOf('poss.conf') > -1) {
+      const configFilePath = path.join(params.datadir, './poss.conf')
       const ppioConfig = JSON.parse(fs.readFileSync(configFilePath))
       let rpcPort = ppioConfig.RPCPort
       global.runningRPCPort = rpcPort

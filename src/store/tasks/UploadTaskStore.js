@@ -1,14 +1,28 @@
 import TaskStore from './TaskStore_new'
-import { ACT_METADATA_ADD_FILE, UL_TASK } from '../../constants/store'
-import { startUpload, cancelUpload } from '../../services/upload'
-import { getObjectStatus as getProgress } from '../../services/file'
+import { UploadTask } from './Task'
+import { UL_TASK } from '../../constants/store'
+import {
+  startUpload,
+  cancelUpload,
+  pauseUpload,
+  resumeUpload,
+} from '../../services/upload'
+import { getTaskProgress } from '../../services/file'
 import File from '../File'
 
 export default class UploadTaskStore extends TaskStore {
   constructor() {
     super('upload')
-    // action methods
-    const a_createTask = (context, payload) => {
+
+    // add new task to queue
+    this.mutations[UL_TASK.MUT_ADD_TASK] = (state, data) => {
+      console.log('adding new upload task')
+      console.log(data)
+      const newTask = new UploadTask(data)
+      state.taskQueue.unshift(newTask)
+    }
+
+    this.actions[UL_TASK.ACT_CREATE_TASK] = (context, payload) => {
       console.log('create task')
       return startUpload(payload)
         .then(res => {
@@ -16,8 +30,8 @@ export default class UploadTaskStore extends TaskStore {
           const newTask = {
             id: res.taskId,
             file: new File(payload.file),
+            localPath: payload.localPath,
           }
-          newTask.localPath = payload.localPath
           return context.commit(UL_TASK.MUT_ADD_TASK, newTask)
         })
         .catch(err => {
@@ -26,102 +40,66 @@ export default class UploadTaskStore extends TaskStore {
           return Promise.reject(err)
         })
     }
-
-    const a_cancelTask = (context, taskId) =>
-      cancelUpload(taskId).then(() => {
+    this.actions[UL_TASK.ACT_PAUSE_TASK] = (context, taskId) => {
+      console.log('pausing task')
+      return pauseUpload(taskId).then(() => {
+        console.log('task paused ', taskId)
+        return context.commit(UL_TASK.MUT_PAUSE_TASK, taskId)
+      })
+    }
+    this.actions[UL_TASK.ACT_RESUME_TASK] = (context, taskId) => {
+      console.log('resuming task')
+      return resumeUpload(taskId).then(() => {
+        console.log('res ', taskId)
+        return context.commit(UL_TASK.MUT_RESUME_TASK, taskId)
+      })
+    }
+    this.actions[UL_TASK.ACT_CANCEL_TASK] = (context, taskId) => {
+      console.log('canceling task')
+      return cancelUpload(taskId).then(() => {
         console.log('res ', taskId)
         return context.commit(UL_TASK.MUT_CANCEL_TASK, taskId)
       })
-
-    const a_getTaskStatus = context => {
-      // const unfinishedTasks = context.state.taskQueue.filter(task => !task.finished)
+    }
+    this.actions[UL_TASK.ACT_GET_PROGRESS] = context => {
       // TODO: Handle window closed case. Need to open app to finish task?
-      const statusGetters = context.state.taskQueue.map(async task => {
-        // if finished/failed, resolve empty
-        if (task.status.finished || task.status.failed) {
-          return Promise.resolve()
-        }
+      const statusGetters = context.state.taskQueue.map(task =>
         // get task status
-        return getProgress(task.id).catch(err => {
-          // if error, resolve it
+        getTaskProgress(task.id).catch(err => {
           console.error(err)
           return Promise.resolve({ error: err })
-        })
-      })
+        }),
+      )
       return Promise.all(statusGetters).then(resArr => {
-        const justFinishedTaskIdxArr = []
+        console.log('all upload task progress got: ')
+        console.log(resArr)
         const statusArr = resArr.map((res, index) => {
-          if (!res) {
-            return undefined
-          }
           let status = {}
-          if (res[0] && res[0].ContractStatus === 'US_DEAL') {
-            console.log(`task ${index} finished !`)
-            status.transferringData = false
-            status.transferProgress = 100
-            justFinishedTaskIdxArr.push(index)
-          } else if (
-            res.error &&
-            res.error.message !== 'failed to get miner-segments-info'
-          ) {
+          if (res.error) {
             console.log(`task ${index} failed !`)
-            status.transferringData = false
-            status.transferProgress = 0
             status.failed = true
             status.failMsg = res.error.message
+          } else if (res.transferred === res.whole) {
+            console.log(`task ${index} finished !`)
+            status.finished = true
+          } else {
+            status.transferredData = res.transferred
+            status.wholeDataLenth = res.whole
           }
           return status
         })
 
-        if (statusArr.filter(status => !!status).length === 0) {
-          return
-        }
-        // set task status
-        context.commit(UL_TASK.MUT_SET_STATUS, statusArr)
-        // work after finished
-        // TODO: This will block the next update action, move work below to watchers in components
-        if (justFinishedTaskIdxArr.length > 0) {
-          return Promise.all(
-            justFinishedTaskIdxArr.map(idx => {
-              // mutate meta data when upload/get task is finished
-              console.log(`upload/get task ${idx} adding file index`)
-              statusArr[idx].addingFileIndex = true
-              return context
-                .dispatch(ACT_METADATA_ADD_FILE, context.state.taskQueue[idx].file)
-                .then(res => ({ idx, res }))
-                .catch(err => Promise.resolve({ idx, error: err }))
-            }),
-          ).then(resultArr => {
-            resultArr.forEach(result => {
-              statusArr[result.idx].finished = true
-              statusArr[result.idx].addingFileIndex = false
-              statusArr[result.idx].exportingFile = false
-              console.log('task result :')
-              console.log(result)
-              if (result.error) {
-                statusArr[result.idx].succeeded = false
-                statusArr[result.idx].failed = true
-                statusArr[result.idx].failMsg = result.error.message.toString()
-              } else {
-                statusArr[result.idx].succeeded = true
-                statusArr[result.idx].failed = false
-                statusArr[result.idx].failMsg = ''
-              }
-            })
-
-            context.commit(UL_TASK.MUT_SET_STATUS, statusArr)
-            return statusArr
-          })
-        }
-        context.commit(UL_TASK.MUT_SET_STATUS, statusArr)
+        statusArr.forEach((status, idx) => {
+          if (status.finished) {
+            return context.commit(UL_TASK.MUT_FINISH_TASK, idx)
+          }
+          if (status.failed) {
+            return context.commit(UL_TASK.MUT_FAIL_TASK, { idx, msg: status.failMsg })
+          }
+          return context.commit(UL_TASK.MUT_SET_PROGRESS, { idx, ...status })
+        })
         return statusArr
       })
-    }
-
-    this.actions = {
-      [UL_TASK.ACT_CREATE_TASK]: a_createTask,
-      [UL_TASK.ACT_CANCEL_TASK]: a_cancelTask,
-      [UL_TASK.ACT_GET_STATUS]: a_getTaskStatus,
     }
   }
 }

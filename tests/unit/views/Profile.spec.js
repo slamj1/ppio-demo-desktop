@@ -33,7 +33,7 @@ describe('Profile.vue', () => {
           isLogin: true,
           nickname: 'nickname',
           balance: 30,
-          fund: 20,
+          funds: 20,
           billingRecords: [],
           avatar: '',
           address: 'fdsafeILHULHUIfwe235feILHULfeILHUL',

@@ -5,10 +5,10 @@ import { GATEWAY_URL } from '../constants/ports'
 /* -------------sdk----------- */
 if (process.env.NODE_ENV === 'production') {
   ppio.setPpioBinPath(
-    ppio.ppioBin.replace('app.asar', 'app.asar.unpacked/node_modules/ppio_sdk_npm/dist'),
+    ppio.ppioBin.replace('app.asar', 'app.asar.unpacked/node_modules/ppio-sdk/dist'),
   )
 } else {
-  ppio.ppioBin = path.join(process.cwd(), './node_modules/ppio_sdk_npm/dist/bin/ppio')
+  ppio.ppioBin = path.join(process.cwd(), './node_modules/ppio-sdk/dist/bin/poss')
 }
 console.log(ppio.ppioBin)
 

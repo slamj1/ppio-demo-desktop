@@ -20,6 +20,7 @@ import {
   MUT_SET_USER_ADDRESS,
   MUT_SET_CHI_PRICE,
   ACT_START_POLLING_CHI_PRICE,
+  MUT_SET_PRIV_KEY,
 } from '../constants/store'
 import {
   APP_MODE_COINPOOL,
@@ -50,6 +51,7 @@ const initialState = () => ({
   curPage: '',
   appVersion: '1.0',
   dataDir: '', // directory to store objects
+  privateKey: '', // account private key
   rpcPort: 0,
   phrase: '',
   recChiPrice: 100,
@@ -80,6 +82,9 @@ export default new Vuex.Store({
     },
     [MUT_SET_DATA_DIR](state, dataDir) {
       state.dataDir = dataDir
+    },
+    [MUT_SET_PRIV_KEY](state, privateKey) {
+      state.privateKey = privateKey
     },
     [MUT_SET_RPC_PORT](state, port) {
       state.rpcPort = port
