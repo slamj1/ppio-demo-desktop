@@ -1,6 +1,5 @@
 import { Task } from './Task'
 import {
-  ACT_METADATA_ADD_FILE,
   TASK_TYPE_UPLOAD,
   TASK_TYPE_DOWNLOAD,
   TASK_TYPE_GET,
@@ -13,7 +12,7 @@ import { startUpload, cancelUpload } from '../../services/upload'
 import { startDownload, cancelDownload, exportObject } from '../../services/download'
 import { getFile as startGet, cancelGet } from '../../services/getFile'
 import { getObjectStatus as getProgress } from '../../services/file'
-import File from '../File'
+import PPFile from '../PPFile'
 
 function cancelTask(task) {}
 
@@ -109,7 +108,7 @@ export default class TaskStore {
           console.log('task started')
           const newTask = {
             id: res.taskId,
-            file: new File(payload.file),
+            file: new PPFile(payload.file),
           }
           if (taskType === TASK_TYPE_UPLOAD) {
             newTask.localPath = payload.localPath
@@ -186,10 +185,7 @@ export default class TaskStore {
               if (taskType === TASK_TYPE_UPLOAD || taskType === TASK_TYPE_GET) {
                 console.log(`upload/get task ${idx} adding file index`)
                 statusArr[idx].addingFileIndex = true
-                return context
-                  .dispatch(ACT_METADATA_ADD_FILE, context.state.taskQueue[idx].file)
-                  .then(res => ({ idx, res }))
-                  .catch(err => Promise.resolve({ idx, error: err }))
+                return { idx, res }
               }
               // export object when download finished
               if (taskType === TASK_TYPE_DOWNLOAD) {
@@ -198,7 +194,7 @@ export default class TaskStore {
                 const task = context.state.taskQueue[idx]
                 console.log(task)
                 return exportObject({
-                  objectHash: task.file.id,
+                  objectHash: task.file.hash,
                   exportPath: task.exportPath,
                   isSecure: task.file.isSecure,
                 })

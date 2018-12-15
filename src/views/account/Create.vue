@@ -38,7 +38,7 @@ import { ACT_LOGIN } from '../../constants/store'
 import storage from 'localforage'
 
 import { USER_STATE_PERSIST_KEY } from '../../constants/constants'
-import { generatePhraseSeed } from '../../services/user'
+import { generateSeedPhrase } from '../../services/user'
 
 const dialog = remote.dialog
 
@@ -80,7 +80,7 @@ export default {
       })
     },
     f_generatePhraseSeed() {
-      const newAccount = generatePhraseSeed()
+      const newAccount = generateSeedPhrase()
       this.account = newAccount
       this.privateKey = newAccount.getPrivateKeyString()
     },

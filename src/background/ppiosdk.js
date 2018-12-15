@@ -1,41 +1,18 @@
 import path from 'path'
-import ppio from 'ppio-sdk'
-import { GATEWAY_URL } from '../constants/ports'
+import poss from 'poss-sdk'
+import { BOOTSTRAP_HOST, INDEXER_URL } from '../constants/ports'
 
-/* -------------sdk----------- */
+const possIns = poss.create({
+  indexerUrl: INDEXER_URL,
+  bootstrapip: BOOTSTRAP_HOST,
+})
+
 if (process.env.NODE_ENV === 'production') {
-  ppio.setPpioBinPath(
-    ppio.ppioBin.replace('app.asar', 'app.asar.unpacked/node_modules/ppio-sdk/dist'),
+  possIns.setPossBinPath(
+    poss.possBin.replace('app.asar', 'app.asar.unpacked/node_modules/poss-sdk'),
   )
 } else {
-  ppio.ppioBin = path.join(process.cwd(), './node_modules/ppio-sdk/dist/bin/poss')
-}
-console.log(ppio.ppioBin)
-
-const baseParams = {
-  gatewayUrl: GATEWAY_URL,
+  possIns.setPossBinPath(path.join(process.cwd(), './node_modules/poss-sdk/bin/poss'))
 }
 
-export function setRpcPort(port) {
-  // baseParams.rpcport = port
-  ppio.setGlobalRpcPort(port)
-}
-
-const proxySdk = {}
-for (let key in ppio) {
-  if (ppio.hasOwnProperty(key)) {
-    if (typeof ppio[key] === 'function' && ppio.rpcMethods.indexOf(key) > -1) {
-      proxySdk[key] = params => {
-        const completeParams = Object.assign({}, baseParams, params)
-        console.log(
-          `calling sdk method ${key} with params: ${JSON.stringify(completeParams)}`,
-        )
-        return ppio[key](completeParams)
-      }
-    } else {
-      proxySdk[key] = ppio[key]
-    }
-  }
-}
-
-export default proxySdk
+export default possIns

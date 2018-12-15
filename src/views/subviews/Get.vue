@@ -1,3 +1,5 @@
+<!-- @deprecated -->
+
 <template>
   <div class="get-page">
     <step-popup
@@ -194,7 +196,7 @@ export default {
           }
           const getParams = {
             file: this.file,
-            objectKey: this.file.id,
+            objectKey: this.file.key,
             chiPrice: parseInt(this.chiPrice),
             exportPath: filePath,
           }

@@ -69,6 +69,7 @@ import { UL_TASK } from '../../constants/store'
 import { getEstimateCost } from '../../services/upload'
 import { gchiToPPCoin } from '../../utils/units'
 import { APP_MODE_COINPOOL } from '../../constants/constants'
+import PPFile from '../../store/PPFile'
 
 export default {
   name: 'upload',
@@ -86,7 +87,7 @@ export default {
     uploadChi: 0,
     preparingUpload: false,
   }),
-  props: ['file'], // file is a Web File object
+  props: ['file'], // file is a HTML File object
   components: {
     StepPopup,
     PaymentTable,
@@ -234,13 +235,12 @@ export default {
 
       // TODO: What do we need to store in metadata?
       const putParams = {
-        file: {
-          id: this.filename,
+        file: new PPFile({
+          key: this.filename,
           filename: this.filename,
           size: this.file.size,
           isSecure: options.isSecure,
-          isPublic: false,
-        },
+        }),
         cpoolId: this.$store.state.user.cpoolData.cpoolId,
         objectKey: this.filename,
         ...options,
@@ -255,9 +255,9 @@ export default {
           console.error(err)
           this.preparingUpload = false
           if (parseInt(err.code) === 2017) {
-            return this.$message.error('Object existed')
+            return this.$message.error('File exists.')
           }
-          return this.$message.error('Object import failed!')
+          return this.$message.error('Upload failed!')
         })
     },
   },

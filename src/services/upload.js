@@ -1,8 +1,7 @@
 import moment from 'moment'
 import { remote } from 'electron'
-import { CANCEL_UPLOAD } from '../constants/sdk-methods'
 
-const ppioUser = remote.getGlobal('ppioUser')
+const poss = remote.getGlobal('poss')
 
 /**
  * @typedef {Object} UploadCost
@@ -19,7 +18,7 @@ const ppioUser = remote.getGlobal('ppioUser')
 export const getEstimateCost = params => {
   console.log('request upload file cost')
   console.log(params)
-  return ppioUser
+  return poss
     .putCost({
       size: params.size,
       copies: params.copyCount,
@@ -59,41 +58,23 @@ export const getEstimateCost = params => {
 export const startUpload = async params => {
   console.log('start upload service')
   console.log(params)
-  return ppioUser
+  return poss
     .putObject({
       key: params.objectKey,
       body: params.localPath,
       copies: params.copyCount,
-      expires: moment(Date.now() + params.storageTime).format('YYYY-MM-DD'),
+      expires: moment(Date.now() + params.storageTime * 1000).format('YYYY-MM-DD'),
       chiprice: params.chiPrice,
       encrypt: params.isSecure,
-      'cpool-id': params.cpoolId,
+      // 'cpool-id': params.cpoolId, TODO: cpool
     })
-    .then(() => ({ taskId: params.objectKey }))
+    .then(taskId => {
+      console.log('Upload task created. Task id: ', taskId)
+      return taskId
+    })
     .catch(err => {
       console.error('put object error')
       console.error(err)
       return Promise.reject(err)
     })
 }
-
-export const pauseUpload = params => {
-  console.log('pausing upload')
-  console.log(params)
-  // return ppioUser.pauseUpload()
-  return Promise.resolve()
-}
-
-export const resumeUpload = params => {
-  console.log('resuming upload')
-  console.log(params)
-  // return ppioUser.resumeUpload()
-  return Promise.resolve()
-}
-
-export const cancelUpload = taskId => ({
-  method: CANCEL_UPLOAD,
-  params: {
-    taskId,
-  },
-})

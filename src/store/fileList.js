@@ -2,23 +2,20 @@ import filesize from 'filesize'
 import {
   MUT_SET_FILE_LIST,
   MUT_REMOVE_FILE,
-  // MUT_RENAME_FILE,
   MUT_SECURE_FILE,
   MUT_SHARE_FILE,
-  // MUT_GET_FILE,
   ACT_GET_FILE_LIST,
-  ACT_ADD_FILE_METADATA,
+  ACT_REFRESH_FILE_LIST,
   ACT_REMOVE_FILE,
   ACT_RENAME_FILE,
-  // ACT_SECURE_FILE,
   ACT_SHARE_FILE,
-  // ACT_GET_FILE,
   USAGE_STORAGE_GETTER,
-  // ACT_METADATA_MODIFY_FILE,
   MUT_CLEAR_FILE_DATA,
-  ACT_MODIFY_FILE_METADATA,
+  ACT_GET_USER_INDEX_DATA,
+  MUT_REPLACE_STATE_HOOK,
 } from '../constants/store'
 import { deleteFile, getObjectList, changeObjectAcl } from '../services/file'
+import PPFile from './PPFile'
 
 const initialState = () => ({
   fileList: [],
@@ -31,8 +28,13 @@ const store = {
     [USAGE_STORAGE_GETTER]: state => filesize(state.usedStorage),
   },
   mutations: {
+    [MUT_REPLACE_STATE_HOOK]: state => {
+      console.log('replace state hook fired for file list')
+      const fileConverter = file => new PPFile(file)
+      state.fileList = state.fileList.map(fileConverter)
+    },
     [MUT_SET_FILE_LIST](state, fileList) {
-      state.fileList = fileList || []
+      state.fileList = fileList.map(file => new PPFile(file))
       const usage = fileList.reduce((acc, cur) => acc + cur.size, 0)
       console.log(usage)
       state.usedStorage = usage || 0
@@ -79,29 +81,18 @@ const store = {
         })
     },
     /**
-     * modify file metadata
+     * Refresh file names from metadata. Triggered after getting index data.
      * @param context
      */
-    [ACT_MODIFY_FILE_METADATA](context) {
-      // TODO: modify file metadata
-      return Promise.resolve()
-    },
-    /**
-     * add file metadata
-     * @deprecated
-     * @param context
-     */
-    [ACT_ADD_FILE_METADATA](context) {
+    [ACT_REFRESH_FILE_LIST](context) {
       console.log('refreshing file list')
-      const metaData = context.rootState.user.metadata
+      const indexData = context.rootState.user.metadata
       const newList = context.state.fileList.map(file => {
-        const newFileInfo = metaData.fileList[file.id]
+        const newFileInfo = indexData.fileListData[file.key]
         console.log(newFileInfo)
-        if (newFileInfo) {
-          return Object.assign({}, file, {
-            filename: newFileInfo.filename,
-            isSecure: newFileInfo.isSecure,
-          })
+        if (newFileInfo && newFileInfo.metadata && newFileInfo.metadata.filename) {
+          file.filename = newFileInfo.metadata.filename
+          console.log('new file name: ', file.filename)
         }
         return file
       })
@@ -111,14 +102,13 @@ const store = {
      * delete file
      * @param context
      * @param payload
-     * @param payload.file {File} file to be deleted
+     * @param payload.file {PPFile} file to be deleted
      * @param payload.fileIndex {Number} file index
      * @returns {PromiseLike<T | never> | Promise<T | never>}
      */
     [ACT_REMOVE_FILE](context, payload) {
-      return deleteFile(payload.file.id).then(
+      return deleteFile(payload.file.key).then(
         () => context.commit(MUT_REMOVE_FILE, payload.fileIndex),
-        // return context.dispatch(ACT_METADATA_REMOVE_FILE, payload.file.id)
         err => {
           console.error(err)
           return Promise.reject(err)
@@ -133,13 +123,7 @@ const store = {
      */
     [ACT_RENAME_FILE](context, payload) {
       console.log('renaming file ', payload.filename)
-      return context.dispatch(ACT_MODIFY_FILE_METADATA)
-      // return context.dispatch(ACT_METADATA_MODIFY_FILE, {
-      //   fileId: payload.file.id,
-      //   data: {
-      //     filename: payload.filename,
-      //   },
-      // })
+      return context.dispatch(ACT_GET_USER_INDEX_DATA)
     },
     /**
      * set file to public

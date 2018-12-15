@@ -30,7 +30,7 @@ export default {
   data: () => ({
     shareCode: null,
   }),
-  props: ['file', 'fileIndex'], // file is a /store/File.js object
+  props: ['file', 'fileIndex'], // file is a /store/PPFilele.js object
   components: {
     Popup,
     StepPopup,
@@ -42,7 +42,7 @@ export default {
     f_genShareCode() {
       getShareCode()
         .then(shareCode => {
-          this.shareCode = this.file.id
+          this.shareCode = shareCode
           return shareCode
         })
         .catch(() => {

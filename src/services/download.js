@@ -1,7 +1,6 @@
 import { remote } from 'electron'
-import { CANCEL_DOWNLOAD } from '../constants/sdk-methods'
 
-const ppioUser = remote.getGlobal('ppioUser')
+const poss = remote.getGlobal('poss')
 
 /**
  * @typedef {Object} DownloadCost
@@ -17,7 +16,7 @@ const ppioUser = remote.getGlobal('ppioUser')
 export const getEstimateCost = params => {
   console.log('request download file cost')
   console.log(params)
-  return ppioUser
+  return poss
     .getCost({
       size: params.size,
     })
@@ -48,40 +47,20 @@ export const getEstimateCost = params => {
 export const startDownload = async params => {
   console.log('start download service')
   console.log(params)
-  return ppioUser
+  return poss
     .getObject({
       key: params.objectKey,
       'share-code': params.shareCode,
       chiprice: params.chiPrice,
-      outFile: params.exportPath,
+      outfile: params.exportPath,
     })
-    .then(
-      () => ({
-        taskId: params.objectKey,
-      }),
-      err => {
-        console.error('get object error')
-        console.error(err)
-        return Promise.reject(err)
-      },
-    )
+    .then(taskId => {
+      console.log('Download task created. Task id: ', taskId)
+      return taskId
+    })
+    .catch(err => {
+      console.error('get object error')
+      console.error(err)
+      return Promise.reject(err)
+    })
 }
-
-export const pauseDownload = params => {
-  console.log('pausing download')
-  console.log(params)
-  return ppioUser.pauseDownload()
-}
-
-export const resumeDownload = params => {
-  console.log('resuming download')
-  console.log(params)
-  return ppioUser.resumeDownload()
-}
-
-export const cancelDownload = taskId => ({
-  method: CANCEL_DOWNLOAD,
-  params: {
-    taskId,
-  },
-})

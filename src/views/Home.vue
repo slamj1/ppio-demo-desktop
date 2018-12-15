@@ -32,6 +32,7 @@
           <span slot="title">Uploading <el-badge class="task-count-badge" v-show="uploadCount > 0" :value="uploadCount" /></span>
         </el-menu-item>
       </el-menu>
+      <el-button type="text" class="feedback-btn" @click="showFeedback = true" icon="el-icon-edit-outline">Feedback</el-button>
     </el-aside>
     <keep-alive>
       <router-view></router-view>
@@ -40,10 +41,10 @@
     <BillingRecords v-if="showPopups.billingRecords" :recordsData="userData.billingRecords"></BillingRecords>
     <Upload v-if="showPopups.uploadFile" :file="uploadingFile"></Upload>
     <Download v-if="showPopups.downloadFile" :file="downloadingFile"></Download>
-    <Get v-if="showPopups.getFile"></Get>
     <Renew v-if="showPopups.renewFile" :file="renewingFile"></Renew>
     <Rename v-if="showPopups.renameFile" :file="renamingFile"></Rename>
     <Share v-if="showPopups.shareFile" :file="sharingFile" :fileIndex="sharingFileIndex"></Share>
+    <Feedback v-if="showFeedback" @close="showFeedback = false"></Feedback>
   </el-container>
 </template>
 
@@ -62,12 +63,12 @@ import {
 
 import Profile from '../components/Profile'
 import Download from './subviews/Download'
-import Get from './subviews/Get'
 import Renew from './subviews/Renew'
 import Rename from './subviews/Rename'
 import Share from './subviews/Share'
 import Upload from './subviews/Upload'
-import BillingRecords from '../views/BillingRecords'
+import BillingRecords from './BillingRecords'
+import Feedback from './Feedback'
 
 export default {
   name: 'home',
@@ -90,7 +91,18 @@ export default {
       renamingFile: null,
       renewingFile: null,
       uploadingFile: null,
+      showFeedback: false,
     }
+  },
+  components: {
+    Profile,
+    BillingRecords,
+    Download,
+    Renew,
+    Rename,
+    Share,
+    Upload,
+    Feedback,
   },
   computed: {
     ...mapState({
@@ -111,16 +123,6 @@ export default {
     curRoutePath() {
       return this.$route.path.split('/').slice(-1)[0]
     },
-  },
-  components: {
-    Profile,
-    BillingRecords,
-    Download,
-    Get,
-    Renew,
-    Rename,
-    Share,
-    Upload,
   },
   mounted() {
     this.f_initEventBus()
@@ -391,6 +393,14 @@ $nav-font-color: #c0c4cc;
       font-size: 12px;
       color: #909399;
     }
+  }
+
+  .feedback-btn {
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    opacity: 0.6;
+    color: #fff;
   }
 }
 </style>

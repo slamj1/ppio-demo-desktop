@@ -4,9 +4,11 @@
       tableName="download"
       :tableData="taskList">
     <template slot="operations" slot-scope="operationProps">
-      <span class="task-operate-btn open-btn" v-if="operationProps.task.status.succeeded" @click="f_open(operationProps.index)"><i class="app-icon icon-open"></i></span>
+      <span class="task-operate-btn pause-btn" v-if="operationProps.task.status === TASK_STATUS_RUNNING" @click="f_pause(operationProps.index)"><i class="app-icon icon-pause"></i></span>
+      <span class="task-operate-btn pause-btn" v-if="operationProps.task.status === TASK_STATUS_PAUSED" @click="f_resume(operationProps.index)"><i class="app-icon icon-play"></i></span>
+      <span class="task-operate-btn cancel-btn" v-if="!operationProps.task.status.finished" @click="f_cancel(operationProps.index)"><i class="el-icon el-icon-close"></i></span>
+      <span class="task-operate-btn open-btn" v-if="operationProps.task.status === TASK_STATUS_SUCC" @click="f_open(operationProps.index)"><i class="app-icon icon-open"></i></span>
       <span class="task-operate-btn delete-btn" v-if="operationProps.task.status.finished" @click="f_delete(operationProps.index)"><i class="el-icon el-icon-delete"></i></span>
-      <!--<span class="task-operate-btn cancel-btn" v-if="operationProps.task.status.transferringData" @click="f_cancel(operationProps.index)"><i class="el-icon el-icon-close"></i></span>-->
     </template>
   </TransferTable>
 </template>
@@ -14,12 +16,15 @@
 import fs from 'fs'
 import { remote } from 'electron'
 import { DL_TASK } from '../constants/store'
-import TransferTable from '@/components/TransferTable'
+import { TASK_GET_PROGRESS_INTERVAL } from '../constants/constants'
+import TransferTable from '../components/TransferTable'
+import * as TASK_STATUS from '../constants/task'
 
 export default {
   name: 'download-list',
   data: () => ({
     getStatusTimer: null,
+    ...TASK_STATUS,
   }),
   computed: {
     taskList() {
@@ -44,8 +49,14 @@ export default {
     }
   },
   methods: {
+    f_pause(index) {
+      this.$store.dispatch(DL_TASK.ACT_PAUSE_TASK, index)
+    },
+    f_resume(index) {
+      this.$store.dispatch(DL_TASK.ACT_RESUME_TASK, index)
+    },
     f_cancel(index) {
-      const toCancel = window.confirm('Are you sure to cancel the uploading?')
+      const toCancel = window.confirm('Are you sure to cancel the downloading?')
       if (toCancel) {
         this.$store.dispatch(DL_TASK.ACT_CANCEL_TASK, index)
       }
@@ -53,8 +64,8 @@ export default {
     f_delete(index) {
       const toDelete = window.confirm('Are you sure to delete the task?')
       if (toDelete) {
-        const cancelIdx = index - this.$store.state.downloadTask.taskQueue.length
-        this.$store.commit(DL_TASK.MUT_REMOVE_TASK, cancelIdx)
+        const deleteIdx = index - this.$store.state.downloadTask.taskQueue.length
+        this.$store.dispatch(DL_TASK.ACT_DELETE_TASK, deleteIdx)
       }
     },
     f_open(index) {
@@ -65,7 +76,7 @@ export default {
         fs.readdirSync(filePath)
         remote.shell.showItemInFolder(this.taskList[index].exportPath)
       } catch (err) {
-        this.$message.error('File does not exist!')
+        this.$message.error('PPFile does not exist!')
       }
     },
     f_updateStatus() {
@@ -75,7 +86,7 @@ export default {
       if (this.taskList.length > 0) {
         this.getStatusTimer = setTimeout(() => {
           this.f_updateStatus()
-        }, 2000)
+        }, TASK_GET_PROGRESS_INTERVAL)
       }
     },
   },

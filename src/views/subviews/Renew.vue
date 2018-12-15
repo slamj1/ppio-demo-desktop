@@ -69,7 +69,7 @@ import { gchiToPPCoin } from '../../utils/units'
 export default {
   name: 'renew',
   data: () => ({
-    steps: ['File', 'Storage Setting', 'Payment'],
+    steps: ['PPFile', 'Storage Setting', 'Payment'],
     curStep: 0,
     radio: 1,
     customStorageDays: '1',
@@ -190,7 +190,7 @@ export default {
       }
       this.renewing = true
       renewFile({
-        objectKey: this.file.id,
+        objectKey: this.file.key,
         isSecure: true,
         cpoolId: this.$store.state.user.cpoolData.cpoolId,
         ...this.taskOptions,

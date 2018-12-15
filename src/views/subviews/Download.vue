@@ -19,7 +19,7 @@
       <span slot="header">Download File</span>
       <div class="step-content step-0" slot="step-0">
         <div class="inner-wrap">
-          <div class="line-wrap">
+          <div class="line-wrap file-container">
             <img src="@/assets/img/file.png" class="file-icon" :alt="file && file.filename">
             <p class="file-name">{{file && file.filename}}</p>
           </div>
@@ -61,6 +61,7 @@ import { DL_TASK } from '../../constants/store'
 import { APP_MODE_COINPOOL } from '../../constants/constants'
 import { getEstimateCost } from '../../services/download'
 import { gchiToPPCoin } from '../../utils/units'
+import PPFile from '../../store/PPFile'
 
 export default {
   name: 'download',
@@ -73,7 +74,7 @@ export default {
     downloadChi: 0,
     preparingDownload: false,
   }),
-  props: ['file'], // file is a /store/File.js object
+  props: ['file'], // PPFile
   components: {
     StepPopup,
     PaymentTable,
@@ -122,6 +123,7 @@ export default {
       }
       return getEstimateCost({
         size: this.file.size,
+        chiPrice: parseInt(this.chiPrice),
       }).then(res => {
         this.totalChi = res.totalCost
         this.downloadChi = res.downloadCost
@@ -169,8 +171,8 @@ export default {
             return
           }
           const getParams = {
-            file: this.file,
-            objectKey: this.file.id,
+            file: new PPFile(this.file),
+            objectKey: this.file.key,
             chiPrice: parseInt(this.chiPrice),
             exportPath: filePath,
           }
@@ -203,6 +205,11 @@ export default {
     .line-wrap {
       position: relative;
       padding: 6px 0 6px 130px;
+
+      &.file-container {
+        padding-left: 0;
+        text-align: center;
+      }
 
       .file-icon {
         width: 60px;

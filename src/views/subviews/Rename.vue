@@ -53,8 +53,8 @@ export default {
   name: 'rename',
   data: () => ({
     curStep: 0,
-    // steps: ['File name', 'Gas Setting', 'Payment'],
-    steps: ['File name'],
+    // steps: ['PPFile name', 'Gas Setting', 'Payment'],
+    steps: ['PPFile name'],
     filename: '',
     totalCost: 0,
     chiPrice: 100,

@@ -17,15 +17,13 @@
       <template scope="scope">
         <el-progress
             class="transmit-progress"
-            v-if="!scope.row.status.failed"
+            v-if="scope.row.status !== TASK_STATUS_FAIL"
             :stroke-width="4"
-            :percentage="scope.row.status.transferProgress"
-            :show-text="scope.row.status.transferringData || scope.row.status.finished"
+            :percentage="scope.row.transferProgress"
+            :show-text="scope.row.status === TASK_STATUS_RUNNING || scope.row.finished"
             :status="getProgressStatus(scope.row)"></el-progress>
-        <span class="transfer-progress-text" v-if="scope.row.status.transferringData">{{scope.row.status.transferSpeed}}</span>
-        <span class="transfer-progress-text processing" v-else-if="scope.row.status.addingFileIndex">adding file index</span>
-        <span class="transfer-progress-text processing" v-else-if="scope.row.status.exportingFile">exporting file</span>
-        <span class="transfer-progress-text failed" v-else-if="scope.row.status.failed">{{scope.row.status.failMsg}}</span>
+        <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_RUNNING">{{scope.row.displayTransferSpeed}}</span>
+        <span class="transfer-progress-text failed" v-else-if="scope.row.status === TASK_STATUS_FAIL">{{scope.row.failMsg}}</span>
       </template>
     </el-table-column>
     <el-table-column width="120">
@@ -37,8 +35,16 @@
 </template>
 
 <script>
+import { TASK_STATUS_FAIL, TASK_STATUS_RUNNING } from '../constants/task'
+
 export default {
   name: 'transfer-list',
+  data() {
+    return {
+      TASK_STATUS_FAIL,
+      TASK_STATUS_RUNNING,
+    }
+  },
   props: ['tableName', 'tableData'],
   mounted() {
     console.log(this.tableData)
@@ -48,11 +54,11 @@ export default {
       this.$emit('cancel', taskIndex)
     },
     getProgressStatus(rowData) {
-      if (rowData.status.finished) {
+      if (rowData.finished) {
         return 'success'
       }
 
-      if (rowData.status.failed) {
+      if (rowData.status === TASK_STATUS_FAIL) {
         return 'exeption'
       }
 

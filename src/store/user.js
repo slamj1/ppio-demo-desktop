@@ -4,7 +4,7 @@ import {
   getBillingRecords,
   getWalletAddress,
   getIndexData,
-  setMetadata,
+  flushIndexdata,
 } from '../services/user'
 import { stopDaemon } from '../services/daemon'
 import { getCpool } from '../services/cpool'
@@ -15,18 +15,15 @@ import {
   ACT_GET_ACCOUNT_DETAILS,
   ACT_GET_USER_CPOOL,
   MUT_SET_USER_CPOOL,
-  MUT_WRITE_USER_META_DATA,
-  ACT_GET_USER_META_DATA,
-  ACT_SET_USER_META_DATA,
-  ACT_METADATA_ADD_FILE,
-  ACT_METADATA_REMOVE_FILE,
-  ACT_METADATA_MODIFY_FILE,
+  MUT_WRITE_USER_INDEX_DATA,
+  ACT_GET_USER_INDEX_DATA,
+  ACT_FLUSH_USER_INDEX_DATA,
   ACT_LOGIN,
   MUT_SET_USER_ADDRESS,
   ACT_LOGOUT,
   MUT_SET_BILLING_RECORDS,
   ACT_GET_BILLING_RECORDS,
-  ACT_ADD_FILE_METADATA,
+  ACT_REFRESH_FILE_LIST,
   MUT_CLEAR_USER_DATA,
   ACT_CLEAR_DATA,
 } from '../constants/store'
@@ -49,7 +46,11 @@ const initialState = () => ({
     capacity: 0,
     expires: 0, // timestamp
   },
-  metadata: { fileList: {} },
+  metadata: {
+    pubkey: '',
+    buckets: [],
+    fileListData: {},
+  },
 })
 
 const store = {
@@ -80,15 +81,15 @@ const store = {
         }
       }
     },
-    [MUT_WRITE_USER_META_DATA](state, data) {
+    [MUT_WRITE_USER_INDEX_DATA](state, data) {
       console.log('set meta data', data)
       console.log(state)
       if (data === null) {
         console.error('not passing metadata')
         return
       }
-      if (!data.fileList) {
-        data.fileList = {}
+      if (!data.fileListData) {
+        data.fileListData = {}
       }
       console.log(data)
       state.metadata = data
@@ -139,7 +140,7 @@ const store = {
           }
           return true
         })
-        .then(() => context.dispatch(ACT_GET_USER_META_DATA))
+        .then(() => context.dispatch(ACT_GET_USER_INDEX_DATA))
         .then(() => checkDefaultBucket())
         .then(() => context.commit(MUT_SET_USER_DATA, { bucket: APP_BUCKET_NAME }))
         .catch(err => {
@@ -184,20 +185,21 @@ const store = {
      * @param context
      * @returns {Promise<T | never>}
      */
-    [ACT_GET_USER_META_DATA](context) {
+    [ACT_GET_USER_INDEX_DATA](context) {
       return getIndexData()
         .then(res => {
           console.log('metadata got')
           console.log(res)
-          return context.commit(MUT_WRITE_USER_META_DATA, res)
+          context.dispatch(ACT_REFRESH_FILE_LIST)
+          return context.commit(MUT_WRITE_USER_INDEX_DATA, res)
         })
         .catch(err => {
           console.log('get metadata failed')
           console.error(err)
           if (err.error && err.error.message === 'user is not exists') {
-            return context.dispatch(ACT_SET_USER_META_DATA, context.state.metadata)
+            return context.dispatch(ACT_FLUSH_USER_INDEX_DATA, context.state.metadata)
           }
-          context.commit(MUT_WRITE_USER_META_DATA, null)
+          context.commit(MUT_WRITE_USER_INDEX_DATA, null)
           return Promise.resolve()
         })
     },
@@ -208,63 +210,13 @@ const store = {
      * @param data
      * @returns {Promise<T | never>}
      */
-    [ACT_SET_USER_META_DATA](context, data) {
+    [ACT_FLUSH_USER_INDEX_DATA](context) {
       console.log('action set user metadata dispatched')
-      console.log(data)
-      return setMetadata(data)
-        .then(() => context.commit(MUT_WRITE_USER_META_DATA, data))
-        .then(() => context.dispatch(ACT_ADD_FILE_METADATA))
-        .catch(err => {
-          console.log('set metadata failed')
-          console.error(err)
-          return Promise.reject(err)
-        })
-    },
-    /**
-     * @deprecated
-     * Add file to user metadata to store file info
-     * @param context
-     * @param file {File}
-     * @returns {*|void|Promise<any>}
-     */
-    [ACT_METADATA_ADD_FILE](context, file) {
-      const newMetadata = JSON.parse(JSON.stringify(context.state.metadata)) // deep clone
-      newMetadata.fileList[file.id] = {
-        filename: file.filename,
-        size: file.size,
-        type: file.type,
-        isSecure: file.isSecure,
-      }
-      return context.dispatch(ACT_SET_USER_META_DATA, newMetadata)
-    },
-    /**
-     * @deprecated
-     * Remove a file's info from user metadata when it is deleted
-     * @param context
-     * @param file {File}
-     * @returns {*|void|Promise<any>}
-     */
-    [ACT_METADATA_REMOVE_FILE](context, fileId) {
-      const newMetadata = JSON.parse(JSON.stringify(context.state.metadata)) // deep clone
-      delete newMetadata.fileList[fileId]
-      return context.dispatch(ACT_SET_USER_META_DATA, newMetadata)
-    },
-    /**
-     * @deprecated
-     * Modify file info stored in user metadata
-     * @param context
-     * @param payload
-     * @returns {*|void|Promise<any>}
-     */
-    [ACT_METADATA_MODIFY_FILE](context, payload) {
-      const newMetadata = JSON.parse(JSON.stringify(context.state.metadata)) // deep clone
-      const oriFileMetadata = newMetadata.fileList[payload.fileId]
-      newMetadata.fileList[payload.fileId] = Object.assign(
-        {},
-        oriFileMetadata,
-        payload.data,
-      )
-      return context.dispatch(ACT_SET_USER_META_DATA, newMetadata)
+      return flushIndexdata().catch(err => {
+        console.log('set metadata failed')
+        console.error(err)
+        return Promise.reject(err)
+      })
     },
     /**
      * Get all billing records

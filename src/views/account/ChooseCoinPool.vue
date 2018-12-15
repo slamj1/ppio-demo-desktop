@@ -28,7 +28,7 @@
 </template>
 <script>
 import electron from 'electron'
-import Popup from './Popup'
+import Popup from '../../components/Popup'
 
 export default {
   name: 'choose-cpool',

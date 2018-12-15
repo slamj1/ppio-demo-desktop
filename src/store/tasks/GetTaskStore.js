@@ -4,10 +4,10 @@
 
 import TaskStore from './TaskStore_new'
 import { GetTask } from './Task'
-import { ACT_METADATA_ADD_FILE, GET_TASK } from '../../constants/store'
+import { GET_TASK } from '../../constants/store'
 import { getFile as startGet, cancelGet } from '../../services/getFile'
 import { getObjectStatus as getProgress } from '../../services/file'
-import File from '../File'
+import PPFile from '../PPFile'
 
 export default class GetTaskStore extends TaskStore {
   constructor() {
@@ -35,7 +35,7 @@ export default class GetTaskStore extends TaskStore {
           console.log('task started')
           const newTask = {
             id: res.taskId,
-            file: new File(payload.file),
+            file: new PPFile(payload.file),
           }
           return context.commit(GET_TASK.MUT_ADD_TASK, newTask)
         })
@@ -105,10 +105,7 @@ export default class GetTaskStore extends TaskStore {
               // mutate meta data when upload/get task is finished
               console.log(`upload/get task ${idx} adding file index`)
               statusArr[idx].addingFileIndex = true
-              return context
-                .dispatch(ACT_METADATA_ADD_FILE, context.state.taskQueue[idx].file)
-                .then(res => ({ idx, res }))
-                .catch(err => Promise.resolve({ idx, error: err }))
+              return { idx, res }
             }),
           ).then(resultArr => {
             resultArr.forEach(result => {

@@ -1,7 +1,7 @@
 import { remote } from 'electron'
 import { APP_SECURE_KEY } from '../constants/constants'
 
-const ppioUser = remote.getGlobal('ppioUser')
+const poss = remote.getGlobal('poss')
 
 export const getFileInfoByShareCode = code =>
   new Promise((resolve, reject) => {
@@ -26,7 +26,7 @@ export const getFile = async params => {
   console.log('get file service fired')
   console.log(params)
 
-  return ppioUser
+  return poss
     .objectCopy({
       copies: params.copies,
       duration: params.duration,

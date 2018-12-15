@@ -19,7 +19,7 @@
 import fs from 'fs'
 import { remote } from 'electron'
 import { MUT_SET_DATA_DIR } from '../../constants/store'
-import { initDaemon } from '../../services/daemon'
+import { startDaemon } from '../../services/daemon'
 
 export default {
   data() {
@@ -28,7 +28,7 @@ export default {
       subStartingApp: false,
     }
   },
-  props: ['startingApp'],
+  props: ['startingApp', 'curAccount'],
   methods: {
     f_chooseDataDir() {
       remote.dialog.showOpenDialog(
@@ -58,7 +58,11 @@ export default {
 
       this.subStartingApp = true
       this.$store.commit(MUT_SET_DATA_DIR, this.dataDir)
-      initDaemon(this.dataDir)
+      startDaemon(
+        this.dataDir,
+        this.curAccount.getPrivateKeyString(),
+        this.curAccount.getAddressString(),
+      )
         .then(() => {
           this.subStartingApp = false
           return this.$emit('startApp')

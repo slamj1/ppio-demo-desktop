@@ -13,12 +13,14 @@ import { remote } from 'electron'
 import storage from 'localforage'
 import { APP_STATE_PERSIST_KEY } from '../constants/constants'
 import {
+  MUT_REPLACE_STATE_HOOK,
   ACT_GET_USER_DATA,
   MUT_SET_PRIV_KEY,
   MUT_SET_RPC_PORT,
   ACT_LOGOUT,
 } from '../constants/store'
 import { startDaemon } from '../services/daemon'
+import ppwallet from 'ppwallet'
 
 export default {
   name: 'app',
@@ -38,6 +40,7 @@ export default {
         if (val) {
           if (val.dataDir.length > 0 && val.address.length > 0) {
             this.$store.replaceState(val)
+            this.$store.commit(MUT_REPLACE_STATE_HOOK)
             return val
           }
         }
@@ -70,16 +73,21 @@ export default {
       } catch (err) {
         return Promise.reject(err)
       }
-      let privKey
+      let privKey = ''
+      let address = ''
       if (typeof account === 'string') {
+        // account is private key
         privKey = account
+        const ppAccount = new ppwallet.Account(account)
+        address = ppAccount.getAddressString()
       } else if (account.getPrivateKeyString) {
         privKey = account.getPrivateKeyString()
+        address = account.getAddressString()
       }
       console.log(
         `starting app at ${this.$store.state.dataDir}, with private key: ${privKey}`,
       )
-      return startDaemon(this.$store.state.dataDir, privKey)
+      return startDaemon(this.$store.state.dataDir, privKey, address)
         .then(port => {
           this.$store.commit(MUT_SET_RPC_PORT, port)
           this.$store.commit(MUT_SET_PRIV_KEY, privKey)

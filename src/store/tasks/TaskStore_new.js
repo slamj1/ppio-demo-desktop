@@ -1,4 +1,12 @@
-import { DL_TASK, UL_TASK, GET_TASK, MUT_CLEAR_TASK_DATA } from '../../constants/store'
+import {
+  DL_TASK,
+  UL_TASK,
+  GET_TASK,
+  MUT_CLEAR_TASK_DATA,
+  MUT_REPLACE_STATE_HOOK,
+  TASK_TYPE_UPLOAD, TASK_TYPE_DOWNLOAD, TASK_TYPE_GET,
+} from '../../constants/store'
+import { DownloadTask, UploadTask } from './Task'
 
 export default class TaskStore {
   constructor(storeType) {
@@ -16,11 +24,14 @@ export default class TaskStore {
     }
 
     const m_setTaskProgress = (state, payload) => {
-      state.taskQueue[payload.idx].transferredData = payload.transferredData
-      state.taskQueue[payload.idx].wholeDataLenth = payload.wholeDataLenth
+      console.log('setting task progress')
+      console.log(state.taskQueue[payload.idx])
+      state.taskQueue[payload.idx].setProgress(payload)
     }
 
     const m_pauseTask = (state, idx) => {
+      console.log('pausing task')
+      console.log(state.taskQueue[idx])
       state.taskQueue[idx].pause()
     }
 
@@ -30,12 +41,15 @@ export default class TaskStore {
 
     const m_failTask = (state, payload) => {
       const taskToFail = state.taskQueue[payload.idx]
+      console.log('failing task')
+      console.log(taskToFail)
       taskToFail.fail(payload.msg)
       state.finishedQueue.unshift(taskToFail)
       state.taskQueue.splice(payload.idx, 1)
     }
 
     const m_finishTask = (state, idx) => {
+      console.log('finishing task ', idx)
       const taskToFinish = state.taskQueue[idx]
       taskToFinish.finish()
       state.finishedQueue.unshift(taskToFinish)
@@ -77,6 +91,18 @@ export default class TaskStore {
       [STORE_KEYS.GET_TASK_COUNT]: state => state.taskQueue.length,
     }
     this.mutations = {
+      [MUT_REPLACE_STATE_HOOK]: state => {
+        console.log('replace state hook fired for task list')
+        const taskConverter = task => {
+          if (task.type === TASK_TYPE_UPLOAD) {
+            return new UploadTask(task)
+          } else if (task.type === TASK_TYPE_DOWNLOAD){
+            return new DownloadTask(task)
+          }
+        }
+        state.taskQueue = state.taskQueue.map(taskConverter)
+        state.finishedQueue = state.finishedQueue.map(taskConverter)
+      },
       [STORE_KEYS.MUT_SET_PROGRESS]: m_setTaskProgress,
       [STORE_KEYS.MUT_PAUSE_TASK]: m_pauseTask,
       [STORE_KEYS.MUT_FINISH_TASK]: m_finishTask,
@@ -92,5 +118,6 @@ export default class TaskStore {
         })
       },
     }
+    this.actions = {}
   }
 }

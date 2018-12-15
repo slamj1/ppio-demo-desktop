@@ -13,21 +13,9 @@
     "electron:build": "vue-cli-service electron:build -mwl",
     "electron:serve": "vue-cli-service electron:serve"
   },
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.js": [
-      "vue-cli-service lint",
-      "git add"
-    ],
-    "*.vue": [
-      "vue-cli-service lint",
-      "git add"
-    ]
-  },
   "main": "background/background.js",
   "dependencies": {
+    "axios": "^0.18.0",
     "bignumber.js": "^8.0.1",
     "bip39": "^2.5.0",
     "electron-updater": "^4.0.4",

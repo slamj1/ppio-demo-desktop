@@ -1,3 +1,5 @@
+export const MUT_REPLACE_STATE_HOOK = 'mutation_replaceStateHook' // dispatched after replaceState in App.vue, to convert tasks/files into Task/File instance
+
 export const MUT_CLEAR_DATA = 'mutation_clearAppData'
 export const ACT_CLEAR_DATA = 'action_clearAppData'
 export const MUT_SET_DATA_DIR = 'mutation_setDataDir'
@@ -12,12 +14,9 @@ export const ACT_GET_USER_DATA = 'action_getUserData'
 export const ACT_GET_USER_CPOOL = 'action_getUserCpool'
 export const MUT_SET_USER_CPOOL = 'mutation_setUserCpool'
 export const ACT_GET_ACCOUNT_DETAILS = 'action_getUserBalance'
-export const MUT_WRITE_USER_META_DATA = 'mutation_setUserMetadata'
-export const ACT_GET_USER_META_DATA = 'action_getUserMetadata'
-export const ACT_SET_USER_META_DATA = 'action_setUserMetadata'
-export const ACT_METADATA_ADD_FILE = 'action_metadataAddFile'
-export const ACT_METADATA_MODIFY_FILE = 'action_metadataModifyFile'
-export const ACT_METADATA_REMOVE_FILE = 'action_metadataRemoveFile'
+export const MUT_WRITE_USER_INDEX_DATA = 'mutation_setUserMetadata'
+export const ACT_GET_USER_INDEX_DATA = 'action_getUserMetadata'
+export const ACT_FLUSH_USER_INDEX_DATA = 'action_flushUserMetadata'
 export const ACT_LOGIN = 'action_login'
 export const ACT_LOGOUT = 'action_logout'
 export const MUT_SET_BILLING_RECORDS = 'mutation_setUserJournal'
@@ -30,9 +29,7 @@ export const ACT_GET_FILE_LIST = 'action_getFileList'
 export const MUT_REMOVE_FILE = 'mutation_removeFile'
 export const ACT_REMOVE_FILE = 'action_removeFile'
 export const ACT_RENAME_FILE = 'action_renameFile'
-export const ACT_MODIFY_FILE_METADATA = 'action_modifyFileMetadata'
-export const ACT_GET_FILE = 'action_getFile'
-export const ACT_ADD_FILE_METADATA = 'action_addFileMetadata'
+export const ACT_REFRESH_FILE_LIST = 'action_addFileMetadata'
 export const MUT_SECURE_FILE = 'mutation_secureFile'
 export const MUT_SHARE_FILE = 'mutation_shareFile'
 export const ACT_SHARE_FILE = 'action_shareFile'
@@ -50,6 +47,7 @@ export const DL_TASK = {
   MUT_REMOVE_TASK: 'mutation_removeDownloadTask',
   MUT_CANCEL_TASK: 'mutation_cancelDownloadTask',
   ACT_CANCEL_TASK: 'action_cancelDownloadTask',
+  ACT_DELETE_TASK: 'action_deleteDownloadTask',
   MUT_SET_STATUS: 'mutation_setDownloadStatus',
   MUT_SET_PROGRESS: 'mutation_setDownloadProgress',
   ACT_GET_PROGRESS: 'action_getDownloadStatus',
@@ -68,6 +66,7 @@ export const UL_TASK = {
   MUT_REMOVE_TASK: 'mutation_removeUploadTask',
   MUT_CANCEL_TASK: 'mutation_cancelUploadTask',
   ACT_CANCEL_TASK: 'action_cancelUploadTask',
+  ACT_DELETE_TASK: 'action_deleteUploadTask',
   MUT_SET_STATUS: 'mutation_setUploadStatus',
   MUT_SET_PROGRESS: 'mutation_setUploadProgress',
   ACT_GET_PROGRESS: 'action_getUploadProgress',
@@ -86,6 +85,7 @@ export const GET_TASK = {
   MUT_REMOVE_TASK: 'mutation_removeGetTask',
   MUT_CANCEL_TASK: 'mutation_cancelGetTask',
   ACT_CANCEL_TASK: 'action_cancelGetTask',
+  ACT_DELETE_TASK: 'action_deleteDownloadTask',
   MUT_SET_STATUS: 'mutation_setGetStatus',
   MUT_SET_PROGRESS: 'mutation_setGetProgress',
   ACT_GET_PROGRESS: 'action_getGetStatus',

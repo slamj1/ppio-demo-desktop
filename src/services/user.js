@@ -1,9 +1,8 @@
 import { remote } from 'electron'
 import ppwallet from 'ppwallet'
 import bip39 from 'bip39'
-// import safeBuffer from 'safe-buffer'
 
-const ppioUser = remote.getGlobal('ppioUser')
+const poss = remote.getGlobal('poss')
 
 export const login = seedPhrase => {
   console.log('calling login method')
@@ -28,8 +27,8 @@ export const login = seedPhrase => {
   })
 }
 
-export const generatePhraseSeed = () => {
-  console.log('calling generatePhraseSeed method')
+export const generateSeedPhrase = () => {
+  console.log('calling generateSeedPhrase method')
   const mnemonic = bip39.generateMnemonic()
   console.log(mnemonic)
   const oriKey = bip39.mnemonicToSeedHex(mnemonic)
@@ -50,14 +49,14 @@ export const generatePhraseSeed = () => {
 }
 
 export const getWalletAddress = () =>
-  ppioUser.walletAccount().then(res => {
+  poss.walletAccount().then(res => {
     console.log(res)
     return res
   })
 
 export const getAccountDetails = walletId => {
   console.log('getting account details for', walletId)
-  return ppioUser.accountDetails({ walletId }).then(res => {
+  return poss.accountDetails({ walletId }).then(res => {
     console.log('account detail got')
     return {
       balance: res.Balance,
@@ -68,35 +67,39 @@ export const getAccountDetails = walletId => {
 }
 
 export const getIndexData = () =>
-  ppioUser.getIndexData().then(res => {
-    console.log('user index data got')
+  poss.getIndexData().then(res => {
+    console.log('user index data got ', typeof res)
     console.log(res)
-    if (res.length > 0) {
-      let indexData
-      try {
-        indexData = JSON.parse(res)
-        // index data must be an object
-        if (typeof indexData !== 'object') {
-          return null
-        }
-        return indexData
-      } catch (err) {
-        console.log(err)
-        return null
+    /*
+    {
+      "bucket": "ppio-demo",
+      "vpath": "aria1232222-1.34.0.tar.gz",
+      "object": "301b47a13c7c4b08579f6e2fdd7d903cabd9da8e9cfdb93a76f7e6dfb0cbe97a",
+      "length": 3786225,
+      "metadata": "",
+      "put_id": "64715dae-930d-4dc9-96eb-1355287ee2f1",
+      "ctime": "2018-12-13T05:18:51.919884Z",
+      "mtime": "2018-12-13T05:18:51.919884Z",
+      "base_index": {
+        "object": "301b47a13c7c4b08579f6e2fdd7d903cabd9da8e9cfdb93a76f7e6dfb0cbe97a",
+        "length": 3786225,
+        "chunks": [
+          "301b47a13c7c4b08579f6e2fdd7d903cabd9da8e9cfdb93a76f7e6dfb0cbe97a"
+        ]
       }
     }
-    return null
+     */
+    console.log(res['poss_index'])
+    return {
+      pubkey: res.pubkey,
+      buckets: res.buckets,
+      fileListData: res['poss_index'],
+    }
   })
 
-export const setMetadata = data => {
-  console.log('setting metadata')
-  console.log(data)
-  console.log(JSON.stringify(data))
-  return ppioUser.metadataPut({ metadata: JSON.stringify(data) }).then(res => {
-    console.log('metadata set')
-    console.log(res)
-    return res
-  })
+export const flushIndexdata = () => {
+  console.log('flushing index data')
+  return Promise.resolve()
 }
 
 export const getBillingRecords = walletId =>
@@ -109,7 +112,7 @@ export const getBillingRecords = walletId =>
   //     Amount: 1000000000,
   //   Gain: true,
   //   Memo: ''
-  ppioUser.purchaseRecords({ walletId }).then(res => {
+  poss.purchaseRecords({ walletId }).then(res => {
     console.log('purchase records got: ')
     console.log(res)
     return res.map(item => ({
@@ -121,4 +124,4 @@ export const getBillingRecords = walletId =>
 
 // TODO: what is the unit of chi price? kwei? gwei?
 export const getChiPrice = () =>
-  ppioUser.chiPrice().then(res => parseInt(res.DownloadChiPrice))
+  poss.chiPrice().then(res => parseInt(res.DownloadChiPrice))

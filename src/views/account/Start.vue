@@ -6,12 +6,12 @@
       <p class="name">PPDISK-demo</p>
     </div>
     <div class="right-content">
-      <router-view @startApp="f_startApp" @setAccount="f_setAccount" :starting-app="startingApp"></router-view>
+      <router-view @startApp="f_startApp" @setAccount="f_setAccount" :starting-app="startingApp" :cur-account="curAccount"></router-view>
     </div>
   </div>
 </template>
 <script>
-import ChooseCoinPool from '../../components/ChooseCoinPool'
+import ChooseCoinPool from './ChooseCoinPool'
 
 export default {
   name: 'Start',

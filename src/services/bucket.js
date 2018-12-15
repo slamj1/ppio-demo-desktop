@@ -1,11 +1,11 @@
 import { remote } from 'electron'
 import { APP_BUCKET_NAME } from '../constants/constants'
 
-const ppioUser = remote.getGlobal('ppioUser')
+const poss = remote.getGlobal('poss')
 
 export const listBuckets = () => {
   console.log('listing buckets')
-  return ppioUser
+  return poss
     .listBuckets()
     .then(res => {
       console.log('user buckets: ')
@@ -21,7 +21,7 @@ export const listBuckets = () => {
 
 export const createBucket = bucketName => {
   console.log('creating bucket: ', bucketName)
-  return ppioUser
+  return poss
     .createBucket({ bucket: bucketName })
     .then(res => {
       console.log(`${bucketName} bucket created`)
@@ -46,20 +46,22 @@ export const checkDefaultBucket = () => {
     .then(res => {
       if (res.indexOf(APP_BUCKET_NAME) > -1) {
         console.log('default bucket exists')
+        poss.setBaseBucket(APP_BUCKET_NAME)
         return true
       }
       return createDefaultBucket().then(() => {
         console.log('default bucket created')
+        poss.setBaseBucket(APP_BUCKET_NAME)
         return true
       })
     })
-    .then(() => ppioUser.setGlobalBucket(APP_BUCKET_NAME))
+    .then(() => poss.setBaseBucket(APP_BUCKET_NAME))
 }
 
 // unused
 export const deleteBucket = bucketName => {
   console.log(`deleting bucket ${bucketName}`)
-  return ppioUser
+  return poss
     .deleteBucket({ bucket: bucketName })
     .then(res => {
       console.log(`${bucketName} bucket deleted`)

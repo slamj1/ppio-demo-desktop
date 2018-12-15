@@ -1,52 +1,50 @@
 import { remote } from 'electron'
 import moment from 'moment'
+import { APP_BUCKET_NAME } from '../constants/constants'
 
-const ppioUser = remote.getGlobal('ppioUser')
+const poss = remote.getGlobal('poss')
 
-export const getObjectList = () =>
-  ppioUser.listObjects().then(res => {
+export const getObjectList = bucket =>
+  poss.listObjects(bucket ? { bucket } : null).then(res => {
     console.log('get file list')
     console.log(res)
     if (res) {
-      const objectList = res.map(file => {
-        const fileInfo = file.ObjectBasicInfo
-        // File.js
-        return {
-          id: fileInfo.key,
-          isSecure: true, // all files are encrypted in demo verison
-        }
-      })
-
-      const getDetailsReqArr = objectList.map(object =>
-        getObjectStatus(object.id)
+      const getDetailsReqArr = res.map(objectKey =>
+        getObjectStatus(objectKey)
           .then(res => {
             console.log('get contract details success')
             console.log(res)
-            // File.js
-            return Object.assign({}, object, {
-              isDeal: res[0].ContractStatus === 'US_DEAL',
-              contractId: res[0].ContractId,
-              startTime: res[0].StartTime,
-              duration: res[0].Duration,
-            })
-          })
-          .then(object => headObject(object.id))
-          .then(res => {
-            console.log('get object info success')
-            console.log(res)
-            if (!res.Metadata.filename) {
-              console.log('no file name for ', object.id)
+            const contract = res[0].Contracts[0]
+            const expireTime = contract.ExpireTime
+            const isDeal = contract.Status === 'SC_AVAILABLE'
+            return {
+              key: objectKey,
+              bucket: bucket || APP_BUCKET_NAME,
+              hash: res[0].Hash,
+              isDeal,
+              contractId: contract.ContractID,
+              expireTime: expireTime, // in seconds
+              filename: objectKey.split('/').slice(-1)[0],
             }
-            return Object.assign({}, object, {
-              size: res.ContentLength,
-              metadata: res.Metadata,
-              filename: res.Metadata.filename || '',
+          })
+          .then(object => {
+            return headObject(object.key).then(res => {
+              console.log('get object details success ')
+              console.log(res)
+              const startTime = Math.round(new Date(res.Created).getTime() / 1000)
+              const finalObject = Object.assign({}, object, {
+                startTime,
+                size: res.ContentLength,
+                metadata: res.Metadata,
+              })
+              console.log(finalObject)
+              return finalObject
             })
           })
           .catch(err => {
             console.log('get object details error')
             console.error(err)
-            return Promise.resolve(Object.assign({}, object))
+            return Promise.resolve(null)
           }),
       )
 
@@ -61,7 +59,7 @@ export const getObjectList = () =>
 export const getObjectStatus = objectKey => {
   console.log('get object status')
   console.log(objectKey)
-  return ppioUser.objectStatus({ key: objectKey }).catch(err => {
+  return poss.objectStatus({ key: objectKey }).catch(err => {
     console.error('get upload object status error')
     console.error(err)
     return Promise.reject(err)
@@ -70,12 +68,16 @@ export const getObjectStatus = objectKey => {
 
 export const headObject = objectKey => {
   console.log('getting object metadata')
-  return ppioUser.headObject({ key: objectKey })
+  return poss.headObject({ key: objectKey }).catch(err => {
+    console.error('get upload object status error')
+    console.error(err)
+    return Promise.reject(err)
+  })
 }
 
 export const changeObjectAcl = params => {
   console.log('changing object acl')
-  return ppioUser
+  return poss
     .objectUpdateAcl({
       objectHash: params.objectHash,
       acl: params.isPublic ? 'Public' : 'Private',
@@ -101,12 +103,12 @@ export const renameFile = id =>
 
 export const deleteFile = objectKey => {
   console.log('delete file service fired')
-  return ppioUser.deleteObject({ key: objectKey })
+  return poss.deleteObject({ key: objectKey })
 }
 
 export const renewFile = params => {
   console.log('renew object')
-  return ppioUser
+  return poss
     .objectRenew({
       key: params.objectKey,
       chiprice: params.chiPrice,
@@ -124,26 +126,10 @@ export const renewFile = params => {
 }
 
 export const getShareCode = objectKey =>
-  ppioUser
+  poss
     .shareObject({ key: objectKey })
     .then(res => res['share-code'])
     .catch(err => {
-      console.error(err)
-      return Promise.reject(err)
-    })
-
-export const getTaskProgress = objectKey =>
-  ppioUser
-    .getJobProgress({ key: objectKey })
-    .then(res => {
-      console.log('task progress got')
-      return {
-        transferred: res[0],
-        whole: res[1],
-      }
-    })
-    .catch(err => {
-      console.error('get task progress error')
       console.error(err)
       return Promise.reject(err)
     })

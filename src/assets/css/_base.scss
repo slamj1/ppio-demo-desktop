@@ -88,6 +88,14 @@ a {
     background-image: url('~@/assets/img/icon-open.png');
     background-size: auto 14px;
   }
+
+  &.icon-play {
+    background-image: url('~@/assets/img/icon-play.png');
+  }
+
+  &.icon-pause {
+    background-image: url('~@/assets/img/icon-pause.png');
+  }
 }
 
 .el-menu-item.is-active {
