@@ -9,10 +9,6 @@
       <div class="step-content step-0" slot="step-0">
         <img src="@/assets/img/file.png" class="file-icon" :alt="filename">
         <el-input v-model="filename" class="file-name-input"></el-input>
-        <!--<el-select v-model="securityOption" class="select" placeholder="Please Choose">-->
-          <!--<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>-->
-        <!--</el-select>-->
-        <!--<el-alert v-show="type === options[1].value" title="You can not share secured file." show-icon class="alert-msg" type="warning" :closable="false"> </el-alert>-->
       </div>
 
       <div class="step-content step-1" slot="step-1">
@@ -23,7 +19,14 @@
               <el-radio :label="1">1 Year(365 days)</el-radio> <br>
               <el-radio :label="2">1 Month(30 days)</el-radio> <br>
               <el-radio :label="3" @change="$refs.customStorageDaysInput.focus()">
-                <el-input class="storage-day-input" ref="customStorageDaysInput" type="number" size="mini" v-model="customStorageDays" @focus="radio = 3"></el-input> <span>Days</span>
+                <el-input
+                    class="storage-day-input"
+                    ref="customStorageDaysInput"
+                    type="number"
+                    size="mini"
+                    v-model="customStorageDays"
+                    @focus="radio = 3"></el-input>
+                <span>{{parseInt(customStorageDays) > 1 ? "Days" : "Day" }}</span>
               </el-radio>
             </el-radio-group>
           </div>
@@ -63,13 +66,13 @@
 </template>
 <script>
 import filesize from 'filesize'
-import StepPopup from '@/components/StepPopup'
-import PaymentTable from '@/components/PaymentTable'
+import StepPopup from '../../components/StepPopup'
+import PaymentTable from '../../components/PaymentTable'
 import { UL_TASK } from '../../constants/store'
 import { getEstimateCost } from '../../services/upload'
 import { gchiToPPCoin } from '../../utils/units'
 import { APP_MODE_COINPOOL } from '../../constants/constants'
-import PPFile from '../../store/PPFile'
+import { TaskFile } from '../../store/PPFile'
 
 export default {
   name: 'upload',
@@ -78,8 +81,6 @@ export default {
     customStorageDays: '1',
     chiPrice: 100,
     curStep: 0,
-    options: [{ value: 1, label: 'Normal' }, { value: 2, label: 'Secure' }],
-    securityOption: 2,
     radio: 1,
     copyCount: 5,
     totalChi: 0,
@@ -101,7 +102,7 @@ export default {
       }
     },
     recChiPrice() {
-      return this.$store.state.recChiPrice
+      return this.$store.state.recChiPrice.storage
     },
     totalCost: function() {
       return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)
@@ -143,9 +144,16 @@ export default {
           days = parseInt(this.customStorageDays)
           break
       }
+      console.log('storage days: ', days)
+      if (isNaN(days)) {
+        return null
+      }
       return days
     },
     storageTimeStr() {
+      if (!this.storageDays) {
+        return ''
+      }
       if (this.storageDays === 365) {
         return '1 Year'
       } else if (this.storageDays === 30) {
@@ -157,15 +165,15 @@ export default {
     taskOptions() {
       return {
         localPath: this.file ? this.file.path : '',
-        isSecure: this.securityOption === this.options[1].value,
-        storageTime: this.storageDays * 24 * 3600,
+        storageTime: this.storageDays ? this.storageDays * 24 * 3600 : 0,
         copyCount: parseInt(this.copyCount),
         chiPrice: parseInt(this.chiPrice),
+        isSecure: true,
       }
     },
   },
   watch: {
-    copyCount: function() {
+    'taskOptions.copyCount': function() {
       this.f_estimateCost()
     },
     'taskOptions.storageTime': function() {
@@ -176,18 +184,22 @@ export default {
     this.preparingUpload = false
     if (this.file) {
       this.filename = this.file.name
-      this.f_estimateCost()
     }
+    this.f_estimateCost()
     // TODO: get ongoing contract from sdk, concat with locally-persisted task queue
   },
   methods: {
     f_estimateCost() {
-      if (!this.file || this.copyCount === 0 || this.taskOptions.storageTime === 0) {
+      if (
+        !this.file ||
+        isNaN(this.taskOptions.copyCount) ||
+        this.taskOptions.storageTime === 0
+      ) {
         return
       }
       return getEstimateCost({
         size: this.file.size,
-        copyCount: this.copyCount,
+        copyCount: this.taskOptions.copyCount,
         storageTime: this.taskOptions.storageTime,
       }).then(res => {
         console.log(res)
@@ -235,11 +247,10 @@ export default {
 
       // TODO: What do we need to store in metadata?
       const putParams = {
-        file: new PPFile({
+        file: new TaskFile({
           key: this.filename,
           filename: this.filename,
           size: this.file.size,
-          isSecure: options.isSecure,
         }),
         cpoolId: this.$store.state.user.cpoolData.cpoolId,
         objectKey: this.filename,
@@ -257,7 +268,7 @@ export default {
           if (parseInt(err.code) === 2017) {
             return this.$message.error('File exists.')
           }
-          return this.$message.error('Upload failed!')
+          return this.$message.error(err.message || 'Upload failed!')
         })
     },
   },

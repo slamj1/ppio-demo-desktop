@@ -7,6 +7,7 @@ export const startDaemon = (dataDir, privateKey, address) => {
     privateKey: `0x${privateKey}`,
     address,
   })
+  // return Promise.resolve(18000)
 }
 
 export const stopDaemon = () => {

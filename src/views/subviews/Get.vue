@@ -10,7 +10,7 @@
       <span slot="header">Get File</span>
       <div class="step-content step-0" slot="step-0">
         <div class="inner-wrap">
-          <el-input type="textarea" resize="none" :rows="4" v-model="shareCode" class="share-code-input" placeholder="Enter the share code"></el-input>
+          <el-input type="textarea" resize="none" :rows="4" v-model="shareCode" class="share-code-input" placeholder="Enter the share code start with poss://"></el-input>
         </div>
       </div>
 
@@ -55,11 +55,11 @@ import filesize from 'filesize'
 import { remote } from 'electron'
 import StepPopup from '../../components/StepPopup'
 import PaymentTable from '../../components/PaymentTable'
-import { getFileInfoByShareCode } from '../../services/getFile'
 import { DL_TASK } from '../../constants/store'
 import { APP_MODE_COINPOOL } from '../../constants/constants'
 import { getEstimateCost } from '../../services/download'
 import { gchiToPPCoin } from '../../utils/units'
+import { TaskFile } from '../../store/PPFile'
 
 export default {
   name: 'get-file',
@@ -87,16 +87,16 @@ export default {
       }
     },
     recChiPrice() {
-      return this.$store.state.recChiPrice
+      return this.$store.state.recChiPrice.download
     },
     fileSizeStr() {
       return this.fileInfo ? filesize(this.fileInfo.size) : ''
     },
     totalCost: function() {
-      return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)
+      return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed()
     },
     downloadCost: function() {
-      return gchiToPPCoin(this.downloadChi * this.chiPrice).toFixed(4)
+      return gchiToPPCoin(this.downloadChi * this.chiPrice).toFixed()
     },
     paymentData() {
       return {
@@ -110,10 +110,29 @@ export default {
       }
     },
   },
+  watch: {
+    fileInfo: function() {
+      this.f_estimateCost()
+    },
+  },
   mounted() {
     this.preparingDownload = false
   },
   methods: {
+    f_getFileInfo(shareCode) {
+      try {
+        const objectInfo = JSON.parse(
+          decodeURIComponent(escape(atob(shareCode.replace('poss://', '')))),
+        )
+        console.log(JSON.stringify(objectInfo))
+        return {
+          key: objectInfo.name,
+          size: objectInfo.length,
+        }
+      } catch (err) {
+        return null
+      }
+    },
     f_estimateCost() {
       if (!this.fileInfo) {
         return
@@ -143,26 +162,18 @@ export default {
         } else {
           // TODO: need sdk support
           this.gettingFileInfo = true
-          getFileInfoByShareCode(this.shareCode)
-            .then(res => {
-              console.log('got file info by share code', res.result)
-              this.fileInfo = {
-                id: res.result.hashCode,
-                filename: res.result.filename,
-                size: res.result.size,
-                type: res.result.fileType || 'file',
-                isSecure: res.result.isSecure,
-                isPublic: false,
-                ownerId: res.result.ownerId,
-              }
-              this.gettingFileInfo = false
-              return this.curStep++
-            })
-            .catch(err => {
-              console.error(err)
-              this.gettingFileInfo = false
-              this.$message.error('failed to get file info')
-            })
+          const fileInfo = this.f_getFileInfo(this.shareCode)
+          console.log('got file info by share code', fileInfo)
+          if (fileInfo === null || !fileInfo.key || !fileInfo.size) {
+            return this.$message.error('invalid share code')
+          }
+          this.fileInfo = {
+            key: fileInfo.key,
+            size: fileInfo.size,
+            filename: fileInfo.key.split('/').slice(-1)[0],
+          }
+          this.gettingFileInfo = false
+          return this.curStep++
         }
       } else if (this.curStep === 1) {
         if (this.chiPrice > 0) {
@@ -185,7 +196,7 @@ export default {
       remote.dialog.showSaveDialog(
         remote.getCurrentWindow(),
         {
-          defaultPath: this.file.filename,
+          defaultPath: this.fileInfo.key,
           message: 'Choose the location to download the file',
           properties: ['openDirectory', 'createDirectory', 'promptToCreate'],
         },
@@ -195,10 +206,16 @@ export default {
             return
           }
           const getParams = {
-            file: this.file,
-            objectKey: this.file.key,
+            file: new TaskFile({
+              key: this.fileInfo.key,
+              filename: this.fileInfo.filename,
+              size: this.fileInfo.size,
+            }),
+            objectKey: '',
+            bucket: '',
             chiPrice: parseInt(this.chiPrice),
             exportPath: filePath,
+            shareCode: this.shareCode,
           }
           this.$store
             .dispatch(DL_TASK.ACT_CREATE_TASK, getParams)
@@ -264,21 +281,17 @@ export default {
       width: 100px;
       margin-right: 8px;
     }
-  }
-  &.step-2 {
-    .line-wrap {
-      padding: 6px 0 6px 120px;
-      position: relative;
-    }
-    .text-1 {
-      display: inline-block;
-      width: 150px;
-    }
-    .line {
-      height: 1px;
-      background-color: #eee;
-      margin-top: 6px;
-      margin-bottom: 6px;
+
+    .recommend-chiprice {
+      margin-left: 10px;
+      font-size: 12px;
+
+      &.too-low {
+        color: red;
+      }
+      &.safe {
+        color: green;
+      }
     }
   }
 }

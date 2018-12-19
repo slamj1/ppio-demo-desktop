@@ -23,7 +23,7 @@ export const getEstimateCost = params => {
       size: params.size,
       copies: params.copyCount,
       duration: params.storageTime,
-      chiPrice: 100, // TODO: ????
+      chiPrice: 100, // TODO: delete
     })
     .then(costs => {
       // The total upload cost contains two parts: storage and upload
@@ -63,6 +63,7 @@ export const startUpload = async params => {
       key: params.objectKey,
       body: params.localPath,
       copies: params.copyCount,
+      metadata: '',
       expires: moment(Date.now() + params.storageTime * 1000).format('YYYY-MM-DD'),
       chiprice: params.chiPrice,
       encrypt: params.isSecure,

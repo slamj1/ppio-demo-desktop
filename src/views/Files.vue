@@ -2,7 +2,7 @@
   <el-container @click.native="f_selectFile(-1)">
     <el-header class="app-header" @click.native.stop="">
       <div class="header-btn-group">
-        <template v-if="selectedFileHash !== ''">
+        <template v-if="selectedFileKey !== ''">
           <el-button size="small" type="primary" :loading="preparingDl" @click="f_download"><i class="app-icon icon-download"></i> Download</el-button>
           <el-button size="small" type="primary" plain :loading="preparingShare" @click="f_share"><i class="app-icon icon-share"></i> Share</el-button>
           <el-dropdown class="header-dropdown-menu" size="small" trigger="click">
@@ -11,7 +11,7 @@
               </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item :loading="preparingRename" @click.native="f_rename">Rename</el-dropdown-item>
-              <el-dropdown-item v-if="isCpoolMode" :loading="preparingRenew" @click.native="f_renew">Renew</el-dropdown-item>
+              <el-dropdown-item v-if="!isCpoolMode" :loading="preparingRenew" @click.native="f_renew">Renew</el-dropdown-item>
               <el-dropdown-item :loading="preparingDel" @click.native="f_delete">Delete</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -32,8 +32,8 @@
       <div v-else class="file-container" v-loading="refreshingData">
         <FileItem
             v-for="(file, idx) in fileList"
-            :selected="selectedFileHash === file.hash"
-            :key="file.hash"
+            :selected="selectedFileKey === file.key"
+            :key="file.key"
             :file="file"
             @click.native.right.prevent.stop="f_rightClickFile(idx)"
             @click.native.stop="f_selectFile(idx)"></FileItem>
@@ -48,6 +48,7 @@ import { remote } from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
 import { ACT_GET_FILE_LIST, ACT_REMOVE_FILE } from '../constants/store'
 import FileItem from '../components/FileItem'
+import * as FILE_STATUS from '../constants/file'
 
 const { Menu, MenuItem, dialog } = remote
 export default {
@@ -63,11 +64,12 @@ export default {
       preparingDel: false,
       preparingUl: false,
       preparingGet: false,
-      selectedFileHash: '',
+      selectedFileKey: '',
       refreshingData: false,
       fetchingData: false,
       operatingFile: null,
       contextMenu: new Menu(),
+      ...FILE_STATUS,
     }
   },
   computed: {
@@ -95,7 +97,7 @@ export default {
     this.f_getFileList()
       .then(() => {
         for (let i = 0; i < this.fileList.length; i++) {
-          if (this.fileList[i].daysLeft < 2) {
+          if (this.fileList[i].daysLeft < 2 && this.fileList[i].daysLeft > 0) {
             this.$message.info(
               'There are some files about to expire. RENEW to save them from being deleted.',
             )
@@ -118,9 +120,9 @@ export default {
       if (this.fetchingData) {
         return Promise.resolve()
       }
-      if (this.fileList.map(file => file.hash).indexOf(this.selectedFileHash) === -1) {
+      if (this.fileList.map(file => file.key).indexOf(this.selectedFileKey) === -1) {
         console.log('lose select')
-        this.selectedFileHash = ''
+        this.selectedFileKey = ''
         this.operatingFile = null
       }
       this.fetchingData = true
@@ -146,10 +148,10 @@ export default {
     f_selectFile(idx) {
       if (idx === -1) {
         console.log('lose select')
-        this.selectedFileHash = ''
+        this.selectedFileKey = ''
         this.operatingFile = null
       } else {
-        this.selectedFileHash = this.fileList[idx].hash
+        this.selectedFileKey = this.fileList[idx].key
         this.operatingFile = this.fileList[idx]
       }
     },
@@ -214,7 +216,12 @@ export default {
       if (!this.operatingFile) {
         return
       }
-
+      if (
+        this.operatingFile.status === FILE_STATUS.FILE_STATUS_BROKEN ||
+        this.operatingFile.status === FILE_STATUS.FILE_STATUS_END
+      ) {
+        return this.$message.error('Cannot share this file.')
+      }
       this.$vueBus.$emit(this.$events.OPEN_SHARE_FILE, {
         file: this.operatingFile,
         fileIndex: this.fileList.indexOf(this.operatingFile),
@@ -224,6 +231,12 @@ export default {
       if (!this.operatingFile) {
         return
       }
+      if (
+        this.operatingFile.status === FILE_STATUS.FILE_STATUS_BROKEN ||
+        this.operatingFile.status === FILE_STATUS.FILE_STATUS_END
+      ) {
+        return this.$message.error('Cannot renew this file.')
+      }
       this.$vueBus.$emit(this.$events.OPEN_RENAME_FILE, {
         file: this.operatingFile,
       })
@@ -231,6 +244,12 @@ export default {
     f_renew() {
       if (!this.operatingFile) {
         return
+      }
+      if (
+        this.operatingFile.status === FILE_STATUS.FILE_STATUS_BROKEN ||
+        this.operatingFile.status === FILE_STATUS.FILE_STATUS_END
+      ) {
+        return this.$message.error('Cannot renew this file.')
       }
       this.$vueBus.$emit(this.$events.OPEN_RENEW_FILE, this.operatingFile)
     },
@@ -283,6 +302,12 @@ export default {
     f_download() {
       if (!this.operatingFile) {
         return
+      }
+      if (
+        this.operatingFile.status === FILE_STATUS.FILE_STATUS_BROKEN ||
+        this.operatingFile.status === FILE_STATUS.FILE_STATUS_END
+      ) {
+        return this.$message.error('Cannot download this file.')
       }
       this.$vueBus.$emit(this.$events.OPEN_DOWNLOAD_FILE, this.operatingFile)
     },

@@ -10,7 +10,7 @@
       <el-table-column
           prop="fee"
           label="Fee"
-          min-width="150">
+          min-width="200">
       </el-table-column>
     </el-table>
     <div class="total-cost">

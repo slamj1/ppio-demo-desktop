@@ -52,6 +52,7 @@ export default {
     errorMsg: '',
     confirmLoading: false,
   }),
+  props: ['curAccount'],
   mounted() {
     this.f_generatePhraseSeed()
   },
@@ -96,6 +97,7 @@ export default {
           .then(account => {
             const address = account.getAddressString()
             console.log(`${USER_STATE_PERSIST_KEY}_${address}`)
+            this.$emit('setAccount', account)
             return storage.getItem(`${USER_STATE_PERSIST_KEY}_${address}`)
           })
           .then(val => {
@@ -104,7 +106,7 @@ export default {
             if (val) {
               if (val.dataDir.length > 0 && val.address.length > 0) {
                 this.$store.replaceState(val)
-                return this.$emit('startApp')
+                return this.$emit('startApp', this.curAccount)
               }
             }
             console.log('init user')

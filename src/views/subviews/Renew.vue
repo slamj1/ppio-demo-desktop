@@ -15,14 +15,21 @@
         <div class="inner-wrap">
           <div class="line-wrap">
             <label class="line-label">Renew Storage Time:</label>
-            <p>The storage time will be added to your current storage duration</p>
             <el-radio-group class="radio-group" v-model="radio">
               <el-radio :label="1">1 Year(365 days)</el-radio> <br>
               <el-radio :label="2">1 Month(30 days)</el-radio> <br>
               <el-radio :label="3" @change="$refs.customStorageDaysInput.focus()">
-                <el-input class="storage-day-input" ref="customStorageDaysInput" type="number" size="mini" v-model="customStorageDays" @focus="radio = 3"></el-input>  <span>Days</span>
+                <el-input
+                    class="storage-day-input"
+                    ref="customStorageDaysInput"
+                    type="number"
+                    size="mini"
+                    v-model="customStorageDays"
+                    @focus="radio = 3"></el-input>
+                <span>{{parseInt(customStorageDays) > 1 ? "Days" : "Day" }}</span>
               </el-radio>
             </el-radio-group>
+            <p class="storage-time-hint">The storage time will be added to your current storage duration</p>
           </div>
           <div class="line-wrap">
             <label class="line-label">Number of copies:</label>
@@ -86,7 +93,7 @@ export default {
   },
   computed: {
     recChiPrice() {
-      return this.$store.state.recChiPrice
+      return this.$store.state.recChiPrice.storage
     },
     totalCost: function() {
       return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)
@@ -121,9 +128,16 @@ export default {
           days = parseInt(this.customStorageDays)
           break
       }
+      console.log('storage days: ', days)
+      if (isNaN(days)) {
+        return null
+      }
       return days
     },
     storageTimeStr() {
+      if (!this.storageDays) {
+        return ''
+      }
       if (this.storageDays === 365) {
         return '1 Year'
       } else if (this.storageDays === 30) {
@@ -134,23 +148,36 @@ export default {
     },
     taskOptions() {
       return {
-        storageTime: this.storageDays * 24 * 3600,
+        storageTime: this.storageDays ? this.storageDays * 24 * 3600 : 0,
         copyCount: parseInt(this.copyCount),
         chiPrice: parseInt(this.chiPrice),
       }
     },
   },
+  watch: {
+    'taskOptions.copyCount': function() {
+      this.f_estimateCost()
+    },
+    'taskOptions.storageTime': function() {
+      this.f_estimateCost()
+    },
+  },
   mounted() {
     this.renewing = false
+    this.f_estimateCost()
   },
   methods: {
     f_estimateCost() {
-      if (!this.file || this.copyCount === 0 || this.taskOptions.storageTime === 0) {
+      if (
+        !this.file ||
+        isNaN(this.taskOptions.copyCount) ||
+        this.taskOptions.storageTime === 0
+      ) {
         return
       }
       return getEstimateCost({
         size: this.file.size,
-        copyCount: this.copyCount,
+        copyCount: this.taskOptions.copyCount,
         storageTime: this.taskOptions.storageTime,
       }).then(res => {
         console.log(res)
@@ -173,9 +200,20 @@ export default {
         this.curStep += 1
       } else if (this.curStep === 1) {
         const options = this.taskOptions
-        if (options.storageTime > 0 && options.chiPrice > 0 && options.copyCount > 0) {
-          this.curStep += 1
+        let todayStartTime = 0
+        todayStartTime = new Date().setHours(0, 0, 0, 0) / 1000
+        if (todayStartTime + options.storageTime <= this.file.expireTime) {
+          this.$message.error('New expire date is before current expire date.')
+          return
         }
+        if (
+          options.storageTime === 0 ||
+          options.chiPrice === 0 ||
+          options.copyCount === 0
+        ) {
+          return
+        }
+        this.curStep += 1
       }
     },
     f_close() {
@@ -212,7 +250,7 @@ export default {
 <style lang="scss" scoped>
 .step-content {
   text-align: center;
-  padding: 20px 20px 0px;
+  padding: 20px 20px 0;
   .inner-wrap {
     display: inline-block;
     text-align: left;
@@ -221,6 +259,7 @@ export default {
     .file-icon {
       height: 58px;
       width: 48px;
+      margin-bottom: 10px;
     }
     .file-name {
       height: 40px;
@@ -238,8 +277,8 @@ export default {
   }
   &.step-1 {
     .line-wrap {
-      padding: 6px 0 6px 130px;
       position: relative;
+      padding: 6px 0 6px 160px;
       .line-label {
         position: absolute;
         top: 6px;
@@ -256,28 +295,21 @@ export default {
         width: 100px;
         margin-right: 8px;
       }
-    }
-  }
-  &.step-2 {
-    .line-wrap {
-      padding: 6px 0 6px 90px;
-      position: relative;
-    }
-    .line-label {
-      position: absolute;
-      top: 6px;
-      left: 0;
-      font-weight: bold;
-    }
-    .text-1 {
-      display: inline-block;
-      width: 120px;
-    }
-    .line {
-      height: 1px;
-      background-color: #eee;
-      margin-top: 6px;
-      margin-bottom: 6px;
+      .storage-time-hint {
+        width: 300px;
+        font-size: 12px;
+      }
+      .recommend-chiprice {
+        margin-left: 10px;
+        font-size: 12px;
+
+        &.too-low {
+          color: red;
+        }
+        &.safe {
+          color: green;
+        }
+      }
     }
   }
 }

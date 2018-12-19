@@ -1,0 +1,5 @@
+export const FILE_STATUS_PART_AVAILABLE = 'fileStatusPartAvailable'
+export const FILE_STATUS_AVAILABLE = 'fileStatusAvailable'
+export const FILE_STATUS_BROKEN = 'fileStatusBroken'
+export const FILE_STATUS_PENDING_END = 'fileStatusDeleting'
+export const FILE_STATUS_END = 'fileStatusDeleted'

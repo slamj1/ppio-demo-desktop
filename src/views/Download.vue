@@ -6,9 +6,10 @@
     <template slot="operations" slot-scope="operationProps">
       <span class="task-operate-btn pause-btn" v-if="operationProps.task.status === TASK_STATUS_RUNNING" @click="f_pause(operationProps.index)"><i class="app-icon icon-pause"></i></span>
       <span class="task-operate-btn pause-btn" v-if="operationProps.task.status === TASK_STATUS_PAUSED" @click="f_resume(operationProps.index)"><i class="app-icon icon-play"></i></span>
-      <span class="task-operate-btn cancel-btn" v-if="!operationProps.task.status.finished" @click="f_cancel(operationProps.index)"><i class="el-icon el-icon-close"></i></span>
+      <span class="task-operate-btn cancel-btn" v-if="!operationProps.task.finished" @click="f_cancel(operationProps.index)"><i class="el-icon el-icon-close"></i></span>
+      <span class="task-operate-btn open-btn" v-if="operationProps.task.status === TASK_STATUS_FAIL" @click="f_resume(operationProps.index)"><i class="el-icon el-icon-refresh"></i></span>
       <span class="task-operate-btn open-btn" v-if="operationProps.task.status === TASK_STATUS_SUCC" @click="f_open(operationProps.index)"><i class="app-icon icon-open"></i></span>
-      <span class="task-operate-btn delete-btn" v-if="operationProps.task.status.finished" @click="f_delete(operationProps.index)"><i class="el-icon el-icon-delete"></i></span>
+      <span class="task-operate-btn delete-btn" v-if="operationProps.task.finished" @click="f_delete(operationProps.index)"><i class="el-icon el-icon-delete"></i></span>
     </template>
   </TransferTable>
 </template>
@@ -50,22 +51,30 @@ export default {
   },
   methods: {
     f_pause(index) {
-      this.$store.dispatch(DL_TASK.ACT_PAUSE_TASK, index)
+      this.$store.dispatch(DL_TASK.ACT_PAUSE_TASK, index).catch(err => {
+        this.$message.error(err.message)
+      })
     },
     f_resume(index) {
-      this.$store.dispatch(DL_TASK.ACT_RESUME_TASK, index)
+      this.$store.dispatch(DL_TASK.ACT_RESUME_TASK, index).catch(err => {
+        this.$message.error(err.message)
+      })
     },
     f_cancel(index) {
       const toCancel = window.confirm('Are you sure to cancel the downloading?')
       if (toCancel) {
-        this.$store.dispatch(DL_TASK.ACT_CANCEL_TASK, index)
+        this.$store.dispatch(DL_TASK.ACT_CANCEL_TASK, index).catch(err => {
+          this.$message.error(err.message)
+        })
       }
     },
     f_delete(index) {
       const toDelete = window.confirm('Are you sure to delete the task?')
       if (toDelete) {
         const deleteIdx = index - this.$store.state.downloadTask.taskQueue.length
-        this.$store.dispatch(DL_TASK.ACT_DELETE_TASK, deleteIdx)
+        this.$store.dispatch(DL_TASK.ACT_DELETE_TASK, deleteIdx).catch(err => {
+          this.$message.error(err.message)
+        })
       }
     },
     f_open(index) {
@@ -73,10 +82,13 @@ export default {
       const filePath = this.taskList[index].exportPath
       console.log(filePath)
       try {
-        fs.readdirSync(filePath)
-        remote.shell.showItemInFolder(this.taskList[index].exportPath)
+        if (fs.existsSync(filePath)) {
+          remote.shell.showItemInFolder(filePath)
+        } else {
+          this.$message.error('File does not exist!')
+        }
       } catch (err) {
-        this.$message.error('PPFile does not exist!')
+        this.$message.error('File does not exist!')
       }
     },
     f_updateStatus() {

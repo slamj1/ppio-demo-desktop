@@ -69,7 +69,7 @@ export default {
   },
   computed: {
     recChiPrice() {
-      return this.$store.state.recChiPrice
+      return this.$store.state.recChiPrice.storage
     },
     totalCost: function() {
       return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)

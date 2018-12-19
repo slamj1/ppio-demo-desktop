@@ -1,56 +1,80 @@
 import { remote } from 'electron'
 import moment from 'moment'
 import { APP_BUCKET_NAME } from '../constants/constants'
+import * as FILE_STATUS from '../constants/file'
 
 const poss = remote.getGlobal('poss')
+
+function getFileStatus(objectStatus) {
+  let fileStatus
+  switch (objectStatus) {
+    case 'Bid':
+      fileStatus = FILE_STATUS.FILE_STATUS_BROKEN
+      break
+    case 'Part-deal':
+      fileStatus = FILE_STATUS.FILE_STATUS_PART_AVAILABLE
+      break
+    case 'Deal':
+      fileStatus = FILE_STATUS.FILE_STATUS_AVAILABLE
+      break
+    case 'Pending-end':
+      fileStatus = FILE_STATUS.FILE_STATUS_PENDING_END
+      break
+    case 'End':
+      fileStatus = FILE_STATUS.FILE_STATUS_END
+      break
+    default:
+      fileStatus = FILE_STATUS.FILE_STATUS_END
+      break
+  }
+  return fileStatus
+}
 
 export const getObjectList = bucket =>
   poss.listObjects(bucket ? { bucket } : null).then(res => {
     console.log('get file list')
     console.log(res)
     if (res) {
-      const getDetailsReqArr = res.map(objectKey =>
-        getObjectStatus(objectKey)
+      const objectList = res.map(object => ({
+        key: object.key,
+        bucket: object.bucket || APP_BUCKET_NAME,
+        status: getFileStatus(object.status),
+        startTime: Math.round(new Date(object.created).getTime() / 1000), // in seconds
+        filename: object.key.split('/').slice(-1)[0],
+        size: object.length,
+      }))
+      const getDetailsReqArr = objectList.map(object => {
+        // bid，part-deal, deal, pending-end, end
+        return getObjectStatus(object.key)
           .then(res => {
-            console.log('get contract details success')
+            console.log('get contract details success for: ', object.key)
             console.log(res)
-            const contract = res[0].Contracts[0]
-            const expireTime = contract.ExpireTime
-            const isDeal = contract.Status === 'SC_AVAILABLE'
-            return {
-              key: objectKey,
-              bucket: bucket || APP_BUCKET_NAME,
-              hash: res[0].Hash,
-              isDeal,
-              contractId: contract.ContractID,
-              expireTime: expireTime, // in seconds
-              filename: objectKey.split('/').slice(-1)[0],
-            }
+            const expireTime = Math.round(new Date(res.expires).getTime() / 1000)
+            return Object.assign(object, { expireTime })
           })
-          .then(object => {
-            return headObject(object.key).then(res => {
-              console.log('get object details success ')
+          .then(object =>
+            headObject(object.key).then(res => {
+              console.log('get object details success for: ', object.key)
               console.log(res)
-              const startTime = Math.round(new Date(res.Created).getTime() / 1000)
               const finalObject = Object.assign({}, object, {
-                startTime,
-                size: res.ContentLength,
-                metadata: res.Metadata,
+                metadata: res.metadata,
               })
               console.log(finalObject)
               return finalObject
-            })
-          })
+            }),
+          )
           .catch(err => {
             console.log('get object details error')
             console.error(err)
             return Promise.resolve(null)
-          }),
-      )
+          })
+      })
 
       return Promise.all(getDetailsReqArr).then(detailedObjectList => {
         console.log(detailedObjectList)
-        return detailedObjectList.filter(res => res.isDeal)
+        return detailedObjectList.filter(res => !!res).sort((a, b) => {
+          return a.startTime - b.startTime
+        })
       })
     }
     return []
@@ -75,23 +99,6 @@ export const headObject = objectKey => {
   })
 }
 
-export const changeObjectAcl = params => {
-  console.log('changing object acl')
-  return poss
-    .objectUpdateAcl({
-      objectHash: params.objectHash,
-      acl: params.isPublic ? 'Public' : 'Private',
-    })
-    .then(
-      res => res,
-      err => {
-        console.error('get upload object status error')
-        console.error(err)
-        return err
-      },
-    )
-}
-
 export const renameFile = id =>
   new Promise((resolve, reject) => {
     if (id === '') {
@@ -109,11 +116,11 @@ export const deleteFile = objectKey => {
 export const renewFile = params => {
   console.log('renew object')
   return poss
-    .objectRenew({
+    .renewObject({
       key: params.objectKey,
       chiprice: params.chiPrice,
       copies: params.copyCount,
-      expires: moment(Date.now() + params.storageTime).format('YYYY-MM-DD'),
+      expires: moment(Date.now() + params.storageTime * 1000).format('YYYY-MM-DD'),
       encrypt: params.isSecure,
       'cpool-id': params.cpoolId,
     })
@@ -121,15 +128,13 @@ export const renewFile = params => {
     .catch(err => {
       console.error('get upload object status error')
       console.error(err)
-      return err
+      return Promise.reject(err)
     })
 }
 
 export const getShareCode = objectKey =>
-  poss
-    .shareObject({ key: objectKey })
-    .then(res => res['share-code'])
-    .catch(err => {
-      console.error(err)
-      return Promise.reject(err)
-    })
+  poss.shareObject({ key: objectKey }).catch(err => {
+    console.error('get share code failed')
+    console.error(err)
+    return Promise.reject(err)
+  })

@@ -38,10 +38,16 @@ build/
 node_modules/
 package-lock.json
 yarn.lock
+yarn-error.log
 package.json
-/webpack.output.js
-ppwallet
+webpack.output.js
+ppwallet/*
+poss-sdk/*
+ppio_js_sdk/*
+neb.js/*
 
 .idea
 npm-debug.log.*
 __snapshots__
+
+ppio.log

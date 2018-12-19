@@ -8,10 +8,9 @@
         <p class="share-hint">Sharing a file means everyone who knows the file's share code can access it. And you can not recall this action unless you delete this file.</p>
         <div class="code-wrap" v-if="shareCode">
           <label class="share-code-label">Share Code:</label>
-          <el-input class="share-code-input" v-model="shareCode" :disabled="true"></el-input>
+          <p class="share-code-container">{{shareCode}}</p>
         </div>
       </div>
-
       <template slot="footer">
         <el-button class="button" @click="f_copy" size="mini" type="primary">Copy Code</el-button>
       </template>
@@ -40,7 +39,8 @@ export default {
   },
   methods: {
     f_genShareCode() {
-      getShareCode()
+      console.log('getting share code, ', this.file.key)
+      getShareCode(this.file.key)
         .then(shareCode => {
           this.shareCode = shareCode
           return shareCode
@@ -60,42 +60,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.step-content {
-  text-align: center;
-  padding: 20px 20px 0;
-  .inner-wrap {
-    display: inline-block;
-    text-align: left;
-  }
-  &.step-0 {
-    .inner-wrap {
-      text-align: center;
-    }
-    .file-icon {
-      height: 58px;
-      width: 48px;
-      margin-bottom: 10px;
-    }
-    .share-hint {
-      width: 300px;
-      margin-top: 20px;
-      font-size: 12px;
-      text-align: left;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .select {
-      width: 120px;
-      margin-bottom: 10px;
-    }
-    .alert-msg {
-      width: 280px;
-      margin: auto;
-      text-align: center;
-    }
-  }
-}
-
 .popup {
   text-align: left;
   .content {
@@ -120,6 +84,12 @@ export default {
         line-height: 40px;
         left: 0;
         display: inline-block;
+      }
+      .share-code-container {
+        padding: 5px 10px;
+        background-color: #f5f7fa;
+        border-color: #e4e7ed;
+        user-select: text;
       }
     }
   }

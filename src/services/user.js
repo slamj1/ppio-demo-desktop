@@ -66,8 +66,9 @@ export const getAccountDetails = walletId => {
   })
 }
 
-export const getIndexData = () =>
-  poss.getIndexData().then(res => {
+export const getIndexData = () => {
+  console.log('getting user index data')
+  return poss.getIndexData().then(res => {
     console.log('user index data got ', typeof res)
     console.log(res)
     /*
@@ -96,6 +97,7 @@ export const getIndexData = () =>
       fileListData: res['poss_index'],
     }
   })
+}
 
 export const flushIndexdata = () => {
   console.log('flushing index data')
@@ -124,4 +126,7 @@ export const getBillingRecords = walletId =>
 
 // TODO: what is the unit of chi price? kwei? gwei?
 export const getChiPrice = () =>
-  poss.chiPrice().then(res => parseInt(res.DownloadChiPrice))
+  poss.chiPrice().then(res => ({
+    storage: parseInt(res.StorageChiPrice),
+    download: parseInt(res.DownloadChiPrice),
+  }))

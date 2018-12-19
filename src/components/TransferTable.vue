@@ -20,7 +20,7 @@
             v-if="scope.row.status !== TASK_STATUS_FAIL"
             :stroke-width="4"
             :percentage="scope.row.transferProgress"
-            :show-text="scope.row.status === TASK_STATUS_RUNNING || scope.row.finished"
+            :show-text="true"
             :status="getProgressStatus(scope.row)"></el-progress>
         <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_RUNNING">{{scope.row.displayTransferSpeed}}</span>
         <span class="transfer-progress-text failed" v-else-if="scope.row.status === TASK_STATUS_FAIL">{{scope.row.failMsg}}</span>

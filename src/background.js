@@ -9,8 +9,8 @@ global.poss = poss
 
 const runningPorts = {}
 
-global.startDaemon = params => {
-  return poss
+global.startDaemon = params =>
+  poss
     .startDaemon({
       datadir: params.dataDir,
       'wallet-key': params.privateKey,
@@ -20,7 +20,6 @@ global.startDaemon = params => {
       runningPorts[res.rpcport] = params.address
       return true
     })
-}
 
 global.stopDaemon = () => {
   console.log('stopping daemon')

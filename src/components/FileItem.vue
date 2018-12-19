@@ -1,29 +1,40 @@
 <template>
   <div class="file-item"
-       :class="{'secure': file.isSecure,
-                'public': file.isPublic,
-                'getting': isGetting,
-                'failed': getFailed,
+       :title="file.filename"
+       :class="{'end': file.status === FILE_STATUS_END,
+                'broken': file.status === FILE_STATUS_BROKEN,
                 'selected': selected}">
     <div class="file-icon-wrap">
-      <span class="file-icon"><span class="file-icon-status"></span></span>
+      <span class="file-icon"></span><span class="file-icon-status"></span>
     </div>
     <p class="filename">
       {{file.filename}}
-      <template v-if="isGetting">
-        <br>{{getFailed ? 'get failed' : 'getting file...'}}
-        <svg @click="f_delete" viewBox="0 0 1024 1024" class="file-delete" version="1.1" width="10" height="10">
-          <path d="M521.693867 449.297067L111.4112 39.0144a51.2 51.2 0 1 0-72.430933 72.362667l410.282666 410.3168-410.282666 410.3168a51.2 51.2 0 1 0 72.3968 72.3968l410.3168-410.282667 410.3168 410.282667a51.2 51.2 0 1 0 72.3968-72.362667l-410.282667-410.350933 410.282667-410.282667a51.2 51.2 0 1 0-72.3968-72.3968l-410.282667 410.282667z"></path>
-        </svg>
-      </template>
     </p>
-    <p class="days-left" v-if="!isGetting && !getFailed">{{file.daysLeft}} days left</p>
+    <p class="days-left">{{daysLeftStr}}</p>
   </div>
 </template>
 <script>
+import * as FILE_STATUS from '../constants/file'
+
 export default {
   name: 'fileitem',
-  props: ['file', 'selected', 'isGetting', 'getFailed'],
+  data() {
+    return {
+      ...FILE_STATUS,
+    }
+  },
+  props: ['file', 'selected'],
+  computed: {
+    daysLeftStr: function() {
+      if (this.file.status === this.FILE_STATUS_END) {
+        return 'Expired'
+      } else if (this.file.status === this.FILE_STATUS_BROKEN) {
+        return 'Pending or lost'
+      } else {
+        return `${this.file.daysLeft} days left`
+      }
+    },
+  },
   methods: {
     f_delete() {
       this.$emit('delete')
@@ -42,13 +53,13 @@ $file-item-width: 105px;
   text-align: center;
   cursor: pointer;
 
-  &.getting {
-    opacity: 0.6;
-  }
-
-  &.failed {
+  &.broken,
+  &.end {
+    .file-icon {
+      opacity: 0.6;
+    }
     .filename {
-      color: #ccc;
+      opacity: 0.6;
     }
   }
 
@@ -62,6 +73,7 @@ $file-item-width: 105px;
   }
 
   .file-icon-wrap {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -77,7 +89,6 @@ $file-item-width: 105px;
   }
 
   .file-icon {
-    position: relative;
     display: inline-block;
     width: 62px;
     height: 74px;
@@ -107,20 +118,17 @@ $file-item-width: 105px;
     display: inline-block;
     width: 14px;
     height: 14px;
-    bottom: 2px;
-    right: 2px;
+    right: 18px;
+    bottom: 13px;
     position: absolute;
     @include general-bg;
     z-index: 2;
+    opacity: 1;
   }
 
-  &.secure .file-icon-status {
-    background-image: url(~@/assets/img/secure.png);
-    background-size: 12px 12px;
-  }
-  &.public .file-icon-status {
-    background-image: url(~@/assets/img/icon-share_active.png);
-    background-size: 10px 10px;
+  &.end .file-icon-status {
+    background-image: url(~@/assets/img/icon-lost.png);
+    background-size: 22px 22px;
   }
 
   .filename {

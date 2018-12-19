@@ -67,6 +67,7 @@ export class Task {
       this.setTransferSpeed(0)
       this.lastTransferredData = length
     }
+    return this
   }
 
   setTransferSpeed(speed) {
@@ -74,6 +75,7 @@ export class Task {
     this.displayTransferSpeed = `${filesize(speed)}/s`
     this.transferSpeed = speed
     console.log('computed speed: ', this.transferSpeed)
+    return this
   }
 
   setStatus(status) {
@@ -86,6 +88,7 @@ export class Task {
       this.setTransferSpeed(0)
     }
     this.status = status
+    return this
   }
 
   setProgress(progress) {
@@ -93,27 +96,28 @@ export class Task {
     console.log(progress)
     this.setTransferredData(progress.transferredData)
     this.wholeDataLength = progress.wholeDataLength
+    return this
   }
   // TODO: for test
   pause() {
     console.log('task paused')
-    this.setStatus(TASK_STATUS_PAUSED)
+    return this.setStatus(TASK_STATUS_PAUSED)
   }
 
   resume() {
     console.log('task resumed')
-    this.setStatus(TASK_STATUS_RUNNING)
+    return this.setStatus(TASK_STATUS_RUNNING)
   }
 
   finish() {
     console.log('task finished succ')
-    this.setStatus(TASK_STATUS_SUCC)
+    return this.setStatus(TASK_STATUS_SUCC)
   }
 
   fail(failMsg) {
     console.log('task failed')
-    this.setStatus(TASK_STATUS_FAIL)
-    this.failMsg = failMsg
+    this.failMsg = failMsg || 'task failed'
+    return this.setStatus(TASK_STATUS_FAIL)
   }
 }
 

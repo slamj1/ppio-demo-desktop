@@ -19,11 +19,16 @@ export const getEstimateCost = params => {
   return poss
     .getCost({
       size: params.size,
+      chiPrice: 100, // TODO: delete
     })
     .then(costs => {
+      console.log(costs)
       // The total download cost contains only one part, so totalCost === downloadCost
-      const totalCost = costs.reduce((acc, cur) => cur + acc, 0)
-      const downloadCost = costs.reduce((acc, cur) => cur + acc, 0)
+      // const totalCost = costs.reduce((acc, cur) => cur + acc, 0)
+      // const downloadCost = costs.reduce((acc, cur) => cur + acc, 0)
+      // return { totalCost, downloadCost }
+      const totalCost = parseInt(costs) / 100
+      const downloadCost = parseInt(costs) / 100
       return { totalCost, downloadCost }
     })
     .catch(err => {
@@ -49,6 +54,7 @@ export const startDownload = async params => {
   console.log(params)
   return poss
     .getObject({
+      bucket: params.bucket,
       key: params.objectKey,
       'share-code': params.shareCode,
       chiprice: params.chiPrice,

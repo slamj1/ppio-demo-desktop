@@ -41,6 +41,7 @@
     <BillingRecords v-if="showPopups.billingRecords" :recordsData="userData.billingRecords"></BillingRecords>
     <Upload v-if="showPopups.uploadFile" :file="uploadingFile"></Upload>
     <Download v-if="showPopups.downloadFile" :file="downloadingFile"></Download>
+    <Get v-if="showPopups.getFile"></Get>
     <Renew v-if="showPopups.renewFile" :file="renewingFile"></Renew>
     <Rename v-if="showPopups.renameFile" :file="renamingFile"></Rename>
     <Share v-if="showPopups.shareFile" :file="sharingFile" :fileIndex="sharingFileIndex"></Share>
@@ -63,6 +64,7 @@ import {
 
 import Profile from '../components/Profile'
 import Download from './subviews/Download'
+import Get from './subviews/Get'
 import Renew from './subviews/Renew'
 import Rename from './subviews/Rename'
 import Share from './subviews/Share'
@@ -98,6 +100,7 @@ export default {
     Profile,
     BillingRecords,
     Download,
+    Get,
     Renew,
     Rename,
     Share,

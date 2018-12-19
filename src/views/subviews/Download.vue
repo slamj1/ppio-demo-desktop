@@ -29,7 +29,7 @@
             <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}} gchi</span>
           </div>
           <div class="line-wrap">
-            <label class="line-label">Chi Limit:</label>
+            <label class="line-label">Total Chi:</label>
             <span>{{totalChi}}</span>
           </div>
           <div class="line-wrap">
@@ -61,7 +61,7 @@ import { DL_TASK } from '../../constants/store'
 import { APP_MODE_COINPOOL } from '../../constants/constants'
 import { getEstimateCost } from '../../services/download'
 import { gchiToPPCoin } from '../../utils/units'
-import PPFile from '../../store/PPFile'
+import { TaskFile } from '../../store/PPFile'
 
 export default {
   name: 'download',
@@ -74,7 +74,7 @@ export default {
     downloadChi: 0,
     preparingDownload: false,
   }),
-  props: ['file'], // PPFile
+  props: ['file'],
   components: {
     StepPopup,
     PaymentTable,
@@ -84,16 +84,16 @@ export default {
       return this.$store.getters.appMode === APP_MODE_COINPOOL
     },
     recChiPrice() {
-      return this.$store.state.recChiPrice
+      return this.$store.state.recChiPrice.download
     },
     fileSizeStr() {
       return filesize(this.file.size)
     },
     totalCost: function() {
-      return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)
+      return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed()
     },
     downloadCost: function() {
-      return gchiToPPCoin(this.downloadChi * this.chiPrice).toFixed(4)
+      return gchiToPPCoin(this.downloadChi * this.chiPrice).toFixed()
     },
     paymentData() {
       return {
@@ -171,7 +171,7 @@ export default {
             return
           }
           const getParams = {
-            file: new PPFile(this.file),
+            file: new TaskFile(this.file),
             objectKey: this.file.key,
             chiPrice: parseInt(this.chiPrice),
             exportPath: filePath,

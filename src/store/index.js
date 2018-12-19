@@ -5,9 +5,7 @@ import storage from 'localforage'
 
 import userStore from './user'
 import fileListStore from './fileList'
-import DownloadTaskStore from './tasks/DownloadTaskStore'
-import UploadTaskStore from './tasks/UploadTaskStore'
-import GetTaskStore from './tasks/GetTaskStore'
+import TaskStore from './tasks/TaskStore'
 import statePersistence from './plugins/persistence'
 import {
   ACT_CLEAR_DATA,
@@ -33,18 +31,14 @@ Vue.config.devtools = true
 Vue.use(Vuex)
 
 const logger = createLogger({
-  collapsed: false, // 自动展开记录的 mutation
+  collapsed: false,
   transformer(state) {
-    // 在开始记录之前转换状态
-    // 例如，只返回指定的子树
     return state
   },
   mutationTransformer(mutation) {
-    // mutation 按照 { type, payload } 格式记录
-    // 我们可以按任意方式格式化
     return mutation
   },
-  logger: console, // 自定义 console 实现，默认为 `console`
+  logger: console,
 })
 
 const initialState = () => ({
@@ -54,7 +48,7 @@ const initialState = () => ({
   privateKey: '', // account private key
   rpcPort: 0,
   phrase: '',
-  recChiPrice: 100,
+  recChiPrice: { storage: 100, download: 100 },
 })
 
 export default new Vuex.Store({
@@ -64,9 +58,8 @@ export default new Vuex.Store({
   modules: {
     user: userStore,
     file: fileListStore,
-    uploadTask: new UploadTaskStore(),
-    downloadTask: new DownloadTaskStore(),
-    getTask: new GetTaskStore(),
+    uploadTask: new TaskStore('upload'),
+    downloadTask: new TaskStore('download'),
   },
   getters: {
     appMode: state =>
@@ -94,7 +87,11 @@ export default new Vuex.Store({
       state.address = address
     },
     [MUT_SET_CHI_PRICE](state, chiPrice) {
-      state.recChiPrice = chiPrice
+      console.log('setting chi price')
+      console.log(chiPrice)
+      console.log(state.recChiPrice)
+      state.recChiPrice.storage = chiPrice.storage
+      state.recChiPrice.download = chiPrice.download
     },
   },
   actions: {
@@ -118,11 +115,12 @@ export default new Vuex.Store({
       const chiPricePolling = () => {
         console.log('refreshing chi price')
         getChiPrice()
-          .then(price => {
-            console.log('current chi price: ', price)
-            commit(MUT_SET_CHI_PRICE, price)
+          .then(prices => {
+            console.log('current chi price: ')
+            console.log(prices)
+            commit(MUT_SET_CHI_PRICE, prices)
             setTimeout(chiPricePolling, 1000 * 30)
-            return price
+            return prices
           })
           .catch(err => {
             console.log('get chi price failed')

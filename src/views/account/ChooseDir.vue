@@ -58,20 +58,21 @@ export default {
 
       this.subStartingApp = true
       this.$store.commit(MUT_SET_DATA_DIR, this.dataDir)
-      startDaemon(
-        this.dataDir,
-        this.curAccount.getPrivateKeyString(),
-        this.curAccount.getAddressString(),
-      )
-        .then(() => {
-          this.subStartingApp = false
-          return this.$emit('startApp')
-        })
-        .catch(err => {
-          console.error('init daemon failed, ', err)
-          this.$message.error('App start failed')
-          this.subStartingApp = false
-        })
+      this.$emit('startApp', this.curAccount)
+      // startDaemon(
+      //   this.dataDir,
+      //   this.curAccount.getPrivateKeyString(),
+      //   this.curAccount.getAddressString(),
+      // )
+      //   .then(() => {
+      //     this.subStartingApp = false
+      //     return
+      //   })
+      //   .catch(err => {
+      //     console.error('init daemon failed, ', err)
+      //     this.$message.error('App start failed')
+      //     this.subStartingApp = false
+      //   })
     },
   },
 }

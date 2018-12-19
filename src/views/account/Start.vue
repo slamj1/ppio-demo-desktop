@@ -25,9 +25,6 @@ export default {
   components: {
     ChooseCoinPool,
   },
-  mounted() {
-    console.log('test', this.$remote.getGlobal('shareObject'))
-  },
   methods: {
     f_startApp() {
       this.startingApp = true
