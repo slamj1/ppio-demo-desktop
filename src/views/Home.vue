@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import filesize from 'filesize'
 import { mapState, mapGetters } from 'vuex'
 import electron from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
@@ -110,20 +111,23 @@ export default {
   computed: {
     ...mapState({
       userData: state => state.user,
-      usagePercent(state) {
-        if (this.$store.getters.appMode === APP_MODE_COINPOOL) {
-          return (state.file.usedStorage / state.user.cpoolData.capacity) * 100
-        }
-        return 0
-      },
     }),
     ...mapGetters({
       appMode: 'appMode',
       downloadCount: DL_TASK.GET_TASK_COUNT,
       uploadCount: UL_TASK.GET_TASK_COUNT,
-      usedStorageStr: USAGE_STORAGE_GETTER, // in file size string
+      usedStorage: USAGE_STORAGE_GETTER, // in file size string
     }),
-    curRoutePath() {
+    usedStorageStr: function() {
+      return filesize(this.usedStorage)
+    },
+    usagePercent: function() {
+      if (this.$store.getters.appMode === APP_MODE_COINPOOL) {
+        return (this.usedStorage / this.$store.state.user.cpoolData.capacity) * 100
+      }
+      return 0
+    },
+    curRoutePath: function() {
       return this.$route.path.split('/').slice(-1)[0]
     },
   },

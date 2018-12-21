@@ -42,6 +42,7 @@ const logger = createLogger({
 })
 
 const initialState = () => ({
+  address: '',
   curPage: '',
   appVersion: '1.0',
   dataDir: '', // directory to store objects

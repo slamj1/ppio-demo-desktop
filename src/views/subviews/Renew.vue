@@ -37,7 +37,7 @@
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
-            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input> <span>gchi</span>
+            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input> <span> chi</span>
             <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}}</span>
           </div>
           <div class="line-wrap">
@@ -71,7 +71,7 @@ import StepPopup from '../../components/StepPopup'
 import PaymentTable from '../../components/PaymentTable'
 import { renewFile } from '../../services/file'
 import { getEstimateCost } from '../../services/upload'
-import { gchiToPPCoin } from '../../utils/units'
+import { chiToPPCoin } from '../../utils/units'
 
 export default {
   name: 'renew',
@@ -96,10 +96,10 @@ export default {
       return this.$store.state.recChiPrice.storage
     },
     totalCost: function() {
-      return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)
+      return chiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)
     },
     storageCost: function() {
-      return gchiToPPCoin(this.storageChi * this.chiPrice).toFixed(4)
+      return chiToPPCoin(this.storageChi * this.chiPrice).toFixed(4)
     },
     fileSizeStr() {
       return filesize(this.file.size)

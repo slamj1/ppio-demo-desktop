@@ -17,8 +17,6 @@ import {
 } from '../../constants/task'
 
 export class Task {
-  transferredData
-
   constructor(initData) {
     if (initData instanceof Task) {
       return initData
@@ -34,22 +32,18 @@ export class Task {
     this.lastTransferredData = initData.transferredData || 0 // used to calculate transfer speed
     this.transferredData = initData.transferredData || 0 // transferred bytes
     this.wholeDataLength = initData.wholeDataLength || 0 // whole file size
+    if (this.wholeDataLength === 0) {
+      this.transferProgress = 0
+    } else {
+      console.log('calculating transfer progress')
+      this.transferProgress = (this.transferredData * 100) / this.wholeDataLength
+    }
     this.transferSpeed = 0 // transfer speed, bytes/s
     this.displayTransferSpeed = '0b/s' // transfer speed for display
     this.finished = initData.finished || false
     this.status = initData.status || TASK_STATUS_RUNNING
     this.failMsg = initData.failMsg || ''
     console.log(this.status)
-  }
-
-  get transferProgress() {
-    if (this.wholeDataLength === 0) {
-      return 0
-    }
-    console.log(
-      `calculating transfer progress: ${this.transferredData}, ${this.wholeDataLength}`,
-    )
-    return (this.transferredData * 100) / this.wholeDataLength
   }
 
   setTransferredData(length) {
@@ -66,6 +60,14 @@ export class Task {
       this.transferredData = length
       this.setTransferSpeed(0)
       this.lastTransferredData = length
+    }
+    console.log(
+      `calculating transfer progress: ${this.transferredData}, ${this.wholeDataLength}`,
+    )
+    if (this.wholeDataLength === 0) {
+      this.transferProgress = 0
+    } else {
+      this.transferProgress = (this.transferredData * 100) / this.wholeDataLength
     }
     return this
   }

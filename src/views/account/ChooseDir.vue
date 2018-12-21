@@ -11,7 +11,10 @@
     <div class="dir-wrap">
       <el-button class="choose-btn" type="primary" @click="f_chooseDataDir">Choose</el-button>
       <p v-show="dataDir.length > 0" class="dir"><b>Your directory: </b>{{dataDir}}</p>
-      <el-button :loading="subStartingApp || startingApp" class="start-button" type="primary" @click="f_start">Start</el-button>
+      <div class="btn-group">
+        <el-button class="back-button" icon="el-icon-arrow-left" @click="f_back"></el-button>
+        <el-button :loading="subStartingApp || startingApp" class="start-button" type="primary" @click="f_start">Start</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -29,6 +32,9 @@ export default {
   },
   props: ['startingApp', 'curAccount'],
   methods: {
+    f_back() {
+      this.$router.back()
+    },
     f_chooseDataDir() {
       remote.dialog.showOpenDialog(
         remote.getCurrentWindow(),
@@ -76,8 +82,22 @@ export default {
   margin-bottom: 40px;
 }
 
+.btn-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.back-button {
+  flex: 0 0;
+  padding: 12px 12px;
+  display: inline-block;
+  vertical-align: middle;
+}
 .start-button {
-  display: block;
+  flex: 1 1;
+  display: inline-block;
   width: 100%;
+  vertical-align: middle;
 }
 </style>

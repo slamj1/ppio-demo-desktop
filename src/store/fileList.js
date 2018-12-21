@@ -1,4 +1,3 @@
-import filesize from 'filesize'
 import {
   MUT_SET_FILE_LIST,
   MUT_REMOVE_FILE,
@@ -16,13 +15,14 @@ import { HomeListFile } from './PPFile'
 
 const initialState = () => ({
   fileList: [],
-  usedStorage: 0,
 })
 
 const store = {
   state: initialState,
   getters: {
-    [USAGE_STORAGE_GETTER]: state => filesize(state.usedStorage),
+    [USAGE_STORAGE_GETTER]: state => {
+      return state.fileList.reduce((acc, cur) => acc + cur.size, 0)
+    },
   },
   mutations: {
     [MUT_REPLACE_STATE_HOOK]: state => {
@@ -32,9 +32,6 @@ const store = {
     },
     [MUT_SET_FILE_LIST](state, fileList) {
       state.fileList = fileList.map(file => new HomeListFile(file))
-      const usage = fileList.reduce((acc, cur) => acc + cur.size, 0)
-      console.log(usage)
-      state.usedStorage = usage || 0
     },
     [MUT_REMOVE_FILE](state, idx) {
       state.fileList.splice(idx, 1)

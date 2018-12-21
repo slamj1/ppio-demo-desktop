@@ -47,7 +47,7 @@ import filesize from 'filesize'
 import StepPopup from '../../components/StepPopup'
 import PaymentTable from '../../components/PaymentTable'
 import { ACT_RENAME_FILE } from '../../constants/store'
-import { gchiToPPCoin } from '../../utils/units'
+import { chiToPPCoin } from '../../utils/units'
 
 export default {
   name: 'rename',
@@ -72,10 +72,10 @@ export default {
       return this.$store.state.recChiPrice.storage
     },
     totalCost: function() {
-      return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)
+      return chiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)
     },
     renameCost: function() {
-      return gchiToPPCoin(this.renameChi * this.chiPrice).toFixed(4)
+      return chiToPPCoin(this.renameChi * this.chiPrice).toFixed(4)
     },
     fileSizeStr() {
       return filesize(this.file.size)

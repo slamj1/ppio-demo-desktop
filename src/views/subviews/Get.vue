@@ -1,5 +1,4 @@
 <!-- @deprecated -->
-
 <template>
   <div class="get-page">
     <step-popup
@@ -23,10 +22,10 @@
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
             <el-input class="price-input" v-model="chiPrice" size="mini"></el-input> <span>chi</span>
-            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}} gchi</span>
+            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}} chi</span>
           </div>
           <div class="line-wrap">
-            <label class="line-label">Chi Limit:</label>
+            <label class="line-label">Total Chi:</label>
             <span>{{totalChi}}</span>
           </div>
           <div class="line-wrap">
@@ -45,7 +44,7 @@
       <template slot="footer">
         <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini">Prev</el-button>
         <el-button class="button" v-if="curStep < steps.length - 1" v-on:click="f_next" size="mini" type="primary">Next</el-button>
-        <el-button class="button" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">Download</el-button>
+        <el-button class="button" :loading="preparingDownload" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">Download</el-button>
       </template>
     </step-popup>
   </div>
@@ -58,7 +57,7 @@ import PaymentTable from '../../components/PaymentTable'
 import { DL_TASK } from '../../constants/store'
 import { APP_MODE_COINPOOL } from '../../constants/constants'
 import { getEstimateCost } from '../../services/download'
-import { gchiToPPCoin } from '../../utils/units'
+import { chiToPPCoin } from '../../utils/units'
 import { TaskFile } from '../../store/PPFile'
 
 export default {
@@ -93,10 +92,10 @@ export default {
       return this.fileInfo ? filesize(this.fileInfo.size) : ''
     },
     totalCost: function() {
-      return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed()
+      return chiToPPCoin(this.totalChi * this.chiPrice).toFixed()
     },
     downloadCost: function() {
-      return gchiToPPCoin(this.downloadChi * this.chiPrice).toFixed()
+      return chiToPPCoin(this.downloadChi * this.chiPrice).toFixed()
     },
     paymentData() {
       return {
@@ -139,10 +138,10 @@ export default {
       }
       return getEstimateCost({
         size: this.fileInfo.size,
-      }).then(res => {
-        this.totalChi = res.totalCost
-        this.downloadChi = res.downloadCost
-        return res
+      }).then(cost => {
+        this.totalChi = cost
+        this.downloadChi = cost
+        return cost
       })
     },
     f_prev() {
@@ -173,6 +172,7 @@ export default {
             filename: fileInfo.key.split('/').slice(-1)[0],
           }
           this.gettingFileInfo = false
+          this.f_estimateCost()
           return this.curStep++
         }
       } else if (this.curStep === 1) {

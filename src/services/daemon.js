@@ -7,10 +7,14 @@ export const startDaemon = (dataDir, privateKey, address) => {
     privateKey: `0x${privateKey}`,
     address,
   })
-  // return Promise.resolve(18000)
 }
 
 export const stopDaemon = () => {
   console.log('stopping daemon service')
-  return remote.getGlobal('stopDaemon')()
+  return remote
+    .getGlobal('stopDaemon')()
+    .then(port => {
+      console.log('stopped daemon of port ', port)
+      return port
+    })
 }

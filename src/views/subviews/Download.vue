@@ -25,8 +25,8 @@
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
-            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input><span>gchi</span>
-            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}} gchi</span>
+            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input><span> chi</span>
+            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}} chi</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Total Chi:</label>
@@ -60,7 +60,7 @@ import PaymentTable from '../../components/PaymentTable'
 import { DL_TASK } from '../../constants/store'
 import { APP_MODE_COINPOOL } from '../../constants/constants'
 import { getEstimateCost } from '../../services/download'
-import { gchiToPPCoin } from '../../utils/units'
+import { chiToPPCoin } from '../../utils/units'
 import { TaskFile } from '../../store/PPFile'
 
 export default {
@@ -90,10 +90,10 @@ export default {
       return filesize(this.file.size)
     },
     totalCost: function() {
-      return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed()
+      return chiToPPCoin(this.totalChi * this.chiPrice).toFixed()
     },
     downloadCost: function() {
-      return gchiToPPCoin(this.downloadChi * this.chiPrice).toFixed()
+      return chiToPPCoin(this.downloadChi * this.chiPrice).toFixed()
     },
     paymentData() {
       return {
