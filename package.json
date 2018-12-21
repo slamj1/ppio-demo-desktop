@@ -10,7 +10,7 @@
     "test:unit": "vue-cli-service test:unit",
     "inspect-webpack": "vue-cli-service inspect > webpack.output.js",
     "rebuild": "electron-rebuild",
-    "electron:build": "vue-cli-service electron:build -mwl",
+    "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve"
   },
   "main": "background.js",
@@ -26,6 +26,7 @@
     "lodash.clonedeep": "^4.5.0",
     "moment": "^2.22.2",
     "portscanner": "^2.2.0",
+    "poss-sdk": "^0.0.1-alpha.7",
     "safe-buffer": "^5.1.2",
     "sanitize.css": "^8.0.0",
     "vue": "^2.5.17",

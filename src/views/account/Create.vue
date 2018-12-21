@@ -9,7 +9,7 @@
     <div class="form-wrap">
       <template v-if="step === 1">
         <p class="title">Step1. Generate your Encryption Key!</p>
-        <code>{{mnemonic}}</code>
+        <code class="mnemonic-container">{{mnemonic}}</code>
         <div class="button-wrap">
           <el-button-group class="button-group">
             <el-button size="mini" @click="f_generatePhraseSeed">ReGenarate</el-button>

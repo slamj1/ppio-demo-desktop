@@ -1,7 +1,7 @@
 <template>
   <div class="user-profile-popover">
     <div class="profile-username">
-      <p>{{userData.address}}</p>
+      <p>{{userData.address}}&nbsp;&nbsp;<span @click="f_copyAddress" class="address-copy-btn">copy</span></p>
     </div>
     <div class="profile-data">
       <el-table
@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import { clipboard } from 'electron'
 import moment from 'moment'
 import { chiToPPCoin } from '../utils/units'
 import { APP_MODE_NON_COINPOOL, APP_MODE_COINPOOL } from '../constants/constants'
@@ -99,6 +100,9 @@ export default {
     },
   },
   methods: {
+    f_copyAddress() {
+      clipboard.writeText(this.userData.address)
+    },
     f_logout() {
       this.$emit('logout')
     },
@@ -119,6 +123,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import '../assets/css/_var.scss';
+
 .user-profile-popover {
   max-width: 240px;
 
@@ -129,6 +135,13 @@ export default {
     p {
       padding: 10px 0;
       border-bottom: 1px solid #dcdfe6;
+    }
+
+    .address-copy-btn {
+      cursor: pointer;
+      font-weight: normal;
+      text-decoration: underline;
+      color: $primary-color;
     }
   }
 
