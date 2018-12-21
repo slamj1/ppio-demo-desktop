@@ -1,23 +1,47 @@
 'use strict'
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, Menu } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import poss from './background/ppiosdk'
 
+const menuTemplate = [
+  {
+    label: 'Application',
+    submenu: [
+      { label: 'About Application', selector: 'orderFrontStandardAboutPanel:' },
+      { type: 'separator' },
+      {
+        label: 'Quit',
+        accelerator: 'Command+Q',
+        click: function() {
+          app.quit()
+        },
+      },
+    ],
+  },
+  {
+    label: 'Edit',
+    submenu: [
+      { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
+      { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', selector: 'redo:' },
+      { type: 'separator' },
+      { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
+      { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
+      { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
+      { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' },
+    ],
+  },
+]
+
 global.poss = poss
-
-// TODO: Support multi-user
-
-const runningPorts = {}
 
 global.startDaemon = params =>
   poss
     .startDaemon({
       datadir: params.dataDir,
-      'wallet-key': params.privateKey,
+      'wallet-key': params.privateKey || undefined,
     })
-    .then(res => {
+    .then(() => {
       console.log('daemon started')
-      runningPorts[res.rpcport] = params.address
       return true
     })
 
@@ -27,7 +51,6 @@ global.stopDaemon = () => {
     .stopDaemon()
     .then(port => {
       console.log('stopped daemon on port ', port)
-      delete runningPorts[port]
       return port
     })
     .catch(err => {
@@ -90,6 +113,7 @@ app.on('ready', async () => {
     // Install Vue Devtools
     // await installVueDevtools()
   }
+  Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate))
   return createWindow()
 })
 

@@ -96,6 +96,10 @@ a {
   &.icon-pause {
     background-image: url('~@/assets/img/icon-pause.png');
   }
+
+  &.icon-close {
+    background-image: url('~@/assets/img/icon-close.png');
+  }
 }
 
 .el-menu-item.is-active {

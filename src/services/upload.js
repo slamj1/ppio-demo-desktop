@@ -3,6 +3,9 @@ import { remote } from 'electron'
 
 const poss = remote.getGlobal('poss')
 
+const timeToExpireDate = storageTime =>
+  moment(Date.now() + storageTime * 1000).format('YYYY-MM-DD')
+
 /**
  * @typedef {Object} UploadCost
  * @property {number} totalCost
@@ -22,17 +25,13 @@ export const getEstimateCost = params => {
     .putCost({
       size: params.size,
       copies: params.copyCount,
-      duration: params.storageTime,
-      chiPrice: 100, // TODO: delete
+      expires: timeToExpireDate(params.storageTime),
     })
     .then(costs => {
       // The total upload cost contains two parts: storage and upload
-      // const totalCost = costs.reduce((acc, cur) => cur + acc, 0)
-      // const storageCost = costs[0]
-      // const uploadCost = totalCost - storageCost
-      const totalCost = parseInt(costs) / 100
-      const storageCost = parseInt(costs) / 100
-      const uploadCost = parseInt(costs) / 100
+      const storageCost = parseInt(costs.miner)
+      const uploadCost = parseInt(costs.service)
+      const totalCost = storageCost + uploadCost
       return { totalCost, storageCost, uploadCost }
     })
     .catch(err => {
@@ -64,7 +63,7 @@ export const startUpload = async params => {
       body: params.localPath,
       copies: params.copyCount,
       metadata: '',
-      expires: moment(Date.now() + params.storageTime * 1000).format('YYYY-MM-DD'),
+      expires: timeToExpireDate(params.storageTime),
       chiprice: params.chiPrice,
       encrypt: params.isSecure,
       // 'cpool-id': params.cpoolId, TODO: cpool

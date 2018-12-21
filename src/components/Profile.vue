@@ -30,7 +30,7 @@
 
 <script>
 import moment from 'moment'
-import { gchiToPPCoin } from '../utils/units'
+import { chiToPPCoin } from '../utils/units'
 import { APP_MODE_NON_COINPOOL, APP_MODE_COINPOOL } from '../constants/constants'
 
 export default {
@@ -44,12 +44,12 @@ export default {
           {
             key: 'balance',
             label: 'Balance',
-            val: `${gchiToPPCoin(this.userData.balance).toFixed(2)} PPCoin`,
+            val: `${chiToPPCoin(this.userData.balance).toFixed()} PPCoin`,
           },
           {
             key: 'func',
             label: 'Funds',
-            val: `${gchiToPPCoin(this.userData.funds).toFixed(2)} PPCoin`,
+            val: `${chiToPPCoin(this.userData.funds).toFixed()} PPCoin`,
           },
           {
             key: 'record',

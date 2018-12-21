@@ -59,7 +59,7 @@
       <template slot="footer">
         <el-button class="button" v-if="curStep > 0" @click="f_prev" size="mini">Prev</el-button>
         <el-button class="button" v-if="curStep < steps.length - 1" @click="f_next" size="mini" type="primary">Next</el-button>
-        <el-button class="button" v-if="curStep >= steps.length - 1" @click="f_confirm" size="mini" type="primary">Pay</el-button>
+        <el-button class="button" :loading="preparingUpload" v-if="curStep >= steps.length - 1" @click="f_confirm" size="mini" type="primary">Pay</el-button>
       </template>
     </step-popup>
   </div>
@@ -105,13 +105,13 @@ export default {
       return this.$store.state.recChiPrice.storage
     },
     totalCost: function() {
-      return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)
+      return gchiToPPCoin(this.totalChi * this.chiPrice).toFixed()
     },
     storageCost: function() {
-      return gchiToPPCoin(this.storageChi * this.chiPrice).toFixed(4)
+      return gchiToPPCoin(this.storageChi * this.chiPrice).toFixed()
     },
     uploadCost: function() {
-      return gchiToPPCoin(this.uploadChi * this.chiPrice).toFixed(4)
+      return gchiToPPCoin(this.uploadChi * this.chiPrice).toFixed()
     },
     fileSizeStr() {
       return filesize(this.file.size)

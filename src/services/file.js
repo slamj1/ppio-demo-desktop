@@ -11,13 +11,13 @@ function getFileStatus(objectStatus) {
     case 'Bid':
       fileStatus = FILE_STATUS.FILE_STATUS_BROKEN
       break
-    case 'Part-deal':
+    case 'Part-Deal':
       fileStatus = FILE_STATUS.FILE_STATUS_PART_AVAILABLE
       break
     case 'Deal':
       fileStatus = FILE_STATUS.FILE_STATUS_AVAILABLE
       break
-    case 'Pending-end':
+    case 'Pending-End':
       fileStatus = FILE_STATUS.FILE_STATUS_PENDING_END
       break
     case 'End':
@@ -43,9 +43,9 @@ export const getObjectList = bucket =>
         filename: object.key.split('/').slice(-1)[0],
         size: object.length,
       }))
-      const getDetailsReqArr = objectList.map(object => {
+      const getDetailsReqArr = objectList.map(object =>
         // bid，part-deal, deal, pending-end, end
-        return getObjectStatus(object.key)
+        getObjectStatus(object.key)
           .then(res => {
             console.log('get contract details success for: ', object.key)
             console.log(res)
@@ -67,14 +67,14 @@ export const getObjectList = bucket =>
             console.log('get object details error')
             console.error(err)
             return Promise.resolve(null)
-          })
-      })
+          }),
+      )
 
       return Promise.all(getDetailsReqArr).then(detailedObjectList => {
         console.log(detailedObjectList)
-        return detailedObjectList.filter(res => !!res).sort((a, b) => {
-          return a.startTime - b.startTime
-        })
+        return detailedObjectList
+          .filter(res => !!res)
+          .sort((a, b) => a.startTime - b.startTime)
       })
     }
     return []

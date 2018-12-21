@@ -19,7 +19,6 @@ export const getEstimateCost = params => {
   return poss
     .getCost({
       size: params.size,
-      chiPrice: 100, // TODO: delete
     })
     .then(costs => {
       console.log(costs)
@@ -27,9 +26,9 @@ export const getEstimateCost = params => {
       // const totalCost = costs.reduce((acc, cur) => cur + acc, 0)
       // const downloadCost = costs.reduce((acc, cur) => cur + acc, 0)
       // return { totalCost, downloadCost }
-      const totalCost = parseInt(costs) / 100
-      const downloadCost = parseInt(costs) / 100
-      return { totalCost, downloadCost }
+      const minerCost = parseInt(costs.miner)
+      const serviceCost = parseInt(costs.service)
+      return minerCost + serviceCost
     })
     .catch(err => {
       console.error('get download cost fail')

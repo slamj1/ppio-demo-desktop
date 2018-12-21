@@ -19,7 +19,6 @@
 import fs from 'fs'
 import { remote } from 'electron'
 import { MUT_SET_DATA_DIR } from '../../constants/store'
-import { startDaemon } from '../../services/daemon'
 
 export default {
   data() {
@@ -59,20 +58,6 @@ export default {
       this.subStartingApp = true
       this.$store.commit(MUT_SET_DATA_DIR, this.dataDir)
       this.$emit('startApp', this.curAccount)
-      // startDaemon(
-      //   this.dataDir,
-      //   this.curAccount.getPrivateKeyString(),
-      //   this.curAccount.getAddressString(),
-      // )
-      //   .then(() => {
-      //     this.subStartingApp = false
-      //     return
-      //   })
-      //   .catch(err => {
-      //     console.error('init daemon failed, ', err)
-      //     this.$message.error('App start failed')
-      //     this.subStartingApp = false
-      //   })
     },
   },
 }

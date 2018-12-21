@@ -1,3 +1,5 @@
+import moment from 'moment'
+import { chiToPPCoin } from '../utils/units'
 import {
   login,
   getAccountDetails,
@@ -99,7 +101,12 @@ const store = {
         console.error('not passing billing records')
         return
       }
-      state.billingRecords = records || []
+      console.log(records[0].amount)
+      state.billingRecords = records.map(record => ({
+        time: moment(record.time * 1000).format('YYYY/MM/DD hh:mm:ss'),
+        comment: record.comment,
+        amount: `${chiToPPCoin(record.amount).toFixed()} PPCoin`,
+      }))
     },
     [MUT_CLEAR_USER_DATA](state) {
       console.log('clearing user data')

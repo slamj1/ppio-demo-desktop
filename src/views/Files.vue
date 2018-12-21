@@ -237,9 +237,9 @@ export default {
       ) {
         return this.$message.error('Cannot renew this file.')
       }
-      this.$vueBus.$emit(this.$events.OPEN_RENAME_FILE, {
-        file: this.operatingFile,
-      })
+      // this.$vueBus.$emit(this.$events.OPEN_RENAME_FILE, {
+      //   file: this.operatingFile,
+      // })
     },
     f_renew() {
       if (!this.operatingFile) {

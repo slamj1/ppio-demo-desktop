@@ -56,14 +56,27 @@ export const getWalletAddress = () =>
 
 export const getAccountDetails = walletId => {
   console.log('getting account details for', walletId)
-  return poss.accountDetails({ walletId }).then(res => {
-    console.log('account detail got')
-    return {
-      balance: res.Balance,
-      funds: res.LockedBalance,
-      spent: res.SpentBalance,
-    }
-  })
+  return poss
+    .accountDetails({ walletId })
+    .then(res => {
+      console.log('account detail got')
+      return {
+        balance: res.Balance,
+        funds: res.LockedBalance,
+        spent: res.SpentBalance,
+      }
+    })
+    .catch(err => {
+      if (err.message === 'account not exists') {
+        return Promise.resolve({
+          balance: 0,
+          funds: 0,
+          spent: 0,
+        })
+      } else {
+        return Promise.reject(err)
+      }
+    })
 }
 
 export const getIndexData = () => {
@@ -104,25 +117,33 @@ export const flushIndexdata = () => {
   return Promise.resolve()
 }
 
-export const getBillingRecords = walletId =>
-  //   Timestamp: '2018-11-23T21:36:35+08:00',
-  //   Type: 'deposit',
-  //   From:
-  //   '00250802122102416bc64849b47a4ce3689a4b8da2273794a287c50189cd58753cfc767b3149c9',
-  //     To:
-  //   '002508021221036e583cb64b75cb6fd7d8ea6f8f952c65813177fa4d69f05a881b57963a4538b5',
-  //     Amount: 1000000000,
-  //   Gain: true,
-  //   Memo: ''
-  poss.purchaseRecords({ walletId }).then(res => {
-    console.log('purchase records got: ')
-    console.log(res)
-    return res.map(item => ({
-      timestamp: new Date(item.Timestamp).getTime(),
-      product: `${item.Memo || ''} - ${item.Type}`,
-      transaction: `${item.Amount}PPCoin`,
-    }))
-  })
+export const getBillingRecords = walletId => {
+  console.log('getting billing records')
+  return poss
+    .purchaseRecords({ walletId, start: 0, limit: 50 })
+    .then(res => {
+      /**
+       *
+       Amount: "1628400"
+       Comment: "lock amount of contract's funds"
+       FromAccountID: "ppio1Ykquh4LpQ1k8emVbx29vrCmq4uz5K6zwS"
+       Time: 1545279012
+       ToAccountID: "ppio1Ykquh4LpQ1k8emVbx29vrCmq4uz5K6zwS"
+       */
+      console.log('purchase records got: ')
+      console.log(res)
+      return res.map(item => ({
+        time: item.Time,
+        comment: item.Comment,
+        amount: parseInt(item.Amount),
+      }))
+    })
+    .catch(err => {
+      console.error('get billing records failed')
+      console.error(err)
+      return Promise.reject(err)
+    })
+}
 
 // TODO: what is the unit of chi price? kwei? gwei?
 export const getChiPrice = () =>

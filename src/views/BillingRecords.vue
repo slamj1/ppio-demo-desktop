@@ -1,23 +1,29 @@
 <template>
   <SlidePopup @close="f_close">
     <h2 slot="header">Billing Records</h2>
-    <el-table slot="content" class="ppio-list-table billing-table" :data="recordsData" stripe style="width: 100%">
+    <el-table
+        slot="content"
+        max-height="500"
+        class="ppio-list-table billing-table"
+        :data="recordsData"
+        stripe
+        style="width: 100%">
       <el-table-column
-          label="Time"
-          width="240"
+          label="time"
+          width="200"
           class-name="table-column-time">
         <template slot-scope="scope">
           <p class="billing-time">{{f_getTime(scope.row.timestamp)}}</p>
         </template>
       </el-table-column>
       <el-table-column
-          prop="product"
+          prop="comment"
           label="Product">
       </el-table-column>
       <el-table-column
-          prop="transaction"
+          prop="amount"
           label="Transaction"
-          width="180">
+          width="240">
       </el-table-column>
     </el-table>
   </SlidePopup>
