@@ -5,12 +5,12 @@
           class-name="table-column-product"
           prop="product"
           label="Product"
-          min-width="240">
+          min-width="200">
       </el-table-column>
       <el-table-column
           prop="fee"
           label="Fee"
-          min-width="200">
+          min-width="280">
       </el-table-column>
     </el-table>
     <div class="total-cost">

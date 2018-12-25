@@ -3,11 +3,7 @@
 // ALERT: Do not add instance methods, those will not be in storage.
 
 import filesize from 'filesize'
-import {
-  TASK_TYPE_UPLOAD,
-  TASK_TYPE_DOWNLOAD,
-  TASK_TYPE_GET,
-} from '../../constants/store'
+import { TASK_TYPE_UPLOAD, TASK_TYPE_DOWNLOAD } from '../../constants/store'
 import { TASK_GET_PROGRESS_INTERVAL } from '../../constants/constants'
 import {
   TASK_STATUS_RUNNING,
@@ -96,8 +92,8 @@ export class Task {
   setProgress(progress) {
     console.log('setting transfer progress')
     console.log(progress)
-    this.setTransferredData(progress.transferredData)
     this.wholeDataLength = progress.wholeDataLength
+    this.setTransferredData(progress.transferredData)
     return this
   }
   // TODO: for test
@@ -150,14 +146,5 @@ export class DownloadTask extends Task {
     }
     super(Object.assign(initData, { type: TASK_TYPE_DOWNLOAD }))
     this.exportPath = initData.exportPath
-  }
-}
-
-export class GetTask extends Task {
-  constructor(initData) {
-    if (!initData || !initData.localPath) {
-      throw new Error('invalid upload task init data')
-    }
-    super(Object.assign(initData, { type: TASK_TYPE_GET }))
   }
 }

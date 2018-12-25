@@ -1,4 +1,8 @@
+export const TASK_STATUS_STARTING = 'taskStatusStarting'
 export const TASK_STATUS_RUNNING = 'taskStatusRunning'
+export const TASK_STATUS_PAUSING = 'taskStatusPausing'
 export const TASK_STATUS_PAUSED = 'taskStatusPaused'
+export const TASK_STATUS_RESUMING = 'taskStatusResuming'
+export const TASK_STATUS_DELETING = 'taskStatusDeleting'
 export const TASK_STATUS_SUCC = 'taskStatusSucceed'
 export const TASK_STATUS_FAIL = 'taskStatusFailed'

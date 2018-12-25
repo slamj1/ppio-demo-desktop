@@ -1,23 +1,25 @@
 import { remote } from 'electron'
 import ppwallet from 'ppwallet'
 import bip39 from 'bip39'
+import safeBuffer from 'safe-buffer'
 
 const poss = remote.getGlobal('poss')
 
-export const login = seedPhrase => {
+export const login = payload => {
   console.log('calling login method')
+  console.log(payload)
   return new Promise((resolve, reject) => {
     try {
-      const oriKey = bip39.mnemonicToSeedHex(seedPhrase)
-      console.log(oriKey)
+      const oriKey = bip39.mnemonicToSeedHex(payload.seedphrase, payload.password)
+      console.log('orikey:', oriKey)
       const privKey = oriKey
         .split('')
         .filter((char, idx) => !!(idx % 2))
         .join('')
-      console.log(privKey)
-      const account = new ppwallet.Account(privKey)
-      console.log(account)
+      console.log('privkey:', privKey)
+      const account = new ppwallet.Account(safeBuffer.Buffer.from(privKey, 'hex'))
       console.log(account.getPrivateKeyString())
+      console.log('address:', account.getAddressString())
       resolve(account)
     } catch (err) {
       console.error('login failed')
@@ -27,11 +29,12 @@ export const login = seedPhrase => {
   })
 }
 
-export const generateSeedPhrase = () => {
+export const generateNewAccount = password => {
   console.log('calling generateSeedPhrase method')
+  console.log(password)
   const mnemonic = bip39.generateMnemonic()
   console.log(mnemonic)
-  const oriKey = bip39.mnemonicToSeedHex(mnemonic)
+  const oriKey = bip39.mnemonicToSeedHex(mnemonic, password)
   console.log(oriKey)
   const privKey = oriKey
     .split('')
@@ -39,11 +42,10 @@ export const generateSeedPhrase = () => {
     .join('')
   console.log(privKey)
 
-  const account = ppwallet.Account.NewAccount(privKey)
-  console.log(account)
-  const address = account.getAddress()
+  const account = new ppwallet.Account(safeBuffer.Buffer.from(privKey, 'hex'))
+  console.log(account.getPrivateKeyString())
+  const address = account.getAddressString()
   console.log(address)
-  account.getPrivateKey()
   account.mnemonic = mnemonic
   return account
 }

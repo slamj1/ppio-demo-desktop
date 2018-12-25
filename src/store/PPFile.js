@@ -42,7 +42,7 @@ export class HomeListFile extends PPFile {
 
 export class TaskFile extends PPFile {
   constructor(fileData) {
-    if (TaskFile instanceof HomeListFile) {
+    if (TaskFile instanceof TaskFile) {
       return fileData
     }
     super(fileData)

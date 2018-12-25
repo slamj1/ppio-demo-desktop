@@ -17,7 +17,6 @@
 import fs from 'fs'
 import { remote } from 'electron'
 import { DL_TASK } from '../constants/store'
-import { TASK_GET_PROGRESS_INTERVAL } from '../constants/constants'
 import TransferTable from '../components/TransferTable'
 import * as TASK_STATUS from '../constants/task'
 
@@ -40,8 +39,6 @@ export default {
   },
   activated() {
     console.log('activated')
-    // TODO: start getting all task status on app start
-    this.f_updateStatus()
   },
   deactivated() {
     console.log('deactivated')
@@ -91,16 +88,6 @@ export default {
         this.$message.error('File does not exist!')
       }
     },
-    f_updateStatus() {
-      this.$store.dispatch(DL_TASK.ACT_GET_PROGRESS).catch(err => {
-        console.error(err)
-      })
-      if (this.taskList.length > 0) {
-        this.getStatusTimer = setTimeout(() => {
-          this.f_updateStatus()
-        }, TASK_GET_PROGRESS_INTERVAL)
-      }
-    },
   },
 }
 </script>
@@ -108,11 +95,20 @@ export default {
 <style lang="scss">
 .download-task-manager {
   .task-operate-btn {
+    display: inline-block;
     cursor: pointer;
-  }
-
-  .app-icon {
     vertical-align: middle;
+
+    .app-icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    .el-icon {
+      margin-right: 10px;
+      vertical-align: middle;
+    }
   }
 }
 </style>

@@ -1,7 +1,8 @@
 'use strict'
-import { app, protocol, BrowserWindow, Menu } from 'electron'
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+import { app, protocol, Menu } from 'electron'
 import poss from './background/ppiosdk'
+import TaskManager from './background/taskManager'
+import windowManager from './background/windowManager'
 
 const menuTemplate = [
   {
@@ -60,38 +61,18 @@ global.stopDaemon = () => {
     })
 }
 
+global.uploadTaskManager = new TaskManager({ type: 'upload' })
+global.downloadTaskManager = new TaskManager({ type: 'download' })
+
+console.log(global.uploadTaskManager.getTasks())
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win
 
 // Standard scheme must be registered before the app is ready
 protocol.registerStandardSchemes(['app'], { secure: true })
-protocol.registerStandardSchemes(['splash'], { secure: true })
-
-function createWindow() {
-  win = new BrowserWindow({
-    width: 300,
-    height: 300,
-    // frame: false,
-    // width: 1000,
-    // height: 670,
-    titleBarStyle: 'hidden',
-  })
-
-  if (isDevelopment) {
-    win.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}#/splash`)
-    if (!process.env.IS_TEST) win.webContents.openDevTools()
-  } else {
-    createProtocol('app')
-    win.loadFile('index.html')
-  }
-
-  win.on('closed', () => {
-    win = null
-  })
-}
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -100,21 +81,19 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-  if (win === null) {
-    return createWindow()
-  }
+  console.log('app is activated')
+  windowManager.createWindow()
+  global.uploadTaskManager.stopUpdating()
+  global.downloadTaskManager.stopUpdating()
 })
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', async () => {
-  if (isDevelopment && !process.env.IS_TEST) {
-    // Install Vue Devtools
-    // await installVueDevtools()
-  }
+app.on('ready', () => {
+  console.log('app is ready')
   Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate))
-  return createWindow()
+  return windowManager.createWindow()
 })
 
 // Exit cleanly on request from parent process in development mode.

@@ -14,7 +14,6 @@
 </template>
 <script>
 import { UL_TASK } from '../constants/store'
-import { TASK_GET_PROGRESS_INTERVAL } from '../constants/constants'
 import TransferTable from '../components/TransferTable'
 import * as TASK_STATUS from '../constants/task'
 
@@ -37,7 +36,6 @@ export default {
   },
   activated() {
     console.log('activated')
-    this.f_updateStatus()
   },
   deactivated() {
     console.log('deactivated')
@@ -74,16 +72,6 @@ export default {
         })
       }
     },
-    f_updateStatus() {
-      this.$store.dispatch(UL_TASK.ACT_GET_PROGRESS).catch(err => {
-        console.error(err)
-      })
-      if (this.taskList.length > 0) {
-        this.getStatusTimer = setTimeout(() => {
-          this.f_updateStatus()
-        }, TASK_GET_PROGRESS_INTERVAL)
-      }
-    },
   },
 }
 </script>
@@ -92,9 +80,16 @@ export default {
   display: inline-block;
   cursor: pointer;
   vertical-align: middle;
+
   .app-icon {
     width: 16px;
     height: 16px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  .el-icon {
+    margin-right: 10px;
+    vertical-align: middle;
   }
 }
 </style>

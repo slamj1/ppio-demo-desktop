@@ -35,7 +35,11 @@ export const MUT_SHARE_FILE = 'mutation_shareFile'
 export const ACT_SHARE_FILE = 'action_shareFile'
 export const MUT_CLEAR_FILE_DATA = 'mutation_clearFileData'
 
+export const ACT_RESTORE_BG_TASKS = 'action_restoreBackgroundTasks'
+export const ACT_SYNC_POSS_TASKS = 'action_syncTasksFromPoss'
+export const ACT_START_POLLING_TASK_PROGRESS = 'action_startPollingTaskProgress'
 export const DL_TASK = {
+  MUT_RESTORE_BG_TASKS: 'mutation_restoreBackgroundDownloadTask',
   MUT_ADD_TASK: 'mutation_addDownloadTask',
   ACT_CREATE_TASK: 'action_createDownloadTask',
   ACT_PAUSE_TASK: 'action_pauseDownloadTask',
@@ -48,13 +52,14 @@ export const DL_TASK = {
   MUT_CANCEL_TASK: 'mutation_cancelDownloadTask',
   ACT_CANCEL_TASK: 'action_cancelDownloadTask',
   ACT_DELETE_TASK: 'action_deleteDownloadTask',
-  MUT_SET_STATUS: 'mutation_setDownloadStatus',
   MUT_SET_PROGRESS: 'mutation_setDownloadProgress',
-  ACT_GET_PROGRESS: 'action_getDownloadStatus',
+  ACT_GET_PROGRESS: 'action_getDownloadProgress',
   GET_TASK_COUNT: 'getter_downloadTaskCount',
+  MUT_SET_TASK_STATUS: 'mutation_setDownloadTaskStatus',
 }
 
 export const UL_TASK = {
+  MUT_RESTORE_BG_TASKS: 'mutation_restoreBackgroundUploadTask',
   MUT_ADD_TASK: 'mutation_addUploadTask',
   ACT_CREATE_TASK: 'action_createUploadTask',
   ACT_PAUSE_TASK: 'action_pauseUploadTask',
@@ -67,33 +72,13 @@ export const UL_TASK = {
   MUT_CANCEL_TASK: 'mutation_cancelUploadTask',
   ACT_CANCEL_TASK: 'action_cancelUploadTask',
   ACT_DELETE_TASK: 'action_deleteUploadTask',
-  MUT_SET_STATUS: 'mutation_setUploadStatus',
   MUT_SET_PROGRESS: 'mutation_setUploadProgress',
   ACT_GET_PROGRESS: 'action_getUploadProgress',
   GET_TASK_COUNT: 'getter_uploadTaskCount',
-}
-
-export const GET_TASK = {
-  MUT_ADD_TASK: 'mutation_addGetTask',
-  ACT_CREATE_TASK: 'action_createGetTask',
-  ACT_PAUSE_TASK: 'action_pauseGetTask',
-  MUT_PAUSE_TASK: 'mutation_pauseGetTask',
-  ACT_RESUME_TASK: 'action_resumeGetTask',
-  MUT_RESUME_TASK: 'mutation_resumeGetTask',
-  MUT_FINISH_TASK: 'mutation_finishGetTask',
-  MUT_FAIL_TASK: 'mutation_failGetTask',
-  MUT_REMOVE_TASK: 'mutation_removeGetTask',
-  MUT_CANCEL_TASK: 'mutation_cancelGetTask',
-  ACT_CANCEL_TASK: 'action_cancelGetTask',
-  ACT_DELETE_TASK: 'action_deleteDownloadTask',
-  MUT_SET_STATUS: 'mutation_setGetStatus',
-  MUT_SET_PROGRESS: 'mutation_setGetProgress',
-  ACT_GET_PROGRESS: 'action_getGetStatus',
-  GET_TASK_COUNT: 'getter_getTaskCount',
+  MUT_SET_TASK_STATUS: 'mutation_setUploadTaskStatus',
 }
 
 export const TASK_TYPE_DOWNLOAD = 'taskType_download'
 export const TASK_TYPE_UPLOAD = 'taskType_upload'
-export const TASK_TYPE_GET = 'taskType_get'
 
 export const MUT_CLEAR_TASK_DATA = 'mutation_clearTaskData'

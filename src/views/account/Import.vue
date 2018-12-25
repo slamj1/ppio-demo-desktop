@@ -3,21 +3,22 @@
     <div class="tip-wrap">
       <p class="title">Log in</p>
       <div class="attention-wrap">
-        <!-- <p class="attention-title">Attention:</p> -->
-        <p>Your Private Key is VERY IMPORTANT. Once lost, all your data will be in danger. Please keep it carefully!</p>
+        <p>Your seed phrase and password are VERY IMPORTANT. Once lost, all your data will be in danger. Please keep them carefully!</p>
       </div>
     </div>
     <div class="form-wrap">
-      <p class="title">Enter your Private Key</p>
-      <el-input type="textarea" :autofocus="true" :rows="4" resize="none" placeholder="enter your Private Key" v-model="seedPhrase" class="seed-phrase-input"> </el-input>
+      <p class="title">Enter your seed phrase and password</p>
+      <el-input type="textarea" :autofocus="true" :rows="4" resize="none" required placeholder="Enter your seed phrase" v-model="mnemonic" class="seed-phrase-input"></el-input>
+      <el-input type="password" placeholder="Enter your password" required v-model="password" class="password-input"></el-input>
       <el-alert v-show="errorMsg !== ''" :title="errorMsg" type="error" :closable="false"></el-alert>
       <el-button :loading="importing || startingApp" class="login-button" type="primary" @click="f_import">Confirm</el-button>
-      <p>Don't have an Private Key? <router-link class="wallet-link" :to="{ name: 'account/create' }">Generate one</router-link></p>
+      <p>Don't have an account? <router-link class="wallet-link" :to="{ name: 'account/create' }">Generate one</router-link></p>
     </div>
   </div>
 </template>
 <script>
 import storage from 'localforage'
+import bip39 from 'bip39'
 import fs from 'fs'
 import { USER_STATE_PERSIST_KEY } from '../../constants/constants'
 import { ACT_LOGIN } from '../../constants/store'
@@ -25,7 +26,8 @@ import { ACT_LOGIN } from '../../constants/store'
 export default {
   name: 'import-account',
   data: () => ({
-    seedPhrase: '',
+    password: '',
+    mnemonic: '',
     errorMsg: '',
     importing: false,
   }),
@@ -33,8 +35,16 @@ export default {
   methods: {
     f_import() {
       this.importing = true
+      if (!bip39.validateMnemonic(this.mnemonic)) {
+        this.$message.error('Seed phrase invalid!')
+        return
+      }
+      if (this.password.length === 0) {
+        this.$message.error('Password is empty!')
+        return
+      }
       this.$store
-        .dispatch(ACT_LOGIN, this.seedPhrase)
+        .dispatch(ACT_LOGIN, { seedphrase: this.mnemonic, password: this.password })
         .then(account => {
           const address = account.getAddressString()
           console.log(`${USER_STATE_PERSIST_KEY}_${address}`)

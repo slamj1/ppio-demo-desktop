@@ -117,8 +117,8 @@ const store = {
     },
   },
   actions: {
-    [ACT_LOGIN](context, mnemonic) {
-      return login(mnemonic).then(
+    [ACT_LOGIN](context, payload) {
+      return login(payload).then(
         account => {
           const address = account.getAddressString()
           context.commit(MUT_SET_USER_ADDRESS, address)

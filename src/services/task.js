@@ -3,7 +3,7 @@ import { remote } from 'electron'
 const poss = remote.getGlobal('poss')
 
 export const listTasks = () => {
-  console.log('list all task')
+  console.log('list all tasks')
   return poss.listTasks()
 }
 

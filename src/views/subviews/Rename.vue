@@ -37,7 +37,7 @@
       <template slot="footer">
         <el-button class="button" v-if="curStep > 0" @click="f_prev" size="mini">Prev</el-button>
         <el-button class="button" v-if="curStep < steps.length - 1" @click="f_next" size="mini" type="primary">Next</el-button>
-        <el-button class="button" v-if="curStep >= steps.length - 1" @click="f_confirm" size="mini" type="primary">Pay</el-button>
+        <el-button class="button" v-if="curStep >= steps.length - 1" @click="f_confirm" size="mini" type="primary">Rename</el-button>
       </template>
     </step-popup>
   </div>
@@ -56,7 +56,6 @@ export default {
     // steps: ['PPFile name', 'Gas Setting', 'Payment'],
     steps: ['PPFile name'],
     filename: '',
-    totalCost: 0,
     chiPrice: 100,
     totalChi: 0,
     renameChi: 0,

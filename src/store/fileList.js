@@ -7,10 +7,9 @@ import {
   ACT_RENAME_FILE,
   USAGE_STORAGE_GETTER,
   MUT_CLEAR_FILE_DATA,
-  ACT_GET_USER_INDEX_DATA,
   MUT_REPLACE_STATE_HOOK,
 } from '../constants/store'
-import { deleteFile, getObjectList } from '../services/file'
+import { deleteFile, getObjectList, renameFile } from '../services/file'
 import { HomeListFile } from './PPFile'
 
 const initialState = () => ({
@@ -107,7 +106,16 @@ const store = {
      */
     [ACT_RENAME_FILE](context, payload) {
       console.log('renaming file ', payload.filename)
-      return context.dispatch(ACT_GET_USER_INDEX_DATA)
+      return renameFile(payload.oriKey, payload.newKey)
+        .then(() => {
+          console.log('renaming file success')
+          return true
+        })
+        .catch(err => {
+          console.error('renaming file failed')
+          console.error(err)
+          throw err
+        })
     },
   },
 }

@@ -1,5 +1,5 @@
 <template>
-  <el-table class="ppio-list-table transfer-table" :data="tableData" stripe style="width: 100%">
+  <el-table class="ppio-list-table transfer-table" :data="tableData" :row-key="getTaskKey" stripe style="width: 100%">
     <p class="empty-text" slot="empty">No {{tableName}} task</p>
     <el-table-column
         prop="name"
@@ -50,6 +50,9 @@ export default {
     console.log(this.tableData)
   },
   methods: {
+    getTaskKey(row) {
+      return row.id
+    },
     f_cancel(taskIndex) {
       this.$emit('cancel', taskIndex)
     },

@@ -10,7 +10,6 @@
                 More<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item :loading="preparingRename" @click.native="f_rename">Rename</el-dropdown-item>
               <el-dropdown-item v-if="!isCpoolMode" :loading="preparingRenew" @click.native="f_renew">Renew</el-dropdown-item>
               <el-dropdown-item :loading="preparingDel" @click.native="f_delete">Delete</el-dropdown-item>
             </el-dropdown-menu>
@@ -188,14 +187,6 @@ export default {
       )
       this.contextMenu.append(
         new MenuItem({
-          label: 'Rename',
-          click() {
-            self.f_rename()
-          },
-        }),
-      )
-      this.contextMenu.append(
-        new MenuItem({
           type: 'separator',
         }),
       )
@@ -226,20 +217,6 @@ export default {
         file: this.operatingFile,
         fileIndex: this.fileList.indexOf(this.operatingFile),
       })
-    },
-    f_rename() {
-      if (!this.operatingFile) {
-        return
-      }
-      if (
-        this.operatingFile.status === FILE_STATUS.FILE_STATUS_BROKEN ||
-        this.operatingFile.status === FILE_STATUS.FILE_STATUS_END
-      ) {
-        return this.$message.error('Cannot renew this file.')
-      }
-      // this.$vueBus.$emit(this.$events.OPEN_RENAME_FILE, {
-      //   file: this.operatingFile,
-      // })
     },
     f_renew() {
       if (!this.operatingFile) {

@@ -7,6 +7,7 @@ import userStore from './user'
 import fileListStore from './fileList'
 import TaskStore from './tasks/TaskStore'
 import statePersistence from './plugins/persistence'
+import taskSync from './plugins/taskSync'
 import {
   ACT_CLEAR_DATA,
   MUT_CLEAR_DATA,
@@ -19,6 +20,9 @@ import {
   MUT_SET_CHI_PRICE,
   ACT_START_POLLING_CHI_PRICE,
   MUT_SET_PRIV_KEY,
+  ACT_SYNC_POSS_TASKS,
+  UL_TASK,
+  DL_TASK,
 } from '../constants/store'
 import {
   APP_MODE_COINPOOL,
@@ -26,6 +30,13 @@ import {
   USER_STATE_PERSIST_KEY,
 } from '../constants/constants'
 import { getChiPrice } from '../services/user'
+import { listTasks } from '../services/task'
+import {
+  TASK_STATUS_SUCC,
+  TASK_STATUS_PAUSED,
+  TASK_STATUS_RUNNING,
+  TASK_STATUS_FAIL,
+} from '../constants/task'
 
 Vue.config.devtools = true
 Vue.use(Vuex)
@@ -54,7 +65,7 @@ const initialState = () => ({
 
 export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
-  plugins: [statePersistence, logger],
+  plugins: [statePersistence, taskSync, logger],
   state: initialState,
   modules: {
     user: userStore,
@@ -130,6 +141,79 @@ export default new Vuex.Store({
           })
       }
       chiPricePolling()
+    },
+    [ACT_SYNC_POSS_TASKS]({ state, commit }) {
+      console.log('syncing task list from poss')
+      return listTasks().then(res => {
+        console.log(res)
+        res.map(task => {
+          let taskQueue, finishedQueue
+          let matchedLocalTask = null
+          let matchedLocalTaskIdx = -1
+          if (task.type === 'Put') {
+            taskQueue = state.uploadTask.taskQueue
+            finishedQueue = state.uploadTask.finishedQueue
+          }
+          if (task.type === 'Get') {
+            taskQueue = state.downloadTask.taskQueue
+            finishedQueue = state.downloadTask.finishedQueue
+          }
+          for (let i = 0; i < taskQueue.length; i++) {
+            if (taskQueue[i].id === task.id) {
+              matchedLocalTaskIdx = i
+              matchedLocalTask = taskQueue[i]
+            }
+          }
+          if (!matchedLocalTask) {
+            for (let i = 0; i < finishedQueue.length; i++) {
+              if (finishedQueue[i].id === task.id) {
+                matchedLocalTaskIdx = i
+                matchedLocalTask = finishedQueue[i]
+              }
+            }
+          }
+          if (matchedLocalTaskIdx > -1) {
+            console.log('syncing single task from poss ')
+            console.log(task)
+            let STORE_KEY
+            if (task.type === 'Put') {
+              STORE_KEY = UL_TASK
+            } else if (task.type === 'Get') {
+              STORE_KEY = DL_TASK
+            }
+            if (!matchedLocalTask.finished) {
+              commit(STORE_KEY.MUT_SET_PROGRESS, {
+                idx: matchedLocalTaskIdx,
+                transferredData: task.finished,
+                wholeDataLength: task.total,
+              })
+            }
+            if (
+              (task.state === 'Running' || task.state === 'Pending') &&
+              matchedLocalTask.status !== TASK_STATUS_RUNNING
+            ) {
+              commit(STORE_KEY.MUT_RESUME_TASK, matchedLocalTaskIdx)
+            } else if (
+              task.state === 'Paused' &&
+              matchedLocalTask.status !== TASK_STATUS_PAUSED
+            ) {
+              commit(STORE_KEY.MUT_PAUSE_TASK, matchedLocalTaskIdx)
+            } else if (
+              task.state === 'Finished' &&
+              matchedLocalTask.status !== TASK_STATUS_SUCC
+            ) {
+              commit(STORE_KEY.MUT_FINISH_TASK, matchedLocalTaskIdx)
+            } else if (
+              task.state === 'Error' &&
+              matchedLocalTask.status !== TASK_STATUS_FAIL
+            ) {
+              console.log('got error task')
+              commit(STORE_KEY.MUT_FAIL_TASK, matchedLocalTaskIdx)
+            }
+          }
+        })
+        return res
+      })
     },
   },
 })

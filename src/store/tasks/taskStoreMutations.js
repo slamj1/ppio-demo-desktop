@@ -5,8 +5,8 @@ import {
   TASK_TYPE_UPLOAD,
   UL_TASK,
 } from '../../constants/store'
-import { TASK_STATUS_RUNNING } from '../../constants/task'
 import { DownloadTask, UploadTask } from './Task'
+import { TASK_STATUS_RUNNING } from '../../constants/task'
 
 export default taskType => {
   let STORE_KEYS
@@ -16,23 +16,38 @@ export default taskType => {
   if (taskType === TASK_TYPE_DOWNLOAD) {
     STORE_KEYS = DL_TASK
   }
+
+  /**
+   * convert plain task object (from background or local storage) to Task instance
+   * @param {object} task
+   * @returns {Task}
+   */
+  const taskConverter = task => {
+    if (task.type === TASK_TYPE_UPLOAD) {
+      return new UploadTask(task)
+    } else if (task.type === TASK_TYPE_DOWNLOAD) {
+      return new DownloadTask(task)
+    }
+  }
+
   const replaceHook = state => {
     console.log('replace state hook fired for task list')
-    const taskConverter = task => {
-      if (task.type === TASK_TYPE_UPLOAD) {
-        if (task.status === TASK_STATUS_RUNNING) {
-          return new UploadTask(task).pause()
-        }
-        return new UploadTask(task)
-      } else if (task.type === TASK_TYPE_DOWNLOAD) {
-        if (task.status === TASK_STATUS_RUNNING) {
-          return new DownloadTask(task).pause()
-        }
-        return new DownloadTask(task)
+    // if restored from local storage, all running tasks should be paused, for calling "GetJobProgress" on an already paused task will throw error
+    const storageTaskConverter = task => {
+      if (task.status === TASK_STATUS_RUNNING) {
+        return taskConverter(task).pause()
       }
+      return taskConverter(task)
     }
-    state.taskQueue = state.taskQueue.map(taskConverter)
-    state.finishedQueue = state.finishedQueue.map(taskConverter)
+    state.taskQueue = state.taskQueue.map(storageTaskConverter)
+    state.finishedQueue = state.finishedQueue.map(storageTaskConverter)
+  }
+
+  const restoreTasks = (state, payload) => {
+    console.log('restoring task list from background')
+    console.log(payload)
+    state.taskQueue = payload.taskQueue.map(taskConverter)
+    state.finishedQueue = payload.finishedQueue.map(taskConverter)
   }
 
   const m_addTask = (state, data) => {
@@ -45,27 +60,33 @@ export default taskType => {
     state.taskQueue.unshift(newTask)
   }
 
+  const m_setTaskStatus = (state, payload) => {
+    console.log('setting task status ', payload.idx)
+    console.log(state.taskQueue[payload.idx])
+    state.taskQueue[payload.idx].setStatus(payload.status)
+  }
+
   const m_setTaskProgress = (state, payload) => {
-    console.log('setting task progress')
+    console.log('setting task progress ', payload.idx)
     console.log(state.taskQueue[payload.idx])
     state.taskQueue[payload.idx].setProgress(payload)
   }
 
   const m_pauseTask = (state, idx) => {
-    console.log('pausing task')
+    console.log('pausing task ', idx)
     console.log(state.taskQueue[idx])
     state.taskQueue[idx].pause()
   }
 
   const m_resumeTask = (state, idx) => {
-    console.log('resuming task')
+    console.log('resuming task ', idx)
     console.log(state.taskQueue[idx])
     state.taskQueue[idx].resume()
   }
 
   const m_failTask = (state, payload) => {
     const taskToFail = state.taskQueue[payload.idx]
-    console.log('failing task')
+    console.log('failing task ', payload.idx)
     console.log(taskToFail)
     taskToFail.fail(payload.msg)
     state.finishedQueue.unshift(taskToFail)
@@ -90,22 +111,9 @@ export default taskType => {
     state.taskQueue.splice(idx, 1)
   }
 
-  const m_setTaskStatus = (state, statusArr) => {
-    console.log('mutate task status')
-    console.log(statusArr)
-    statusArr.map((status, idx) => {
-      if (status && state.taskQueue[idx]) {
-        const task = state.taskQueue[idx]
-        task.status = Object.assign(task.status, status)
-        if (status.finished || status.failed) {
-          state.finishedQueue.unshift(task)
-          state.taskQueue.splice(idx, 1)
-        }
-      }
-    })
-  }
   return {
     [MUT_REPLACE_STATE_HOOK]: replaceHook,
+    [STORE_KEYS.MUT_RESTORE_BG_TASKS]: restoreTasks,
     [STORE_KEYS.MUT_ADD_TASK]: m_addTask,
     [STORE_KEYS.MUT_SET_PROGRESS]: m_setTaskProgress,
     [STORE_KEYS.MUT_PAUSE_TASK]: m_pauseTask,
@@ -114,6 +122,6 @@ export default taskType => {
     [STORE_KEYS.MUT_RESUME_TASK]: m_resumeTask,
     [STORE_KEYS.MUT_REMOVE_TASK]: m_removeTask,
     [STORE_KEYS.MUT_CANCEL_TASK]: m_cancelTask,
-    [STORE_KEYS.MUT_SET_STATUS]: m_setTaskStatus,
+    [STORE_KEYS.MUT_SET_TASK_STATUS]: m_setTaskStatus,
   }
 }

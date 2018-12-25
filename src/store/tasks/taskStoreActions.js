@@ -1,14 +1,27 @@
+import { remote } from 'electron'
+import appRouter from '../../index/router'
 import {
   UL_TASK,
   DL_TASK,
   TASK_TYPE_UPLOAD,
   TASK_TYPE_DOWNLOAD,
+  ACT_RESTORE_BG_TASKS,
+  ACT_START_POLLING_TASK_PROGRESS,
 } from '../../constants/store'
 import { startUpload } from '../../services/upload'
 import { startDownload } from '../../services/download'
 import { pauseTask, resumeTask, deleteTask, getTaskProgress } from '../../services/task'
+import { deleteFile } from '../../services/file'
 import { TaskFile } from '../PPFile'
-import { TASK_STATUS_PAUSED } from '../../constants/task'
+import {
+  TASK_STATUS_PAUSED,
+  TASK_STATUS_FAIL,
+  TASK_STATUS_PAUSING,
+  TASK_STATUS_RESUMING,
+  TASK_STATUS_DELETING,
+  TASK_STATUS_RUNNING,
+} from '../../constants/task'
+import { TASK_GET_PROGRESS_INTERVAL } from '../../constants/constants'
 
 export default taskType => {
   let STORE_KEYS
@@ -44,6 +57,7 @@ export default taskType => {
         return deleteTask(err.taskId)
           .then(() => {
             console.log('deleted task ', err.taskId)
+            deleteFile(payload.file.key)
             return Promise.reject(err.error)
           })
           .catch(err => {
@@ -59,6 +73,7 @@ export default taskType => {
     if (!taskToPause) {
       return Promise.reject(new Error('task not exist!'))
     }
+    context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, { idx, status: TASK_STATUS_PAUSING })
     return pauseTask(taskToPause.id).then(() => {
       console.log('task paused ', taskToPause.id)
       return context.commit(STORE_KEYS.MUT_PAUSE_TASK, idx)
@@ -70,6 +85,7 @@ export default taskType => {
     if (!taskToResume) {
       return Promise.reject(new Error('task not exist!'))
     }
+    context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, { idx, status: TASK_STATUS_RESUMING })
     return resumeTask(taskToResume.id).then(() => {
       console.log('task resumed ', taskToResume.id)
       return context.commit(STORE_KEYS.MUT_RESUME_TASK, idx)
@@ -88,10 +104,12 @@ export default taskType => {
     } else {
       pauseFunc = () => pauseTask(taskToCancel.id)
     }
+    context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, { idx, status: TASK_STATUS_DELETING })
     return pauseFunc()
       .then(() => deleteTask(taskToCancel.id))
       .then(() => {
         console.log('cancelled task ', taskToCancel.id)
+        deleteFile(taskToCancel.file.key)
         return context.commit(STORE_KEYS.MUT_CANCEL_TASK, idx)
       })
       .catch(err => {
@@ -110,6 +128,9 @@ export default taskType => {
     return deleteTask(taskToDelete.id)
       .then(() => {
         console.log('deleted task ', taskToDelete.id)
+        if (taskToDelete.status === TASK_STATUS_FAIL) {
+          deleteFile(taskToDelete.file.key)
+        }
         return context.commit(STORE_KEYS.MUT_REMOVE_TASK, idx)
       })
       .catch(err => {
@@ -122,25 +143,57 @@ export default taskType => {
       })
   }
   const a_getTaskProgress = context => {
-    // TODO: Handle window closed case. Need to open app to finish task?
+    const failNotif = task => {
+      const notifContent =
+        taskType === TASK_TYPE_UPLOAD ? 'Upload failed!' : 'Download failed!'
+      const taskPageName = taskType === TASK_TYPE_UPLOAD ? 'upload-list' : 'download-list'
+      let taskFailNotif = new Notification('ppio-demo task failed', {
+        body: `${task.file.filename} ${notifContent}`,
+        silent: true,
+      })
+      taskFailNotif.onclick = () => {
+        console.log('notif clicked')
+        appRouter.push({ name: taskPageName })
+        taskFailNotif.close()
+      }
+    }
+
+    const succNotif = task => {
+      console.log('showing task finish notification')
+      const notifContent =
+        taskType === TASK_TYPE_UPLOAD ? 'Upload finished!' : 'Download finished!'
+      const taskPageName = taskType === TASK_TYPE_UPLOAD ? 'upload-list' : 'download-list'
+      let taskFinishNotif = new Notification('ppio-demo task finished', {
+        body: `${task.file.filename} ${notifContent}`,
+        silent: true,
+      })
+      console.log(taskFinishNotif)
+      taskFinishNotif.onclick = () => {
+        console.log('notif clicked')
+        appRouter.push({ name: taskPageName })
+        taskFinishNotif.close()
+      }
+    }
+
     const statusGetters = context.state.taskQueue.map(task => {
       // get task status
-      if (task.status === TASK_STATUS_PAUSED) {
-        return Promise.resolve({ paused: true })
+      if (task.status === TASK_STATUS_RUNNING) {
+        return getTaskProgress(task.id).catch(err => {
+          console.error('get task progress failed')
+          console.error(err)
+          return Promise.resolve({ error: err })
+        })
+      } else {
+        return Promise.resolve({ suspended: true })
       }
-      return getTaskProgress(task.id).catch(err => {
-        console.error('get task progress failed')
-        console.error(err)
-        return Promise.resolve({ error: err })
-      })
     })
     return Promise.all(statusGetters).then(resArr => {
       // console.log('all upload task progress got: ')
       // console.log(resArr)
       const statusArr = resArr.map((res, index) => {
         let status = {}
-        if (res.paused) {
-          status.paused = true
+        if (res.suspended) {
+          status.suspended = true
         } else if (res.error) {
           console.log(`task ${index} failed !`)
           status.failed = true
@@ -161,14 +214,16 @@ export default taskType => {
         if (status.finished) {
           console.log('found a succ task')
           context.commit(STORE_KEYS.MUT_SET_PROGRESS, { idx, ...status })
+          succNotif(context.state.taskQueue[idx])
           return context.commit(STORE_KEYS.MUT_FINISH_TASK, idx)
         }
         if (status.failed) {
           console.log('found a fail task')
+          failNotif(context.state.taskQueue[idx])
           return context.commit(STORE_KEYS.MUT_FAIL_TASK, { idx, msg: status.failMsg })
         }
-        if (status.paused) {
-          console.log('found a paused task')
+        if (status.suspended) {
+          console.log('found a suspended task')
           return true
         }
         console.log('found a running task')
@@ -177,6 +232,41 @@ export default taskType => {
       return statusArr
     })
   }
+
+  const a_syncTasks = ({ state, commit }) => {
+    console.log('restoring tasks from background')
+    let taskManager
+    if (taskType === TASK_TYPE_UPLOAD) {
+      taskManager = remote.getGlobal('uploadTaskManager')
+    } else if (taskType === TASK_TYPE_DOWNLOAD) {
+      taskManager = remote.getGlobal('downloadTaskManager')
+    }
+    const backgroundTasks = taskManager.getTasks()
+    if (
+      backgroundTasks.taskQueue.length > 0 ||
+      backgroundTasks.finishedQueue.length > 0
+    ) {
+      return commit(STORE_KEYS.MUT_RESTORE_BG_TASKS, backgroundTasks)
+    } else {
+      console.log('nothing to restore, setting to background')
+      taskManager.setTasks({
+        taskQueue: state.taskQueue,
+        finishedQueue: state.finishedQueue,
+      })
+    }
+  }
+
+  const a_startTasksPolling = ({ dispatch }) => {
+    console.log('start polling tasks')
+    const updateTasks = () => {
+      dispatch(STORE_KEYS.ACT_GET_PROGRESS).catch(err => {
+        console.error(err)
+      })
+      setTimeout(updateTasks, TASK_GET_PROGRESS_INTERVAL)
+    }
+    updateTasks()
+  }
+
   return {
     [STORE_KEYS.ACT_CREATE_TASK]: a_createTask,
     [STORE_KEYS.ACT_PAUSE_TASK]: a_pauseTask,
@@ -184,5 +274,7 @@ export default taskType => {
     [STORE_KEYS.ACT_CANCEL_TASK]: a_cancelTask,
     [STORE_KEYS.ACT_DELETE_TASK]: a_deleteTask,
     [STORE_KEYS.ACT_GET_PROGRESS]: a_getTaskProgress,
+    [ACT_RESTORE_BG_TASKS]: a_syncTasks,
+    [ACT_START_POLLING_TASK_PROGRESS]: a_startTasksPolling,
   }
 }

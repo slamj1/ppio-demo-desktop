@@ -14,6 +14,9 @@ import storage from 'localforage'
 import { APP_STATE_PERSIST_KEY } from '../constants/constants'
 import {
   MUT_REPLACE_STATE_HOOK,
+  ACT_START_POLLING_TASK_PROGRESS,
+  ACT_RESTORE_BG_TASKS,
+  ACT_SYNC_POSS_TASKS,
   ACT_GET_USER_DATA,
   MUT_SET_PRIV_KEY,
   MUT_SET_RPC_PORT,
@@ -26,7 +29,7 @@ export default {
   name: 'app',
   data() {
     return {
-      initializing: true,
+      initializing: false,
     }
   },
   mounted() {
@@ -41,17 +44,18 @@ export default {
           if (val.dataDir.length > 0 && val.address.length > 0) {
             this.$store.replaceState(val)
             this.$store.commit(MUT_REPLACE_STATE_HOOK)
+            this.$store.dispatch(ACT_RESTORE_BG_TASKS)
             return val
           }
         }
-        return Promise.reject(new Error('not login'))
+        throw new Error('not login')
       })
       .then(persistedState => {
         if (persistedState.privateKey.length > 0) {
           console.log(persistedState.privateKey)
           return this.f_startApp(persistedState.privateKey)
         }
-        return Promise.reject(new Error('not login'))
+        throw new Error('not login')
       })
       .catch(err => {
         console.log('data init failed.')
@@ -60,13 +64,18 @@ export default {
         this.$store
           .dispatch(ACT_LOGOUT)
           .then(() => {
-            remote.getCurrentWindow().setSize(1000, 670, true)
+            remote.getCurrentWindow().setSize(1000, 670, false)
             return this.$router.push({ name: 'account/import' })
           })
           .catch(() => {})
       })
   },
   methods: {
+    /**
+     * start daemon with account
+     * @param {object | string} account
+     * @returns {Promise}
+     */
     f_startApp(account) {
       try {
         fs.readdirSync(this.$store.state.dataDir)
@@ -96,9 +105,16 @@ export default {
         .then(() => {
           console.log('data init finished')
           this.initializing = false
-          remote.getCurrentWindow().setSize(1000, 670, true)
+          remote.getCurrentWindow().setSize(1000, 670, false)
           if (this.$store.state.address.length > 0) {
-            return this.$router.push({ name: 'files' })
+            console.log('get user data success')
+            this.$vueBus.$emit(this.$events.APP_INIT_FINISHED)
+            this.$store.dispatch(ACT_SYNC_POSS_TASKS)
+            this.$store.dispatch(ACT_START_POLLING_TASK_PROGRESS)
+            if (!this.$route.path.match('home')) {
+              return this.$router.push({ name: 'files' })
+            }
+            return true
           }
           console.log('get user data failed, redirecting to import account page')
           return this.$store

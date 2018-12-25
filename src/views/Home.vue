@@ -265,26 +265,6 @@ export default {
         this.renewingFile = null
       })
 
-      // rename file
-      // open rename file
-      this.$vueBus.$on(this.$events.OPEN_RENAME_FILE, payload => {
-        console.log('open rename file ', payload.file)
-        this.showPopups.renameFile = true
-        this.renamingFile = payload.file
-      })
-      // close rename file
-      this.$vueBus.$on(this.$events.CLOSE_RENAME_FILE, () => {
-        console.log('close rename file')
-        this.showPopups.renameFile = false
-        this.renamingFile = null
-      })
-      // rename file
-      this.$vueBus.$on(this.$events.RENAME_FILE_DONE, () => {
-        console.log('rename file done')
-        this.showPopups.renameFile = false
-        this.renamingFile = null
-      })
-
       // open billing records
       this.$vueBus.$on(this.$events.OPEN_BILLING_RECORDS, () => {
         console.log('open billing records')

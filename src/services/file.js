@@ -99,17 +99,13 @@ export const headObject = objectKey => {
   })
 }
 
-export const renameFile = id =>
-  new Promise((resolve, reject) => {
-    if (id === '') {
-      reject(new Error('rename file error'))
-    } else {
-      resolve('rename file success')
-    }
-  })
+export const renameFile = (oriKey, newKey) => {
+  console.log('renaming file ', oriKey, newKey)
+  return poss.renameObject({ key: newKey, source: `${APP_BUCKET_NAME}/${oriKey}` })
+}
 
 export const deleteFile = objectKey => {
-  console.log('delete file service fired')
+  console.log('delete file service fired ', objectKey)
   return poss.deleteObject({ key: objectKey })
 }
 

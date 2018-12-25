@@ -1,4 +1,5 @@
 const EVENTS = {
+  APP_INIT_FINISHED: 'app-init-finished',
   OPEN_GET_FILE: 'open-get-file',
   CLOSE_GET_FILE: 'close-get-file',
   GET_FILE_DONE: 'done-get-file',
