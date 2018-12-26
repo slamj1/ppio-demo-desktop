@@ -65,7 +65,6 @@ Vue.use(TableColumn)
 Vue.use(Badge)
 Vue.use(Popover)
 Vue.use(Loading)
-Vue.use(Message)
 
 Vue.prototype.$notify = Notification
 Vue.prototype.$message = Message

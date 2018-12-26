@@ -74,6 +74,7 @@ export default {
       font-size: 14px;
     }
     .code-wrap {
+      margin-top: 10px;
       text-align: left;
       padding-left: 90px;
       position: relative;
@@ -86,6 +87,8 @@ export default {
         display: inline-block;
       }
       .share-code-container {
+        max-height: 140px;
+        overflow: auto;
         padding: 5px 10px;
         background-color: #f5f7fa;
         border-color: #e4e7ed;

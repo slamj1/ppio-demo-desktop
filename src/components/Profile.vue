@@ -12,6 +12,7 @@
           @row-click="handleClick">
         <el-table-column
             prop="label"
+            :width="100"
             class-name="profile-table-key">
         </el-table-column>
         <el-table-column
@@ -23,7 +24,7 @@
         </el-table-column>
       </el-table>
     </div>
-    <div class="cpool-renew" @click="f_renew">Renew service</div>
+    <div class="cpool-renew" @click="f_renew">{{isCpoolMode ? 'Renew service' : 'Recharge'}}</div>
     <div class="logout-btn" @click="f_logout">Log out</div>
   </div>
 </template>
@@ -36,6 +37,9 @@ import { APP_MODE_NON_COINPOOL, APP_MODE_COINPOOL } from '../constants/constants
 
 export default {
   computed: {
+    isCpoolMode: function(){
+      return this.$store.getters.appMode === APP_MODE_COINPOOL
+    },
     userData: function() {
       return this.$store.state.user
     },
@@ -126,7 +130,7 @@ export default {
 @import '../assets/css/_var.scss';
 
 .user-profile-popover {
-  max-width: 240px;
+  max-width: 370px;
 
   .profile-username {
     font-weight: bold;

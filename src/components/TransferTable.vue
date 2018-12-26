@@ -112,6 +112,7 @@ export default {
   }
   .transfer-progress-text {
     display: inline-block;
+    font-size: 12px;
 
     &.left-time {
       margin-left: 20px;

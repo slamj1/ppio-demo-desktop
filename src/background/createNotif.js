@@ -1,5 +1,5 @@
 import { Notification } from 'electron'
-// import windowManager from './windowManager'
+import windowManager from './windowManager'
 
 const createNotif = options => {
   console.log('creating notification')
@@ -24,16 +24,15 @@ export const createTaskNotif = options => {
     options.type === 'upload'
       ? `${options.filename} upload ${options.failed ? 'failed!' : 'finished!'}`
       : `${options.filename} download ${options.failed ? 'failed!' : 'finished!'}`
-  // const taskPageRoute =
-    // options.type === 'upload' ? '/home/upload-list' : '/home/download-list'
+  const taskPageRoute =
+    options.type === 'upload' ? '/home/upload-list' : '/home/download-list'
   const notif = createNotif({
     title: `ppio-demo task ${options.failed ? 'failed' : 'finished'}`,
     body: notifContent,
     onClick: () => {
       console.log('notif clicked')
-      // TODO: creating window from notification causes crash.
-      // windowManager.createWindow({ routePath: taskPageRoute })
-      notif.close()
+      windowManager.createWindow({ routePath: taskPageRoute })
+      // notif.close() // closing notification causes crash.
     },
   })
   return notif
