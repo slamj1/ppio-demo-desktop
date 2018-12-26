@@ -44,7 +44,6 @@ export default {
           if (val.dataDir.length > 0 && val.address.length > 0) {
             this.$store.replaceState(val)
             this.$store.commit(MUT_REPLACE_STATE_HOOK)
-            this.$store.dispatch(ACT_RESTORE_BG_TASKS)
             return val
           }
         }
@@ -109,6 +108,7 @@ export default {
           if (this.$store.state.address.length > 0) {
             console.log('get user data success')
             this.$vueBus.$emit(this.$events.APP_INIT_FINISHED)
+            this.$store.dispatch(ACT_RESTORE_BG_TASKS)
             this.$store.dispatch(ACT_SYNC_POSS_TASKS)
             this.$store.dispatch(ACT_START_POLLING_TASK_PROGRESS)
             if (!this.$route.path.match('home')) {

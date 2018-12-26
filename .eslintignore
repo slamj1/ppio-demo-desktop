@@ -33,18 +33,18 @@ app/node_modules
 
 # App packaged
 release
-dist/
-build/
-node_modules/
+dist
+dist_electron
+qoslog
 package-lock.json
 yarn.lock
 yarn-error.log
 package.json
 webpack.output.js
-ppwallet/*
-poss-sdk/*
-ppio_js_sdk/*
-neb.js/*
+ppwallet
+poss-sdk
+ppio_js_sdk
+neb.js
 
 .idea
 npm-debug.log.*

@@ -38,11 +38,8 @@ import fs from 'fs'
 import bip39 from 'bip39'
 import { clipboard, remote } from 'electron'
 import { ACT_LOGIN } from '../../constants/store'
-import storage from 'localforage'
-import { login } from '../../services/user'
-
 import { USER_STATE_PERSIST_KEY } from '../../constants/constants'
-import { generateNewAccount } from '../../services/user'
+import { login, generateNewAccount } from '../../services/user'
 
 const dialog = remote.dialog
 
@@ -112,39 +109,28 @@ export default {
           console.log(account.getAddressString())
           if (this.account.getAddressString() === account.getAddressString()) {
             this.confirmLoading = true
-            this.$store
+            return this.$store
               .dispatch(ACT_LOGIN, { seedphrase: this.mnemonic, password: this.password })
               .then(account => {
                 const address = account.getAddressString()
                 console.log(`${USER_STATE_PERSIST_KEY}_${address}`)
                 this.$emit('setAccount', account)
-                return storage.getItem(`${USER_STATE_PERSIST_KEY}_${address}`)
-              })
-              .then(val => {
-                console.log('restore app state')
-                console.log(val)
-                if (val) {
-                  if (val.dataDir.length > 0 && val.address.length > 0) {
-                    this.$store.replaceState(val)
-                    return this.$emit('startApp', this.curAccount)
-                  }
-                }
-                console.log('init user')
-                return this.$router.push({ name: 'account/choose-dir' })
-              })
-              .finally(() => {
                 this.confirmLoading = false
+                return this.$router.push({ name: 'account/choose-dir' })
               })
               .catch(err => {
                 this.errorMsg = err.toString()
-                console.log(err)
+                this.confirmLoading = false
+                console.error(err)
               })
           } else {
             this.errorMsg = 'Seed phrase or password is wrong'
+            return false
           }
         })
         .catch(err => {
-          this.errorMsg = 'Validation failed.'
+          console.error(err)
+          this.errorMsg = err.toString()
         })
     },
   },

@@ -12,6 +12,20 @@ import {
   TASK_STATUS_PAUSED,
 } from '../../constants/task'
 
+function pad(num) {
+  return `0${num}`.slice(-2)
+}
+function secondConverter(secs) {
+  var minutes = Math.floor(secs / 60)
+  secs = secs % 60
+  var hours = Math.floor(minutes / 60)
+  minutes = minutes % 60
+  if (hours > 0) {
+    return `${pad(hours)}:${pad(minutes)}:${pad(secs)}`
+  }
+  return `${pad(minutes)}:${pad(secs)}`
+}
+
 export class Task {
   constructor(initData) {
     if (initData instanceof Task) {
@@ -36,6 +50,7 @@ export class Task {
     }
     this.transferSpeed = 0 // transfer speed, bytes/s
     this.displayTransferSpeed = '0b/s' // transfer speed for display
+    this.displayLeftTime = ''
     this.finished = initData.finished || false
     this.status = initData.status || TASK_STATUS_RUNNING
     this.failMsg = initData.failMsg || ''
@@ -72,6 +87,21 @@ export class Task {
     console.log('setting transfer speed:', speed)
     this.displayTransferSpeed = `${filesize(speed)}/s`
     this.transferSpeed = speed
+    if (speed > 0) {
+      const leftSeconds = Math.round(this.wholeDataLength / speed)
+      console.log(leftSeconds)
+      if (leftSeconds > 3600 * 6) {
+        this.displayLeftTime = 'Over 6 hours'
+      } else if (leftSeconds > 60) {
+        this.displayLeftTime = `${secondConverter(leftSeconds)} left`
+      } else if (leftSeconds > 1) {
+        this.displayLeftTime = `${leftSeconds} seconds left`
+      } else {
+        this.displayLeftTime = ''
+      }
+    } else {
+      this.displayLeftTime = ''
+    }
     console.log('computed speed: ', this.transferSpeed)
     return this
   }

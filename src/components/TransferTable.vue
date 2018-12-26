@@ -18,11 +18,13 @@
         <el-progress
             class="transmit-progress"
             v-if="scope.row.status !== TASK_STATUS_FAIL"
+            :width="180"
             :stroke-width="4"
             :percentage="scope.row.transferProgress"
             :show-text="true"
             :status="getProgressStatus(scope.row)"></el-progress>
         <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_RUNNING">{{scope.row.displayTransferSpeed}}</span>
+        <span class="transfer-progress-text left-time" v-if="scope.row.status === TASK_STATUS_RUNNING">{{scope.row.displayLeftTime}}</span>
         <span class="transfer-progress-text failed" v-else-if="scope.row.status === TASK_STATUS_FAIL">{{scope.row.failMsg}}</span>
       </template>
     </el-table-column>
@@ -110,6 +112,10 @@ export default {
   }
   .transfer-progress-text {
     display: inline-block;
+
+    &.left-time {
+      margin-left: 20px;
+    }
 
     &.processing {
       color: #ccc;

@@ -19,9 +19,8 @@ const initialState = () => ({
 const store = {
   state: initialState,
   getters: {
-    [USAGE_STORAGE_GETTER]: state => {
-      return state.fileList.reduce((acc, cur) => acc + cur.size, 0)
-    },
+    [USAGE_STORAGE_GETTER]: state =>
+      state.fileList.reduce((acc, cur) => acc + cur.size, 0),
   },
   mutations: {
     [MUT_REPLACE_STATE_HOOK]: state => {

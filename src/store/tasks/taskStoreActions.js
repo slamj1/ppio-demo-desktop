@@ -242,6 +242,7 @@ export default taskType => {
       taskManager = remote.getGlobal('downloadTaskManager')
     }
     const backgroundTasks = taskManager.getTasks()
+    console.log(backgroundTasks)
     if (
       backgroundTasks.taskQueue.length > 0 ||
       backgroundTasks.finishedQueue.length > 0

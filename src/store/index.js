@@ -175,6 +175,7 @@ export default new Vuex.Store({
           if (matchedLocalTaskIdx > -1) {
             console.log('syncing single task from poss ')
             console.log(task)
+            console.log(matchedLocalTask)
             let STORE_KEY
             if (task.type === 'Put') {
               STORE_KEY = UL_TASK

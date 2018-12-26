@@ -21,7 +21,7 @@ import storage from 'localforage'
 import bip39 from 'bip39'
 import fs from 'fs'
 import { USER_STATE_PERSIST_KEY } from '../../constants/constants'
-import { ACT_LOGIN } from '../../constants/store'
+import { ACT_LOGIN, MUT_REPLACE_STATE_HOOK } from '../../constants/store'
 
 export default {
   name: 'import-account',
@@ -50,8 +50,10 @@ export default {
           console.log(`${USER_STATE_PERSIST_KEY}_${address}`)
           this.$emit('setAccount', account)
           return storage.getItem(`${USER_STATE_PERSIST_KEY}_${address}`).then(val => {
+            this.importing = false
             if (val && val.dataDir.length > 0 && val.address.length > 0) {
               this.$store.replaceState(val)
+              this.$store.commit(MUT_REPLACE_STATE_HOOK)
               try {
                 fs.readdirSync(this.$store.state.dataDir)
                 console.log('user exists, starting app')
@@ -65,12 +67,9 @@ export default {
             return this.$router.push({ name: 'account/choose-dir' })
           })
         })
-        .finally(() => {
-          this.importing = false
-        })
         .catch(err => {
           this.errorMsg = err.toString()
-          console.log(err)
+          console.error(err)
           this.importing = false
         })
     },
