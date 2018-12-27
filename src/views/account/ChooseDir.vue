@@ -21,7 +21,6 @@
 <script>
 import fs from 'fs'
 import { remote } from 'electron'
-import { MUT_SET_DATA_DIR } from '../../constants/store'
 
 export default {
   data() {
@@ -30,7 +29,7 @@ export default {
       subStartingApp: false,
     }
   },
-  props: ['startingApp', 'curAccount'],
+  props: ['startingApp'],
   methods: {
     f_back() {
       this.$router.back()
@@ -60,10 +59,8 @@ export default {
       if (this.dataDir.length === 0) {
         return this.$message.error('Please select your data directory')
       }
-
-      this.subStartingApp = true
-      this.$store.commit(MUT_SET_DATA_DIR, this.dataDir)
-      this.$emit('startApp', this.curAccount)
+      this.$emit('setDatadir', this.dataDir)
+      this.$emit('startApp', true)
     },
   },
 }

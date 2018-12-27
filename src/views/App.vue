@@ -18,12 +18,11 @@ import {
   ACT_RESTORE_BG_TASKS,
   ACT_SYNC_POSS_TASKS,
   ACT_GET_USER_DATA,
-  MUT_SET_PRIV_KEY,
-  MUT_SET_RPC_PORT,
+  MUT_SET_USER_CPOOL,
   ACT_LOGOUT,
+  MUT_SET_DATA_DIR,
 } from '../constants/store'
 import { startDaemon } from '../services/daemon'
-import ppwallet from 'ppwallet'
 
 export default {
   name: 'app',
@@ -41,18 +40,11 @@ export default {
         console.log('init app state')
         console.log(val)
         if (val) {
-          if (val.dataDir.length > 0 && val.address.length > 0) {
+          if (val.dataDir.length > 0 && val.user.uid.length > 0) {
             this.$store.replaceState(val)
             this.$store.commit(MUT_REPLACE_STATE_HOOK)
-            return val
+            return this.f_startApp({ datadir: val.dataDir })
           }
-        }
-        throw new Error('not login')
-      })
-      .then(persistedState => {
-        if (persistedState.privateKey.length > 0) {
-          console.log(persistedState.privateKey)
-          return this.f_startApp(persistedState.privateKey)
         }
         throw new Error('not login')
       })
@@ -75,37 +67,33 @@ export default {
      * @param {object | string} account
      * @returns {Promise}
      */
-    f_startApp(account) {
+    f_startApp(initConfig) {
       try {
-        fs.readdirSync(this.$store.state.dataDir)
+        fs.readdirSync(initConfig.datadir)
       } catch (err) {
         return Promise.reject(err)
       }
-      let privKey = ''
-      let address = ''
-      if (typeof account === 'string') {
-        // account is private key
-        privKey = account
-        const ppAccount = new ppwallet.Account(account)
-        address = ppAccount.getAddressString()
-      } else if (account.getPrivateKeyString) {
-        privKey = account.getPrivateKeyString()
-        address = account.getAddressString()
-      }
       console.log(
-        `starting app at ${this.$store.state.dataDir}, with private key: ${privKey}`,
+        `starting app at ${initConfig.datadir}, with private key: ${
+          initConfig.privateKey
+        }`,
       )
-      return startDaemon(this.$store.state.dataDir, privKey, address)
+      return startDaemon(initConfig.datadir, initConfig.privateKey)
         .then(port => {
-          this.$store.commit(MUT_SET_RPC_PORT, port)
-          this.$store.commit(MUT_SET_PRIV_KEY, privKey)
+          this.$store.commit(MUT_SET_DATA_DIR, initConfig.datadir)
+          if (initConfig.cpoolHost && initConfig.cpoolAddress) {
+            this.$store.commit(MUT_SET_USER_CPOOL, {
+              cpoolHost: initConfig.cpoolHost,
+              cpoolAddress: initConfig.cpoolAddress,
+            })
+          }
           return this.$store.dispatch(ACT_GET_USER_DATA)
         })
         .then(() => {
           console.log('data init finished')
           this.initializing = false
           remote.getCurrentWindow().setSize(1000, 670, false)
-          if (this.$store.state.address.length > 0) {
+          if (this.$store.state.user.uid.length > 0) {
             console.log('get user data success')
             this.$vueBus.$emit(this.$events.APP_INIT_FINISHED)
             this.$store.dispatch(ACT_RESTORE_BG_TASKS)

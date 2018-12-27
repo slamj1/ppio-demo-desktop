@@ -42,9 +42,13 @@ yarn-error.log
 package.json
 webpack.output.js
 ppwallet
+ppwallet/
 poss-sdk
 ppio_js_sdk
+neb.js/
 neb.js
+**/neb.js/*
+**/ppwallet/*
 
 .idea
 npm-debug.log.*

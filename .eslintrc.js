@@ -1,7 +1,3 @@
-const fs = require('fs')
-
-const prettierOptions = JSON.parse(fs.readFileSync('./.prettierrc', 'utf8'))
-
 module.exports = {
   root: true,
   env: {
@@ -20,7 +16,17 @@ module.exports = {
   rules: {
     'no-console': 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'prettier/prettier': ['error', prettierOptions],
+    'prettier/prettier': [
+      'error',
+      {
+        printWidth: 90,
+        tabWidth: 2,
+        useTabs: false,
+        semi: false,
+        singleQuote: true,
+        trailingComma: 'all',
+      },
+    ],
     'arrow-body-style': ['warn', 'as-needed'],
     'arrow-parens': ['off'],
     'class-methods-use-this': 'off',

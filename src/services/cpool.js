@@ -1,13 +1,54 @@
-export const getCpool = address => {
-  console.log('getting binded cpool')
-  return new Promise((resolve, reject) => {
-    // resolve({
-    //   cpoolId: 'ppiofd23dsfadsaf',
-    //   cpoolName: 'ppio-test',
-    //   planName: 'premium',
-    //   capacity: 1e12, // TODO: 1PB => big number?
-    //   usage: 5e11,
-    // })
-    resolve(null)
-  })
+import axios from 'axios'
+import { remote } from 'electron'
+import { AVAILABLE_CPOOLS } from '../constants/constants'
+
+const poss = remote.getGlobal('poss')
+
+export const iterateCpools = address => {
+  console.log('iterating cpools')
+  return Promise.all(
+    AVAILABLE_CPOOLS.map(cpoolHost =>
+      getCpoolSubscriptionInfo(cpoolHost, address)
+        .then(res => {
+          console.log(res)
+          if (res.err_code === 0) {
+            return {
+              host: cpoolHost,
+              address: res.data.account_id,
+              binded: true,
+            }
+          }
+          return {
+            host: cpoolHost,
+            address: '',
+            binded: false,
+          }
+        })
+        .catch(() => Promise.resolve({ binded: false })),
+    ),
+  )
+}
+
+export const getCpoolSubscriptionInfo = (cpoolUrl, address) => {
+  console.log('getting binded cpool ', cpoolUrl, address)
+  const reqUrl =
+    process.env.NODE_ENV === 'development'
+      ? '/cpool/api/plan/subscribe_info'
+      : `${cpoolUrl}/cpool/api/plan/subscribe_info`
+  return axios({
+    url: reqUrl,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    data: {
+      account_id: address,
+    },
+  }).then(res => res.data)
+}
+
+export const saveCpoolConfig = ({ datadir, url, address }) => {
+  console.log('saving cpool data to config file')
+  return poss.setCpool({ datadir, url, address })
 }

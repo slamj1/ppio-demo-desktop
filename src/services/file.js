@@ -118,7 +118,6 @@ export const renewFile = params => {
       copies: params.copyCount,
       expires: moment(Date.now() + params.storageTime * 1000).format('YYYY-MM-DD'),
       encrypt: params.isSecure,
-      'cpool-id': params.cpoolId,
     })
     .then(res => res)
     .catch(err => {

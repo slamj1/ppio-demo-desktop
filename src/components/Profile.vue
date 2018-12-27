@@ -1,5 +1,5 @@
 <template>
-  <div class="user-profile-popover">
+  <div class="user-profile-popover" :class="{'cpool': isCpoolMode}">
     <div class="profile-username">
       <p>{{userData.address}}&nbsp;&nbsp;<span @click="f_copyAddress" class="address-copy-btn">copy</span></p>
     </div>
@@ -37,11 +37,18 @@ import { APP_MODE_NON_COINPOOL, APP_MODE_COINPOOL } from '../constants/constants
 
 export default {
   computed: {
-    isCpoolMode: function(){
+    isCpoolMode: function() {
       return this.$store.getters.appMode === APP_MODE_COINPOOL
     },
     userData: function() {
       return this.$store.state.user
+    },
+    expireDate: function() {
+      const expireTime = this.userData.cpoolData.expires
+      if (expireTime !== -1) {
+        return moment(expireTime).format('YYYY/MM/DD')
+      }
+      return 'unlimited'
     },
     profileData: function() {
       if (this.$store.getters.appMode === APP_MODE_NON_COINPOOL) {
@@ -87,7 +94,7 @@ export default {
           {
             key: 'expires',
             label: 'Expire date',
-            val: moment(this.userData.cpoolData.expires).format('YYYY/MM/DD'),
+            val: this.expireDate,
           },
           {
             key: 'version',
@@ -132,6 +139,9 @@ export default {
 .user-profile-popover {
   max-width: 370px;
 
+  &.cpool {
+    max-width: 260px;
+  }
   .profile-username {
     font-weight: bold;
     padding: 0 20px;

@@ -20,8 +20,10 @@
 import storage from 'localforage'
 import bip39 from 'bip39'
 import fs from 'fs'
+import path from 'path'
 import { USER_STATE_PERSIST_KEY } from '../../constants/constants'
-import { ACT_LOGIN, MUT_REPLACE_STATE_HOOK } from '../../constants/store'
+import { MUT_REPLACE_STATE_HOOK } from '../../constants/store'
+import { login } from '../../services/user'
 
 export default {
   name: 'import-account',
@@ -43,24 +45,26 @@ export default {
         this.$message.error('Password is empty!')
         return
       }
-      this.$store
-        .dispatch(ACT_LOGIN, { seedphrase: this.mnemonic, password: this.password })
+
+      login({ seedphrase: this.mnemonic, password: this.password })
         .then(account => {
           const address = account.getAddressString()
           console.log(`${USER_STATE_PERSIST_KEY}_${address}`)
           this.$emit('setAccount', account)
           return storage.getItem(`${USER_STATE_PERSIST_KEY}_${address}`).then(val => {
             this.importing = false
-            if (val && val.dataDir.length > 0 && val.address.length > 0) {
+            console.log('persisted state got for import page')
+            console.log(val)
+            if (val && val.dataDir.length > 0 && val.user.uid.length > 0) {
               this.$store.replaceState(val)
               this.$store.commit(MUT_REPLACE_STATE_HOOK)
-              try {
-                fs.readdirSync(this.$store.state.dataDir)
+              this.$emit('setDatadir', val.dataDir)
+              if (fs.existsSync(path.resolve(val.dataDir, './poss.conf'))) {
                 console.log('user exists, starting app')
-                return this.$emit('startApp', account)
-              } catch (err) {
-                console.log('choose data dir')
-                return this.$router.push({ name: 'account/choose-dir' })
+                return this.$emit('startApp')
+              } else {
+                console.log('config file does not exist, initing app')
+                return this.$emit('startApp', true)
               }
             }
             console.log('choose data dir')

@@ -2,6 +2,17 @@ module.exports = {
   pages: {
     index: 'src/index/main.js',
   },
+  devServer: {
+    proxy: {
+      '/cpool': {
+        target: 'http://192.168.50.233:10001',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/cpool': '',
+        },
+      },
+    },
+  },
   configureWebpack: {
     resolve: {
       symlinks: false,

@@ -35,16 +35,15 @@ const menuTemplate = [
 
 global.poss = poss
 
-global.startDaemon = params =>
-  poss
-    .startDaemon({
-      datadir: params.dataDir,
-      'wallet-key': params.privateKey || undefined,
-    })
-    .then(() => {
-      console.log('daemon started')
-      return true
-    })
+console.log('this is background poss')
+console.log(global.poss.baseParams)
+console.log(global.poss.initDaemon)
+
+global.initDaemon = params => poss.initDaemon(params)
+
+console.log('testing poss init')
+
+global.startDaemon = params => poss.startDaemon(params)
 
 global.stopDaemon = () => {
   console.log('stopping daemon')

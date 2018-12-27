@@ -31,7 +31,6 @@ describe('Profile.vue', () => {
         userData: {
           uid: '',
           isLogin: true,
-          nickname: 'nickname',
           balance: 30,
           funds: 20,
           billingRecords: [],

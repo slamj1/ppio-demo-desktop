@@ -15,11 +15,8 @@ import {
   MUT_CLEAR_USER_DATA,
   MUT_CLEAR_FILE_DATA,
   MUT_SET_DATA_DIR,
-  MUT_SET_RPC_PORT,
-  MUT_SET_USER_ADDRESS,
   MUT_SET_CHI_PRICE,
   ACT_START_POLLING_CHI_PRICE,
-  MUT_SET_PRIV_KEY,
   ACT_SYNC_POSS_TASKS,
   UL_TASK,
   DL_TASK,
@@ -53,13 +50,9 @@ const logger = createLogger({
 })
 
 const initialState = () => ({
-  address: '',
   curPage: '',
-  appVersion: '1.0',
+  appVersion: '1.0.0',
   dataDir: '', // directory to store objects
-  privateKey: '', // account private key
-  rpcPort: 0,
-  phrase: '',
   recChiPrice: { storage: 100, download: 100 },
 })
 
@@ -75,7 +68,9 @@ export default new Vuex.Store({
   },
   getters: {
     appMode: state =>
-      state.user.cpoolData.cpoolId.length > 0 ? APP_MODE_COINPOOL : APP_MODE_NON_COINPOOL,
+      state.user.cpoolData.cpoolHost.length > 0
+        ? APP_MODE_COINPOOL
+        : APP_MODE_NON_COINPOOL,
   },
   mutations: {
     [MUT_CLEAR_DATA](state) {
@@ -87,16 +82,6 @@ export default new Vuex.Store({
     },
     [MUT_SET_DATA_DIR](state, dataDir) {
       state.dataDir = dataDir
-    },
-    [MUT_SET_PRIV_KEY](state, privateKey) {
-      state.privateKey = privateKey
-    },
-    [MUT_SET_RPC_PORT](state, port) {
-      state.rpcPort = port
-    },
-    [MUT_SET_USER_ADDRESS](state, address) {
-      // used for local storage key
-      state.address = address
     },
     [MUT_SET_CHI_PRICE](state, chiPrice) {
       console.log('setting chi price')

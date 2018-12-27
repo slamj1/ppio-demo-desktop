@@ -59,7 +59,7 @@
       <template slot="footer">
         <el-button class="button" v-if="curStep > 0" @click="f_prev" size="mini">Prev</el-button>
         <el-button class="button" v-if="curStep < steps.length - 1" @click="f_next" size="mini" type="primary">Next</el-button>
-        <el-button class="button" :loading="preparingUpload" v-if="curStep >= steps.length - 1" @click="f_confirm" size="mini" type="primary">Pay</el-button>
+        <el-button class="button" :loading="preparingUpload" v-if="curStep >= steps.length - 1" @click="f_confirm" size="mini" type="primary">Upload</el-button>
       </template>
     </step-popup>
   </div>
@@ -252,7 +252,6 @@ export default {
           filename: this.filename,
           size: this.file.size,
         }),
-        cpoolId: this.$store.state.user.cpoolData.cpoolId,
         objectKey: this.filename,
         ...options,
       }

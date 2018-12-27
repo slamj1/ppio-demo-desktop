@@ -51,7 +51,6 @@ export const getEstimateCost = params => {
  * @param {number} params.localPath - the file's path
  * @param {number} params.storageTime - time to storage, in seconds
  * @param {number} params.isSecure - whether to encrypt the file, enforced to be true in demo
- * @param {number} params.cpoolId - the coin pool's id to use
  * @returns {Promise<{taskId: string} | never>}
  */
 export const startUpload = async params => {
@@ -66,7 +65,6 @@ export const startUpload = async params => {
       expires: timeToExpireDate(params.storageTime),
       chiprice: params.chiPrice,
       encrypt: params.isSecure,
-      // 'cpool-id': params.cpoolId, TODO: cpool
     })
     .then(taskId => {
       console.log('Upload task created. Task id: ', taskId)

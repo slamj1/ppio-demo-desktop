@@ -80,9 +80,9 @@ export default {
   computed: {
     steps() {
       if (this.$store.getters.appMode === APP_MODE_COINPOOL) {
-        return ['Share Code']
+        return ['Share Code', 'File Info']
       } else {
-        return ['Share Code', 'Storage Settings', 'Payment']
+        return ['Share Code', 'File Info', 'Payment']
       }
     },
     recChiPrice() {

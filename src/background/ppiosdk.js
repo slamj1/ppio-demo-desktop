@@ -6,7 +6,7 @@ const possIns = poss.create({
   indexerUrl: INDEXER_URL,
   bootstrapip: BOOTSTRAP_HOST,
 })
-
+console.log('poss instance created')
 console.log('poss path: ', possIns.possBin)
 if (process.env.NODE_ENV === 'production') {
   possIns.setPossBinPath(
@@ -17,5 +17,6 @@ if (process.env.NODE_ENV === 'production') {
   possIns.setPossBinPath(path.join(process.cwd(), './node_modules/poss-sdk/bin/poss'))
   console.log('dev poss path: ', possIns.possBin)
 }
+console.log(possIns.baseParams)
 
 export default possIns

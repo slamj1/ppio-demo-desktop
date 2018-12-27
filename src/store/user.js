@@ -1,7 +1,6 @@
 import moment from 'moment'
 import { chiToPPCoin } from '../utils/units'
 import {
-  login,
   getAccountDetails,
   getBillingRecords,
   getWalletAddress,
@@ -9,7 +8,7 @@ import {
   flushIndexdata,
 } from '../services/user'
 import { stopDaemon } from '../services/daemon'
-import { getCpool } from '../services/cpool'
+import { getCpoolSubscriptionInfo } from '../services/cpool'
 import { checkDefaultBucket } from '../services/bucket'
 import {
   MUT_SET_USER_DATA,
@@ -20,8 +19,6 @@ import {
   MUT_WRITE_USER_INDEX_DATA,
   ACT_GET_USER_INDEX_DATA,
   ACT_FLUSH_USER_INDEX_DATA,
-  ACT_LOGIN,
-  MUT_SET_USER_ADDRESS,
   ACT_LOGOUT,
   MUT_SET_BILLING_RECORDS,
   ACT_GET_BILLING_RECORDS,
@@ -33,7 +30,6 @@ import { APP_BUCKET_NAME } from '../constants/constants'
 
 const initialState = () => ({
   uid: '',
-  nickname: '',
   balance: 0,
   funds: 0,
   billingRecords: [],
@@ -41,7 +37,8 @@ const initialState = () => ({
   avatar: require('@/assets/img/avatar.png'),
   address: '',
   cpoolData: {
-    cpoolId: '',
+    cpoolHost: '',
+    cpoolAddress: '',
     cpoolName: '',
     planName: '',
     usage: 0,
@@ -68,13 +65,18 @@ const store = {
       console.log('setting user cpool ')
       console.log(cpoolData)
       if (cpoolData) {
-        state.cpoolData.cpoolId = cpoolData.cpoolId
-        state.cpoolData.usage = cpoolData.usage
-        state.cpoolData.capacity = cpoolData.capacity
-        state.cpoolData.expires = cpoolData.expires
+        state.cpoolData = Object.assign(
+          state.cpoolData,
+          {
+            cpoolName: 'PPool',
+            planName: 'Free',
+          },
+          cpoolData,
+        )
       } else {
         state.cpoolData = {
-          cpoolId: '',
+          cpoolHost: '',
+          cpoolAddress: '',
           cpoolName: '',
           planName: '',
           usage: 0,
@@ -117,20 +119,6 @@ const store = {
     },
   },
   actions: {
-    [ACT_LOGIN](context, payload) {
-      return login(payload).then(
-        account => {
-          const address = account.getAddressString()
-          context.commit(MUT_SET_USER_ADDRESS, address)
-          return account
-        },
-        err => {
-          console.log('login error')
-          console.log(err)
-          return Promise.reject(err)
-        },
-      )
-    },
     [ACT_GET_USER_DATA](context) {
       console.log('init user data')
       // wrap sdk calls with catch-resolve to prevent errors from interrupting Promise.all()
@@ -139,15 +127,11 @@ const store = {
           context.commit(MUT_SET_USER_DATA, {
             uid: address,
           })
-          return context.dispatch(ACT_GET_USER_CPOOL)
-        })
-        .then(res => {
-          if (!res) {
-            return context.dispatch(ACT_GET_ACCOUNT_DETAILS)
+          if (context.state.cpoolData.cpoolHost.length > 0) {
+            return context.dispatch(ACT_GET_USER_CPOOL)
           }
-          return true
+          return context.dispatch(ACT_GET_ACCOUNT_DETAILS)
         })
-        .then(() => context.dispatch(ACT_GET_USER_INDEX_DATA))
         .then(() => checkDefaultBucket())
         .then(() => context.commit(MUT_SET_USER_DATA, { bucket: APP_BUCKET_NAME }))
         .catch(err => {
@@ -173,21 +157,31 @@ const store = {
       })
     },
     /**
-     * Get user's coin pool data
+     * Get user's coin-pool subscription info
      * @param context
      * @returns {Promise<T | never>}
      */
     [ACT_GET_USER_CPOOL](context) {
-      return getCpool(context.state.address).then(res => {
-        if (res) {
-          context.commit(MUT_SET_USER_CPOOL, res)
+      return getCpoolSubscriptionInfo(
+        context.state.cpoolData.cpoolHost,
+        context.state.address,
+      ).then(res => {
+        if (res.err_code === 0) {
+          console.log('cpool data got')
+          console.log(res)
+          context.commit(MUT_SET_USER_CPOOL, {
+            usage: res.data.used_space,
+            capacity: res.data.total_space,
+            expires: res.data.expired_time,
+          })
           return res
         }
         context.commit(MUT_SET_USER_CPOOL, null)
-        return null
+        throw new Error('Cpool data getter failed!')
       })
     },
     /**
+     * @deprecated: indexdata has no use for now
      * Get user metadata
      * @param context
      * @returns {Promise<T | never>}
@@ -211,6 +205,7 @@ const store = {
         })
     },
     /**
+     * @deprecated: indexdata has no use for now
      * Set user metadata
      * @todo: api not provided
      * @param context

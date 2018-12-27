@@ -9,7 +9,7 @@
             <span class="profile-username">{{userData.address}}</span>
             <template v-if="appMode === APP_MODE_COINPOOL">
               <el-progress class="usage-progress" :percentage="usagePercent" :show-text="false"></el-progress>
-              <span class="usage-number with-progress">{{usedStorageStr}}/{{userData.capacity}}</span>
+              <span class="usage-number with-progress">{{usedStorageStr}} / {{capacityStr}}</span>
             </template>
             <template v-else>
               <span class="usage-number">Used: {{usedStorageStr}}</span>
@@ -119,11 +119,20 @@ export default {
       usedStorage: USAGE_STORAGE_GETTER, // in file size string
     }),
     usedStorageStr: function() {
+      if (this.appMode === APP_MODE_COINPOOL) {
+        return filesize(this.userData.cpoolData.usage)
+      }
       return filesize(this.usedStorage)
     },
+    capacityStr: function() {
+      if (this.appMode === APP_MODE_COINPOOL) {
+        return filesize(this.userData.cpoolData.capacity)
+      }
+      return 0
+    },
     usagePercent: function() {
-      if (this.$store.getters.appMode === APP_MODE_COINPOOL) {
-        return (this.usedStorage / this.$store.state.user.cpoolData.capacity) * 100
+      if (this.appMode === APP_MODE_COINPOOL) {
+        return (this.userData.cpoolData.usage / this.userData.cpoolData.capacity) * 100
       }
       return 0
     },
@@ -325,13 +334,13 @@ $nav-font-color: #c0c4cc;
     }
 
     .profile-userinfo {
-      height: 46px;
       display: flex;
       flex-direction: column;
       justify-content: space-around;
       align-items: flex-start;
 
       .usage-progress {
+        margin: 5px 0;
         align-self: stretch;
       }
 

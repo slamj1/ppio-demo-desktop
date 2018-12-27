@@ -1,24 +1,30 @@
 <template>
   <div class="start">
-    <choose-coin-pool v-if="showChooseCpool" @confirm="f_bindCpool" @close="f_cancelCpool"></choose-coin-pool>
+    <choose-coin-pool v-if="showChooseCpool" :account="curAccount" @bindCpool="f_bindCpool" @close="f_cancelCpool"></choose-coin-pool>
     <div class="left-content">
       <img src="@/assets/img/back.png" class="logo-img" alt="logo">
       <p class="name">PPDISK-demo</p>
     </div>
     <div class="right-content">
-      <router-view @startApp="f_startApp" @setAccount="f_setAccount" :starting-app="startingApp" :cur-account="curAccount"></router-view>
+      <router-view @startApp="f_startApp" @setAccount="f_setAccount" @setDatadir="f_setDatadir" :starting-app="startingApp" :cur-account="curAccount"></router-view>
     </div>
   </div>
 </template>
 <script>
 import ChooseCoinPool from './ChooseCoinPool'
+import { iterateCpools, saveCpoolConfig } from '../../services/cpool'
+import { init as initApp } from '../../services/daemon'
 
 export default {
   name: 'Start',
   data: () => ({
     name: 'test',
     curAccount: null,
-    cpoolBinded: false, // TODO: use api instead
+    datadir: '',
+    bindedCpool: {
+      host: '',
+      address: '',
+    },
     showChooseCpool: false,
     startingApp: false,
   }),
@@ -26,33 +32,90 @@ export default {
     ChooseCoinPool,
   },
   methods: {
-    f_startApp() {
-      this.startingApp = true
-      console.log(this.cpoolBinded)
-      console.log(this.showChooseCpool)
-      if (this.cpoolBinded) {
-        console.log('starting app')
-        console.log(this.curAccount)
-        this.startingApp = true
-        this.$emit('startApp', this.curAccount)
-      } else {
-        this.showChooseCpool = true
-        this.startingApp = false
+    f_checkCpool() {
+      console.log(this.bindedCpool.host)
+      if (this.bindedCpool.host.length > 0) {
+        return Promise.resolve()
       }
+      return iterateCpools(this.curAccount.getAddressString()).then(res => {
+        for (let i = 0; i < res.length; i++) {
+          if (res[i].binded === true) {
+            this.bindedCpool.host = res[i].host
+            this.bindedCpool.address = res[i].address
+            break
+          }
+        }
+        return res
+      })
+    },
+    f_startApp(isInit) {
+      this.startingApp = true
+      console.log(this.bindedCpool)
+      console.log(this.showChooseCpool)
+      this.f_checkCpool()
+        .then(() => {
+          if (this.bindedCpool.host.length > 0) {
+            console.log('starting app')
+            console.log(this.curAccount)
+            const initConfig = {
+              datadir: this.datadir,
+              privateKey: this.curAccount.getPrivateKeyString(),
+            }
+            initConfig.cpoolHost = this.bindedCpool.host
+            initConfig.cpoolAddress = this.bindedCpool.address
+            if (isInit) {
+              return initApp(initConfig)
+                .then(() => {
+                  console.log('daemon inited')
+                  return this.$emit('startApp', initConfig)
+                })
+                .catch(err => {
+                  this.startingApp = false
+                  console.error(err)
+                })
+            }
+            return saveCpoolConfig({
+              datadir: initConfig.datadir,
+              url: initConfig.cpoolHost,
+              address: initConfig.cpoolAddress,
+            })
+              .then(() => {
+                console.log('cpool config saved')
+                return this.$emit('startApp', initConfig)
+              })
+              .catch(err => {
+                this.startingApp = false
+                console.error(err)
+              })
+          }
+          this.showChooseCpool = true
+          return false
+        })
+        .catch(err => {
+          console.error(err)
+          this.showChooseCpool = true
+        })
     },
     f_setAccount(account) {
       this.curAccount = account
-      console.log(this.curAccount)
+    },
+    f_setDatadir(datadir) {
+      this.datadir = datadir
     },
     f_cancelCpool() {
       this.showChooseCpool = false
-      this.cpoolBinded = false
       this.startingApp = false
+      this.bindedCpool = {
+        host: '',
+        address: '',
+      }
     },
-    f_bindCpool() {
-      this.cpoolBinded = true
+    f_bindCpool(cpoolData) {
+      console.log(cpoolData)
+      this.bindedCpool.host = cpoolData.host
+      this.bindedCpool.address = cpoolData.address
       this.showChooseCpool = false
-      this.f_startApp()
+      this.f_startApp(true)
     },
   },
 }

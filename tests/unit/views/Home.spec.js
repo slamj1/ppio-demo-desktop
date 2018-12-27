@@ -84,7 +84,6 @@ describe('Home.vue', () => {
           state: {
             uid: '',
             isLogin: true,
-            nickname: '',
             balance: 30,
             funds: 20,
             billingRecords: [],

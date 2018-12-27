@@ -63,6 +63,7 @@ const store = {
         })
     },
     /**
+     * @deprecated Renaming a file has been deprecated for IndexData cannot be synced automatically
      * Refresh file names from metadata. Triggered after getting index data.
      * @param context
      */

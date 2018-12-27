@@ -21,8 +21,8 @@
       </template>
       <template v-else>
         <p class="title">Step2.Repeat your seed phrase and password</p>
-        <el-input type="textarea" :autofocus="true" :rows="4" resize="none" placeholder="enter your seed phrase" v-model="repeatMnemonic" class="seed-phrase-input"> </el-input>
         <el-input class="password-input" type="password" placeholder="Enter your password" required v-model="repeatPassword" ></el-input>
+        <el-input type="textarea" :autofocus="true" :rows="4" resize="none" placeholder="enter your seed phrase" v-model="repeatMnemonic" class="seed-phrase-input"> </el-input>
         <el-alert v-show="errorMsg !== ''" :title="errorMsg" type="error" :closable="false"></el-alert>
         <div class="button-wrap" style="text-align: left;">
           <el-button type="primary" class="back-button" plain @click="f_goStep(1)">Back</el-button>
@@ -37,8 +37,6 @@
 import fs from 'fs'
 import bip39 from 'bip39'
 import { clipboard, remote } from 'electron'
-import { ACT_LOGIN } from '../../constants/store'
-import { USER_STATE_PERSIST_KEY } from '../../constants/constants'
 import { login, generateNewAccount } from '../../services/user'
 
 const dialog = remote.dialog
@@ -55,7 +53,6 @@ export default {
     errorMsg: '',
     confirmLoading: false,
   }),
-  props: ['curAccount'],
   methods: {
     f_copy() {
       clipboard.writeText(this.mnemonic)
@@ -101,35 +98,23 @@ export default {
         this.errorMsg = 'Password is empty!'
         return
       }
+      this.confirmLoading = true
       login({ seedphrase: this.repeatMnemonic, password: this.repeatPassword })
         .then(account => {
-          console.log(this.account.getPrivateKeyString())
-          console.log(account.getPrivateKeyString())
-          console.log(this.account.getAddressString())
-          console.log(account.getAddressString())
-          if (this.account.getAddressString() === account.getAddressString()) {
-            this.confirmLoading = true
-            return this.$store
-              .dispatch(ACT_LOGIN, { seedphrase: this.mnemonic, password: this.password })
-              .then(account => {
-                const address = account.getAddressString()
-                console.log(`${USER_STATE_PERSIST_KEY}_${address}`)
-                this.$emit('setAccount', account)
-                this.confirmLoading = false
-                return this.$router.push({ name: 'account/choose-dir' })
-              })
-              .catch(err => {
-                this.errorMsg = err.toString()
-                this.confirmLoading = false
-                console.error(err)
-              })
+          const address = account.getAddressString()
+          if (this.account.getAddressString() === address) {
+            this.$emit('setAccount', account)
+            this.confirmLoading = false
+            return this.$router.push({ name: 'account/choose-dir' })
           } else {
             this.errorMsg = 'Seed phrase or password is wrong'
+            this.confirmLoading = false
             return false
           }
         })
         .catch(err => {
           console.error(err)
+          this.confirmLoading = false
           this.errorMsg = err.toString()
         })
     },
