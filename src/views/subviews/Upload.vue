@@ -1,14 +1,29 @@
 <template>
   <div class="upload-page">
+    <popup v-if="isCpoolMode" class="popup" @close="f_close">
+      <span slot="header">Upload File</span>
+      <div class="content" slot="content">
+        <div class="line-wrap file-container">
+          <img src="@/assets/img/file.png" class="file-icon" :alt="filename">
+          <el-input v-model="filename" class="file-name-input"></el-input>
+        </div>
+      </div>
+      <template slot="footer">
+        <el-button class="button" :loading="preparingUpload" @click="f_confirm" size="mini" type="primary">Upload</el-button>
+      </template>
+    </popup>
     <step-popup
+        v-else
         :steps="steps"
         :cur-step="curStep"
         @close="f_close"
         class="popup-wrap">
       <span slot="header">Upload File</span>
       <div class="step-content step-0" slot="step-0">
-        <img src="@/assets/img/file.png" class="file-icon" :alt="filename">
-        <el-input v-model="filename" class="file-name-input"></el-input>
+        <div class="file-container">
+          <img src="@/assets/img/file.png" class="file-icon" :alt="filename">
+          <el-input v-model="filename" class="file-name-input"></el-input>
+        </div>
       </div>
 
       <div class="step-content step-1" slot="step-1">
@@ -65,7 +80,9 @@
   </div>
 </template>
 <script>
+import fs from 'fs'
 import filesize from 'filesize'
+import Popup from '../../components/Popup'
 import StepPopup from '../../components/StepPopup'
 import PaymentTable from '../../components/PaymentTable'
 import { UL_TASK } from '../../constants/store'
@@ -81,6 +98,7 @@ export default {
     customStorageDays: '1',
     chiPrice: 100,
     curStep: 0,
+    steps: ['Upload', 'Storage Settings', 'Payment'],
     radio: 1,
     copyCount: 5,
     totalChi: 0,
@@ -88,18 +106,15 @@ export default {
     uploadChi: 0,
     preparingUpload: false,
   }),
-  props: ['file'], // file is a HTML File object
+  props: ['filePath'], // file is a HTML File object
   components: {
+    Popup,
     StepPopup,
     PaymentTable,
   },
   computed: {
-    steps() {
-      if (this.$store.getters.appMode === APP_MODE_COINPOOL) {
-        return ['Upload']
-      } else {
-        return ['Upload', 'Storage Settings', 'Payment']
-      }
+    isCpoolMode() {
+      return this.$isCpoolPackage
     },
     recChiPrice() {
       return this.$store.state.recChiPrice.storage
@@ -114,7 +129,7 @@ export default {
       return chiToPPCoin(this.uploadChi * this.chiPrice).toFixed()
     },
     fileSizeStr() {
-      return filesize(this.file.size)
+      return this.file ? filesize(this.file.size) : ''
     },
     paymentData: function() {
       return {
@@ -162,45 +177,54 @@ export default {
         return `${this.storageDays} Days`
       }
     },
-    taskOptions() {
+    
+  },
+  watch: {
+    copyCount: function() {
+      this.f_estimateCost()
+    },
+    storageDays: function() {
+      this.f_estimateCost()
+    },
+  },
+  mounted() {
+    this.preparingUpload = false
+    if (this.filePath) {
+      const fileStats = fs.statSync(this.filePath)
+      console.log(fileStats)
+      this.file = {
+        size: fileStats.size,
+        filename: this.filePath.split('/').slice(-1)[0],
+        path: this.filePath,
+      }
+      this.filename = this.filePath.split('/').slice(-1)[0]
+      console.log(this.file)
+      this.f_estimateCost()
+    }
+    // TODO: get ongoing contract from sdk, concat with locally-persisted task queue
+  },
+  methods: {
+    f_getTaskOptions() {
       return {
-        localPath: this.file ? this.file.path : '',
+        localPath: this.filePath || '',
         storageTime: this.storageDays ? this.storageDays * 24 * 3600 : 0,
         copyCount: parseInt(this.copyCount),
         chiPrice: parseInt(this.chiPrice),
         isSecure: true,
       }
     },
-  },
-  watch: {
-    'taskOptions.copyCount': function() {
-      this.f_estimateCost()
-    },
-    'taskOptions.storageTime': function() {
-      this.f_estimateCost()
-    },
-  },
-  mounted() {
-    this.preparingUpload = false
-    if (this.file) {
-      this.filename = this.file.name
-    }
-    this.f_estimateCost()
-    // TODO: get ongoing contract from sdk, concat with locally-persisted task queue
-  },
-  methods: {
     f_estimateCost() {
       if (
         !this.file ||
-        isNaN(this.taskOptions.copyCount) ||
-        this.taskOptions.storageTime === 0
+        isNaN(parseInt(this.copyCount)) ||
+        this.storageDays === null
       ) {
         return
       }
       return getEstimateCost({
         size: this.file.size,
-        copyCount: this.taskOptions.copyCount,
-        storageTime: this.taskOptions.storageTime,
+        copyCount: parseInt(this.copyCount),
+        storageTime: this.storageDays * 24 * 3600,
       }).then(res => {
         console.log(res)
         this.totalChi = res.totalCost
@@ -224,7 +248,7 @@ export default {
           this.curStep += 1
         }
       } else if (this.curStep === 1) {
-        const options = this.taskOptions
+        const options = this.f_getTaskOptions()
         if (options.storageTime > 0 && options.chiPrice > 0 && options.copyCount > 0) {
           this.curStep += 1
         }
@@ -242,7 +266,7 @@ export default {
       }
       this.preparingUpload = true
       console.log('upload confirm')
-      const options = this.taskOptions
+      const options = this.f_getTaskOptions()
       console.log(options)
 
       // TODO: What do we need to store in metadata?
@@ -277,69 +301,69 @@ export default {
 .step-content {
   text-align: center;
   padding: 20px 20px 0;
-  .inner-wrap {
-    display: inline-block;
-    text-align: left;
-  }
-  &.step-0 {
-    .file-icon {
-      height: 58px;
-      width: 48px;
-      margin-bottom: 10px;
-    }
-    .file-name-input {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      margin-bottom: 10px;
-      height: 40px;
-      line-height: 40px;
-      width: 300px;
+}
 
-      .el-input__inner {
-        text-align: center;
-      }
-    }
-    .select {
-      width: 120px;
-      margin-bottom: 10px;
-    }
-    .alert-msg {
-      width: 280px;
-      margin: auto;
+.inner-wrap {
+  display: inline-block;
+  text-align: left;
+}
+.file-container {
+  margin: 20px auto;
+  text-align: center;
+
+  .file-icon {
+    height: 58px;
+    width: 48px;
+    margin-bottom: 10px;
+  }
+  .file-name-input {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    height: 40px;
+    line-height: 40px;
+    width: 300px;
+
+    .el-input__inner {
       text-align: center;
     }
   }
-  &.step-1 {
-    .line-wrap {
-      position: relative;
-      padding: 6px 0 6px 130px;
-      .line-label {
-        position: absolute;
-        top: 6px;
-        left: 0;
+  .alert-msg {
+    width: 280px;
+    margin: auto;
+    text-align: center;
+  }
+}
+.step-1 {
+  .line-wrap {
+    position: relative;
+    padding: 6px 0 6px 130px;
+    .line-label {
+      position: absolute;
+      top: 6px;
+      left: 0;
+    }
+    .radio-group {
+      label {
+        margin-bottom: 10px;
       }
-      .radio-group {
-        label {
-          margin-bottom: 10px;
-        }
-      }
-      .storage-day-input,
-      .price-input,
-      .copy-input {
-        width: 100px;
-        margin-right: 8px;
-      }
-      .recommend-chiprice {
-        margin-left: 10px;
-        font-size: 12px;
+    }
+    .storage-day-input,
+    .price-input,
+    .copy-input {
+      width: 100px;
+      margin-right: 8px;
+    }
+    .recommend-chiprice {
+      margin-left: 10px;
+      font-size: 12px;
 
-        &.too-low {
-          color: red;
-        }
-        &.safe {
-          color: green;
-        }
+      &.too-low {
+        color: red;
+      }
+      &.safe {
+        color: green;
       }
     }
   }

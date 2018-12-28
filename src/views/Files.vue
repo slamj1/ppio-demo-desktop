@@ -16,7 +16,6 @@
           </el-dropdown>
         </template>
         <template v-else>
-          <input type="file" ref="fileUploadInput" class="file-upload-input" name="file-upload" @change="f_upload">
           <el-button size="small" type="primary" :loading="preparingUl" @click="f_chooseUploadFile"><i class="app-icon icon-upload"></i> Upload</el-button>
           <el-button size="small" type="primary" plain :loading="preparingGet" @click="f_get"><i class="app-icon icon-get"></i> Get</el-button>
         </template>
@@ -76,7 +75,7 @@ export default {
       fileList: state => state.file.fileList,
     }),
     isCpoolMode() {
-      return this.$store.getters.appMode === APP_MODE_COINPOOL
+      return this.$isCpoolPackage
     },
   },
   components: {
@@ -267,14 +266,20 @@ export default {
       )
     },
     f_chooseUploadFile() {
-      this.$refs.fileUploadInput.click()
-    },
-    f_upload() {
-      const file = this.$refs.fileUploadInput.files[0]
-      console.log(file)
-      if (file) {
-        this.$vueBus.$emit(this.$events.OPEN_UPLOAD_FILE, file)
-      }
+      remote.dialog.showOpenDialog(
+        remote.getCurrentWindow(),
+        {
+          message: 'Select the file to upload',
+          properties: ['openFile'],
+        },
+        filePaths => {
+          if (!filePaths) {
+            return
+          }
+          console.log(filePaths[0])
+          this.$vueBus.$emit(this.$events.OPEN_UPLOAD_FILE, filePaths[0])
+        },
+      )
     },
     f_download() {
       if (!this.operatingFile) {

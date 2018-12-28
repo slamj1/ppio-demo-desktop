@@ -48,7 +48,13 @@ export const getCpoolSubscriptionInfo = (cpoolUrl, address) => {
   }).then(res => res.data)
 }
 
-export const saveCpoolConfig = ({ datadir, url, address }) => {
+export const saveCpoolConfig = ({ datadir, host, address }) => {
   console.log('saving cpool data to config file')
-  return poss.setCpool({ datadir, url, address })
+  console.log(host, address)
+  return poss.setCpool({ datadir, host, address })
+}
+
+export const clearCpoolConfig = datadir => {
+  console.log('clearing cpool data for config file')
+  return poss.clearCpool(datadir)
 }

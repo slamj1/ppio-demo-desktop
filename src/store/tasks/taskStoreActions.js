@@ -50,7 +50,7 @@ export default taskType => {
       })
       .catch(err => {
         console.error('create task error')
-        console.error(err.error)
+        console.error(err)
         if (!err.taskId) {
           return Promise.reject(err)
         }
@@ -115,6 +115,12 @@ export default taskType => {
       .catch(err => {
         console.log('cancelling task failed ', taskToCancel.id)
         console.error(err)
+        if (
+          err.message === 'task not found' ||
+          err.message === 'this account has not put this chunk yet'
+        ) {
+          return context.commit(STORE_KEYS.MUT_CANCEL_TASK, idx)
+        }
         return Promise.reject(err)
       })
   }

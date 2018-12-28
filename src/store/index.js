@@ -50,7 +50,7 @@ const logger = createLogger({
 })
 
 const initialState = () => ({
-  curPage: '',
+  appMode: process.env.IS_CPOOL === 'true' ? APP_MODE_COINPOOL : APP_MODE_NON_COINPOOL,
   appVersion: '1.0.0',
   dataDir: '', // directory to store objects
   recChiPrice: { storage: 100, download: 100 },
@@ -65,12 +65,6 @@ export default new Vuex.Store({
     file: fileListStore,
     uploadTask: new TaskStore('upload'),
     downloadTask: new TaskStore('download'),
-  },
-  getters: {
-    appMode: state =>
-      state.user.cpoolData.cpoolHost.length > 0
-        ? APP_MODE_COINPOOL
-        : APP_MODE_NON_COINPOOL,
   },
   mutations: {
     [MUT_CLEAR_DATA](state) {
@@ -93,8 +87,9 @@ export default new Vuex.Store({
   },
   actions: {
     [ACT_CLEAR_DATA](context) {
+      console.log('clearing data action for user ', context.state.user.uid)
       storage
-        .setItem(`${USER_STATE_PERSIST_KEY}_${context.state.address}`, context.state)
+        .setItem(`${USER_STATE_PERSIST_KEY}_${context.state.user.uid}`, context.state)
         .then(() => {
           context.commit(MUT_CLEAR_DATA)
           context.commit(MUT_CLEAR_USER_DATA)

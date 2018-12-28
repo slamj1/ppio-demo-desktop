@@ -79,7 +79,7 @@ export default {
   },
   computed: {
     steps() {
-      if (this.$store.getters.appMode === APP_MODE_COINPOOL) {
+      if (this.$isCpoolPackage) {
         return ['Share Code', 'File Info']
       } else {
         return ['Share Code', 'File Info', 'Payment']

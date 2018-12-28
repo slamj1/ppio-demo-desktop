@@ -10,11 +10,12 @@
     <p class="filename">
       {{file.filename}}
     </p>
-    <p class="days-left">{{daysLeftStr}}</p>
+    <p v-if="!isCpoolMode" class="days-left">{{daysLeftStr}}</p>
   </div>
 </template>
 <script>
 import * as FILE_STATUS from '../constants/file'
+import { APP_MODE_COINPOOL } from '../constants/constants'
 
 export default {
   name: 'fileitem',
@@ -25,6 +26,9 @@ export default {
   },
   props: ['file', 'selected'],
   computed: {
+    isCpoolMode: function() {
+      return this.$isCpoolPackage
+    },
     daysLeftStr: function() {
       if (this.file.status === this.FILE_STATUS_END) {
         return 'Expired'

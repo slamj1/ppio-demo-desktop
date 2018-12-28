@@ -13,6 +13,19 @@ module.exports = {
       },
     },
   },
+  chainWebpack: config => {
+    config.plugin('define').tap(args => {
+      return [
+        {
+          'process.env': {
+            NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+            BASE_URL: args[0]['process.env'].BASE_URL,
+            IS_CPOOL: JSON.stringify(process.env.IS_CPOOL),
+          },
+        },
+      ]
+    })
+  },
   configureWebpack: {
     resolve: {
       symlinks: false,

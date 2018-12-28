@@ -3,11 +3,13 @@
     <popup v-if="isCpoolMode" class="popup" @close="f_close">
       <span slot="header">Download File</span>
       <div class="content" slot="content">
-        <img src="@/assets/img/file.png" class="file-icon" :alt="file && file.filename">
-        <p class="file-name">{{file && file.filename}}</p>
+        <div class="line-wrap file-container">
+          <img src="@/assets/img/file.png" class="file-icon" :alt="file && file.filename">
+          <p class="file-name">{{file && file.filename}}</p>
+        </div>
       </div>
       <template slot="footer">
-        <el-button class="button" @click="f_confirm" size="mini" type="primary">Download</el-button>
+        <el-button class="button" :loading="preparingDownload" @click="f_confirm" size="mini" type="primary">Download</el-button>
       </template>
     </popup>
     <step-popup
@@ -55,6 +57,7 @@
 <script>
 import filesize from 'filesize'
 import { remote } from 'electron'
+import Popup from '../../components/Popup'
 import StepPopup from '../../components/StepPopup'
 import PaymentTable from '../../components/PaymentTable'
 import { DL_TASK } from '../../constants/store'
@@ -76,12 +79,13 @@ export default {
   }),
   props: ['file'],
   components: {
+    Popup,
     StepPopup,
     PaymentTable,
   },
   computed: {
     isCpoolMode() {
-      return this.$store.getters.appMode === APP_MODE_COINPOOL
+      return this.$isCpoolPackage
     },
     recChiPrice() {
       return this.$store.state.recChiPrice.download
@@ -197,57 +201,58 @@ export default {
 .step-content {
   text-align: center;
   padding: 20px 20px 0;
-  .inner-wrap {
-    display: inline-block;
-    text-align: left;
+}
+
+.inner-wrap {
+  display: inline-block;
+  text-align: left;
+}
+
+.line-wrap {
+  position: relative;
+  padding: 6px 0 6px 130px;
+
+  &.file-container {
+    margin-top: 10px;
+    padding-left: 0;
+    text-align: center;
   }
-  &.step-0 {
-    .line-wrap {
-      position: relative;
-      padding: 6px 0 6px 130px;
 
-      &.file-container {
-        padding-left: 0;
-        text-align: center;
-      }
+  .file-icon {
+    width: 60px;
+  }
+  .file-name {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
 
-      .file-icon {
-        width: 60px;
-      }
-      .file-name {
-        margin-top: 10px;
-        margin-bottom: 20px;
-        font-size: 14px;
-      }
+  .line-label {
+    position: absolute;
+    top: 6px;
+    left: 0;
+  }
+  .radio-group {
+    label {
+      margin-bottom: 10px;
+    }
+  }
+  .storage-day-input,
+  .price-input,
+  .copy-input {
+    width: 100px;
+    margin-right: 8px;
+  }
 
-      .line-label {
-        position: absolute;
-        top: 6px;
-        left: 0;
-      }
-      .radio-group {
-        label {
-          margin-bottom: 10px;
-        }
-      }
-      .storage-day-input,
-      .price-input,
-      .copy-input {
-        width: 100px;
-        margin-right: 8px;
-      }
+  .recommend-chiprice {
+    margin-left: 10px;
+    font-size: 12px;
 
-      .recommend-chiprice {
-        margin-left: 10px;
-        font-size: 12px;
-
-        &.too-low {
-          color: red;
-        }
-        &.safe {
-          color: green;
-        }
-      }
+    &.too-low {
+      color: red;
+    }
+    &.safe {
+      color: green;
     }
   }
 }

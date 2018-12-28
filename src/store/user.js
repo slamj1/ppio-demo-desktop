@@ -28,29 +28,32 @@ import {
 } from '../constants/store'
 import { APP_BUCKET_NAME } from '../constants/constants'
 
-const initialState = () => ({
-  uid: '',
-  balance: 0,
-  funds: 0,
-  billingRecords: [],
-  bucket: '',
-  avatar: require('@/assets/img/avatar.png'),
-  address: '',
-  cpoolData: {
-    cpoolHost: '',
-    cpoolAddress: '',
-    cpoolName: '',
-    planName: '',
-    usage: 0,
-    capacity: 0,
-    expires: 0, // timestamp
-  },
-  metadata: {
-    pubkey: '',
-    buckets: [],
-    fileListData: {},
-  },
-})
+const initialState = () => {
+  const initState = {
+    uid: '',
+    balance: 0,
+    funds: 0,
+    billingRecords: [],
+    bucket: '',
+    avatar: require('@/assets/img/avatar.png'),
+    address: '',
+    metadata: {
+      pubkey: '',
+      buckets: [],
+      fileListData: {},
+    },
+    cpoolData: {
+      cpoolHost: '',
+      cpoolAddress: '',
+      cpoolName: '',
+      planName: '',
+      usage: 0,
+      capacity: 0,
+      expires: 0, // timestamp
+    },
+  }
+  return initState
+}
 
 const store = {
   state: initialState,
@@ -127,7 +130,7 @@ const store = {
           context.commit(MUT_SET_USER_DATA, {
             uid: address,
           })
-          if (context.state.cpoolData.cpoolHost.length > 0) {
+          if (process.env.IS_CPOOL === 'true') {
             return context.dispatch(ACT_GET_USER_CPOOL)
           }
           return context.dispatch(ACT_GET_ACCOUNT_DETAILS)
@@ -176,8 +179,8 @@ const store = {
           })
           return res
         }
-        context.commit(MUT_SET_USER_CPOOL, null)
-        throw new Error('Cpool data getter failed!')
+        console.error('Cpool data getter failed!')
+        throw res
       })
     },
     /**

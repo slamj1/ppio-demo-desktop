@@ -14,5 +14,7 @@ export default {
     // vue event bus instance and event names
     Vue.prototype.$vueBus = new Vue()
     Vue.prototype.$events = EVENTS
+
+    Vue.prototype.$isCpoolPackage = process.env.IS_CPOOL === 'true'
   },
 }

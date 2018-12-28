@@ -38,7 +38,7 @@ import { APP_MODE_NON_COINPOOL, APP_MODE_COINPOOL } from '../constants/constants
 export default {
   computed: {
     isCpoolMode: function() {
-      return this.$store.getters.appMode === APP_MODE_COINPOOL
+      return this.$isCpoolPackage
     },
     userData: function() {
       return this.$store.state.user
@@ -51,7 +51,7 @@ export default {
       return 'unlimited'
     },
     profileData: function() {
-      if (this.$store.getters.appMode === APP_MODE_NON_COINPOOL) {
+      if (!this.isCpoolMode) {
         return [
           {
             key: 'balance',
@@ -79,7 +79,7 @@ export default {
             val: '',
           },
         ]
-      } else if (this.$store.getters.appMode === APP_MODE_COINPOOL) {
+      } else {
         return [
           {
             key: 'cpool',

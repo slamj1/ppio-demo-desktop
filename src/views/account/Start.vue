@@ -12,7 +12,7 @@
 </template>
 <script>
 import ChooseCoinPool from './ChooseCoinPool'
-import { iterateCpools, saveCpoolConfig } from '../../services/cpool'
+import { iterateCpools } from '../../services/cpool'
 import { init as initApp } from '../../services/daemon'
 
 export default {
@@ -33,6 +33,9 @@ export default {
   },
   methods: {
     f_checkCpool() {
+      if (!this.$isCpoolPackage) {
+        return Promise.resolve()
+      }
       console.log(this.bindedCpool.host)
       if (this.bindedCpool.host.length > 0) {
         return Promise.resolve()
@@ -54,7 +57,7 @@ export default {
       console.log(this.showChooseCpool)
       this.f_checkCpool()
         .then(() => {
-          if (this.bindedCpool.host.length > 0) {
+          if (!this.$isCpoolPackage || this.bindedCpool.host.length > 0) {
             console.log('starting app')
             console.log(this.curAccount)
             const initConfig = {
@@ -74,26 +77,15 @@ export default {
                   console.error(err)
                 })
             }
-            return saveCpoolConfig({
-              datadir: initConfig.datadir,
-              url: initConfig.cpoolHost,
-              address: initConfig.cpoolAddress,
-            })
-              .then(() => {
-                console.log('cpool config saved')
-                return this.$emit('startApp', initConfig)
-              })
-              .catch(err => {
-                this.startingApp = false
-                console.error(err)
-              })
+            return this.$emit('startApp', initConfig)
           }
           this.showChooseCpool = true
           return false
         })
         .catch(err => {
           console.error(err)
-          this.showChooseCpool = true
+          this.startingApp = false
+          // this.showChooseCpool = true
         })
     },
     f_setAccount(account) {

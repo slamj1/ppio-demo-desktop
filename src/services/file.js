@@ -35,7 +35,7 @@ export const getObjectList = bucket =>
     console.log('get file list')
     console.log(res)
     if (res) {
-      const objectList = res.map(object => ({
+      const objectList = res.filter(object => object.isdir === false).map(object => ({
         key: object.key,
         bucket: object.bucket || APP_BUCKET_NAME,
         status: getFileStatus(object.status),

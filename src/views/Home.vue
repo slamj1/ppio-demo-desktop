@@ -7,7 +7,7 @@
           <img class="profile-avatar" :src="userData.avatar" />
           <div class="profile-userinfo">
             <span class="profile-username">{{userData.address}}</span>
-            <template v-if="appMode === APP_MODE_COINPOOL">
+            <template v-if="$isCpoolPackage">
               <el-progress class="usage-progress" :percentage="usagePercent" :show-text="false"></el-progress>
               <span class="usage-number with-progress">{{usedStorageStr}} / {{capacityStr}}</span>
             </template>
@@ -39,7 +39,7 @@
     </keep-alive>
 
     <BillingRecords v-if="showPopups.billingRecords" :recordsData="userData.billingRecords"></BillingRecords>
-    <Upload v-if="showPopups.uploadFile" :file="uploadingFile"></Upload>
+    <Upload v-if="showPopups.uploadFile" :filePath="uploadingFilePath"></Upload>
     <Download v-if="showPopups.downloadFile" :file="downloadingFile"></Download>
     <Get v-if="showPopups.getFile"></Get>
     <Renew v-if="showPopups.renewFile" :file="renewingFile"></Renew>
@@ -61,6 +61,7 @@ import {
   ACT_LOGOUT,
   ACT_START_POLLING_CHI_PRICE,
   ACT_GET_ACCOUNT_DETAILS,
+  ACT_GET_USER_CPOOL,
 } from '../constants/store'
 
 import Profile from '../components/Profile'
@@ -93,7 +94,7 @@ export default {
       sharingFileIndex: -1,
       renamingFile: null,
       renewingFile: null,
-      uploadingFile: null,
+      uploadingFilePath: '',
       showFeedback: false,
     }
   },
@@ -113,25 +114,27 @@ export default {
       userData: state => state.user,
     }),
     ...mapGetters({
-      appMode: 'appMode',
       downloadCount: DL_TASK.GET_TASK_COUNT,
       uploadCount: UL_TASK.GET_TASK_COUNT,
       usedStorage: USAGE_STORAGE_GETTER, // in file size string
     }),
+    isCpoolMode: function() {
+      return this.$isCpoolPackage
+    },
     usedStorageStr: function() {
-      if (this.appMode === APP_MODE_COINPOOL) {
+      if (this.isCpoolMode) {
         return filesize(this.userData.cpoolData.usage)
       }
       return filesize(this.usedStorage)
     },
     capacityStr: function() {
-      if (this.appMode === APP_MODE_COINPOOL) {
+      if (this.isCpoolMode) {
         return filesize(this.userData.cpoolData.capacity)
       }
       return 0
     },
     usagePercent: function() {
-      if (this.appMode === APP_MODE_COINPOOL) {
+      if (this.isCpoolMode) {
         return (this.userData.cpoolData.usage / this.userData.cpoolData.capacity) * 100
       }
       return 0
@@ -146,7 +149,11 @@ export default {
   },
   methods: {
     onProfileShow() {
-      this.$store.dispatch(ACT_GET_ACCOUNT_DETAILS)
+      if (this.isCpoolMode) {
+        this.$store.dispatch(ACT_GET_USER_CPOOL)
+      } else {
+        this.$store.dispatch(ACT_GET_ACCOUNT_DETAILS)
+      }
     },
     f_goBilling() {
       this.showProfile = false
@@ -184,22 +191,22 @@ export default {
 
       // upload file
       // open upload file
-      this.$vueBus.$on(this.$events.OPEN_UPLOAD_FILE, file => {
+      this.$vueBus.$on(this.$events.OPEN_UPLOAD_FILE, filePath => {
         console.log('open upload file')
-        this.uploadingFile = file
+        this.uploadingFilePath = filePath
         this.showPopups.uploadFile = true
       })
       // close upload file
       this.$vueBus.$on(this.$events.CLOSE_UPLOAD_FILE, () => {
         console.log('close upload file')
         this.showPopups.uploadFile = false
-        this.uploadingFile = null
+        this.uploadingFilePath = ''
       })
       // upload file
       this.$vueBus.$on(this.$events.UPLOAD_FILE_DONE, () => {
         console.log('upload file done')
         this.showPopups.uploadFile = false
-        this.uploadingFile = null
+        this.uploadingFilePath = ''
         this.$router.push({ name: 'upload-list' })
       })
 

@@ -8,6 +8,7 @@ import {
   USAGE_STORAGE_GETTER,
   MUT_CLEAR_FILE_DATA,
   MUT_REPLACE_STATE_HOOK,
+  UL_TASK,
 } from '../constants/store'
 import { deleteFile, getObjectList, renameFile } from '../services/file'
 import { HomeListFile } from './PPFile'
@@ -90,13 +91,37 @@ const store = {
      * @returns {PromiseLike<T | never> | Promise<T | never>}
      */
     [ACT_REMOVE_FILE](context, payload) {
-      return deleteFile(payload.file.key).then(
-        () => context.commit(MUT_REMOVE_FILE, payload.fileIndex),
-        err => {
+      return deleteFile(payload.file.key)
+        .then(() => {
+          context.commit(MUT_REMOVE_FILE, payload.fileIndex)
+          const uploadTasks = context.rootState.uploadTask.taskQueue
+          const tasksToCancel = []
+          uploadTasks.forEach((task, index) => {
+            if (task.file.key === payload.file.key) {
+              tasksToCancel.push(index)
+            }
+          })
+          const cancelQueue = tasksToCancel.map(taskIdx =>
+            context
+              .dispatch(UL_TASK.ACT_CANCEL_TASK, taskIdx)
+              .then(() => ({ idx: taskIdx, canceled: true }))
+              .catch(err => {
+                console.error(
+                  `cancel task from deleting ${payload.file.key} failed for ${taskIdx}`,
+                )
+                console.error(err)
+                return Promise.resolve({ idx: taskIdx, canceled: false })
+              }),
+          )
+          return Promise.all(cancelQueue).then(resArr => {
+            console.log(`all upload tasks of ${payload.file.key} canceled`)
+            return resArr
+          })
+        })
+        .catch(err => {
           console.error(err)
           return Promise.reject(err)
-        },
-      )
+        })
     },
     /**
      * rename file

@@ -34,9 +34,6 @@ export default {
   components: {
     TransferTable,
   },
-  activated() {
-    console.log('activated')
-  },
   deactivated() {
     console.log('deactivated')
     if (this.getStatusTimer) {
