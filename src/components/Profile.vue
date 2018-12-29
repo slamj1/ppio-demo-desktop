@@ -33,7 +33,6 @@
 import { clipboard } from 'electron'
 import moment from 'moment'
 import { chiToPPCoin } from '../utils/units'
-import { APP_MODE_NON_COINPOOL, APP_MODE_COINPOOL } from '../constants/constants'
 
 export default {
   computed: {

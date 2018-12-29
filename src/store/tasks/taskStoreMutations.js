@@ -72,6 +72,12 @@ export default taskType => {
     state.taskQueue[payload.idx].setProgress(payload)
   }
 
+  const m_startTask = (state, idx) => {
+    console.log('starting task ', idx)
+    console.log(state.taskQueue[idx])
+    state.taskQueue[idx].start()
+  }
+
   const m_pauseTask = (state, idx) => {
     console.log('pausing task ', idx)
     console.log(state.taskQueue[idx])
@@ -116,6 +122,7 @@ export default taskType => {
     [STORE_KEYS.MUT_RESTORE_BG_TASKS]: restoreTasks,
     [STORE_KEYS.MUT_ADD_TASK]: m_addTask,
     [STORE_KEYS.MUT_SET_PROGRESS]: m_setTaskProgress,
+    [STORE_KEYS.MUT_START_TASK]: m_startTask,
     [STORE_KEYS.MUT_PAUSE_TASK]: m_pauseTask,
     [STORE_KEYS.MUT_FINISH_TASK]: m_finishTask,
     [STORE_KEYS.MUT_FAIL_TASK]: m_failTask,

@@ -88,7 +88,6 @@ import PaymentTable from '../../components/PaymentTable'
 import { UL_TASK } from '../../constants/store'
 import { getEstimateCost } from '../../services/upload'
 import { chiToPPCoin } from '../../utils/units'
-import { APP_MODE_COINPOOL } from '../../constants/constants'
 import { TaskFile } from '../../store/PPFile'
 
 export default {
@@ -177,7 +176,6 @@ export default {
         return `${this.storageDays} Days`
       }
     },
-    
   },
   watch: {
     copyCount: function() {
@@ -214,11 +212,7 @@ export default {
       }
     },
     f_estimateCost() {
-      if (
-        !this.file ||
-        isNaN(parseInt(this.copyCount)) ||
-        this.storageDays === null
-      ) {
+      if (!this.file || isNaN(parseInt(this.copyCount)) || this.storageDays === null) {
         return
       }
       return getEstimateCost({

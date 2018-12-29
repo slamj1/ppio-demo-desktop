@@ -30,8 +30,8 @@ export const init = params => {
 
 export const startDaemon = (datadir, privateKey) => {
   console.log('starting daemon service')
-  return remote
-    .getGlobal('startDaemon')({
+  return poss
+    .startDaemon({
       datadir: datadir,
       walletKey: privateKey ? `0x${privateKey}` : undefined,
     })

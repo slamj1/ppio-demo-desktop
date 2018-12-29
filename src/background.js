@@ -35,31 +35,6 @@ const menuTemplate = [
 
 global.poss = poss
 
-console.log('this is background poss')
-console.log(global.poss.baseParams)
-console.log(global.poss.initDaemon)
-
-global.initDaemon = params => poss.initDaemon(params)
-
-console.log('testing poss init')
-
-global.startDaemon = params => poss.startDaemon(params)
-
-global.stopDaemon = () => {
-  console.log('stopping daemon')
-  return poss
-    .stopDaemon()
-    .then(port => {
-      console.log('stopped daemon on port ', port)
-      return port
-    })
-    .catch(err => {
-      console.error('daemon stop failed')
-      console.error(err)
-      return Promise.resolve()
-    })
-}
-
 global.uploadTaskManager = new TaskManager({ type: 'upload' })
 global.downloadTaskManager = new TaskManager({ type: 'download' })
 

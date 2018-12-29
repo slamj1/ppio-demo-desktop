@@ -36,7 +36,6 @@ export default {
   props: ['startingApp'],
   methods: {
     f_import() {
-      this.importing = true
       if (!bip39.validateMnemonic(this.mnemonic)) {
         this.$message.error('Seed phrase invalid!')
         return
@@ -45,7 +44,7 @@ export default {
         this.$message.error('Password is empty!')
         return
       }
-
+      this.importing = true
       login({ seedphrase: this.mnemonic, password: this.password })
         .then(account => {
           const address = account.getAddressString()

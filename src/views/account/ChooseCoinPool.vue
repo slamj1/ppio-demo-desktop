@@ -80,19 +80,16 @@ export default {
     f_confirmSubscription() {
       this.checking = true
       getCpoolSubscriptionInfo(this.bindingCpoolHost, this.curAddress)
-        .then(res => {
-          if (res.err_code === 0) {
-            return this.$emit('bindCpool', {
-              host: this.bindingCpoolHost,
-              address: res.data.account_id,
-            })
-          }
-          return this.$message.error('Subscription incomplete')
-        })
+        .then(res =>
+          this.$emit('bindCpool', {
+            host: this.bindingCpoolHost,
+            address: res.account_id,
+          }),
+        )
         .catch(err => {
           console.error(err)
           this.checking = false
-          this.$message.error('check failed')
+          return this.$message.error('Subscription incomplete')
         })
     },
     f_goCpool() {

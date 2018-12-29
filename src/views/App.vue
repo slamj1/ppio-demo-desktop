@@ -23,7 +23,7 @@ import {
   MUT_SET_DATA_DIR,
 } from '../constants/store'
 import { startDaemon } from '../services/daemon'
-import { saveCpoolConfig, clearCpoolConfig } from '../services/cpool'
+import { initCpoolData, saveCpoolConfig, clearCpoolConfig } from '../services/cpool'
 
 export default {
   name: 'app',
@@ -35,9 +35,9 @@ export default {
   mounted() {
     console.log('is cpool package: ', this.$isCpoolPackage)
     console.log('getting app state from storage')
-    // get persisted state from storage
-    storage
-      .getItem(APP_STATE_PERSIST_KEY)
+    // TODO: do not put cpool initing here
+    initCpoolData()
+      .then(() => storage.getItem(APP_STATE_PERSIST_KEY))
       .then(val => {
         console.log('init app state')
         console.log(val)

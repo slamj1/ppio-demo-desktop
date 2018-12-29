@@ -15,7 +15,6 @@
 </template>
 <script>
 import * as FILE_STATUS from '../constants/file'
-import { APP_MODE_COINPOOL } from '../constants/constants'
 
 export default {
   name: 'fileitem',

@@ -39,8 +39,10 @@ export const getTaskProgress = taskId => {
       console.log('task progress got')
       console.log(res)
       return {
+        status: res.JobState, // Pending, Running, Paused, Finished, Error
         transferred: res.FinishedBytes,
         total: res.TotalBytes,
+        errMsg: res.Err,
       }
     })
     .catch(err => {

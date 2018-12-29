@@ -6,6 +6,7 @@ import filesize from 'filesize'
 import { TASK_TYPE_UPLOAD, TASK_TYPE_DOWNLOAD } from '../../constants/store'
 import { TASK_GET_PROGRESS_INTERVAL } from '../../constants/constants'
 import {
+  TASK_STATUS_STARTING,
   TASK_STATUS_RUNNING,
   TASK_STATUS_FAIL,
   TASK_STATUS_SUCC,
@@ -52,7 +53,7 @@ export class Task {
     this.displayTransferSpeed = '0b/s' // transfer speed for display
     this.displayLeftTime = ''
     this.finished = initData.finished || false
-    this.status = initData.status || TASK_STATUS_RUNNING
+    this.status = initData.status || TASK_STATUS_STARTING
     this.failMsg = initData.failMsg || ''
     console.log(this.status)
   }
@@ -126,7 +127,12 @@ export class Task {
     this.setTransferredData(progress.transferredData)
     return this
   }
-  // TODO: for test
+
+  start() {
+    console.log('task start')
+    return this.setStatus(TASK_STATUS_RUNNING)
+  }
+
   pause() {
     console.log('task paused')
     return this.setStatus(TASK_STATUS_PAUSED)

@@ -28,12 +28,7 @@ import {
 } from '../constants/constants'
 import { getChiPrice } from '../services/user'
 import { listTasks } from '../services/task'
-import {
-  TASK_STATUS_SUCC,
-  TASK_STATUS_PAUSED,
-  TASK_STATUS_RUNNING,
-  TASK_STATUS_FAIL,
-} from '../constants/task'
+import { TASK_STATUS_SUCC, TASK_STATUS_PAUSED, TASK_STATUS_FAIL } from '../constants/task'
 
 Vue.config.devtools = true
 Vue.use(Vuex)
@@ -169,9 +164,10 @@ export default new Vuex.Store({
                 wholeDataLength: task.total,
               })
             }
+
             if (
-              (task.state === 'Running' || task.state === 'Pending') &&
-              matchedLocalTask.status !== TASK_STATUS_RUNNING
+              task.state === 'Running' &&
+              matchedLocalTask.status === TASK_STATUS_PAUSED
             ) {
               commit(STORE_KEY.MUT_RESUME_TASK, matchedLocalTaskIdx)
             } else if (
@@ -185,11 +181,12 @@ export default new Vuex.Store({
             ) {
               commit(STORE_KEY.MUT_FINISH_TASK, matchedLocalTaskIdx)
             } else if (
-              task.state === 'Error' &&
+              (task.state === 'Error' || task.state === 'Pending') &&
               matchedLocalTask.status !== TASK_STATUS_FAIL
             ) {
+              // TODO: not exactly. If recovered from background, maybe the task is really "pending".
               console.log('got error task')
-              commit(STORE_KEY.MUT_FAIL_TASK, matchedLocalTaskIdx)
+              commit(STORE_KEY.MUT_FAIL_TASK, { idx: matchedLocalTaskIdx })
             }
           }
         })

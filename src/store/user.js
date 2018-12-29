@@ -168,20 +168,22 @@ const store = {
       return getCpoolSubscriptionInfo(
         context.state.cpoolData.cpoolHost,
         context.state.address,
-      ).then(res => {
-        if (res.err_code === 0) {
+      )
+        .then(res => {
           console.log('cpool data got')
           console.log(res)
           context.commit(MUT_SET_USER_CPOOL, {
-            usage: res.data.used_space,
-            capacity: res.data.total_space,
-            expires: res.data.expired_time,
+            usage: res.used_space,
+            capacity: res.total_space,
+            expires: res.expired_time,
           })
           return res
-        }
-        console.error('Cpool data getter failed!')
-        throw res
-      })
+        })
+        .catch(err => {
+          console.error('Cpool data getter failed!')
+          console.error(err)
+          throw err
+        })
     },
     /**
      * @deprecated: indexdata has no use for now

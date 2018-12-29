@@ -135,6 +135,9 @@ export default {
     },
     usagePercent: function() {
       if (this.isCpoolMode) {
+        if (this.userData.cpoolData.capacity === 0) {
+          return 0
+        }
         return (this.userData.cpoolData.usage / this.userData.cpoolData.capacity) * 100
       }
       return 0

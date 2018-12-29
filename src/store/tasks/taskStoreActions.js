@@ -20,6 +20,7 @@ import {
   TASK_STATUS_RESUMING,
   TASK_STATUS_DELETING,
   TASK_STATUS_RUNNING,
+  TASK_STATUS_STARTING,
 } from '../../constants/task'
 import { TASK_GET_PROGRESS_INTERVAL } from '../../constants/constants'
 
@@ -183,7 +184,11 @@ export default taskType => {
 
     const statusGetters = context.state.taskQueue.map(task => {
       // get task status
-      if (task.status === TASK_STATUS_RUNNING) {
+      if (
+        task.status === TASK_STATUS_STARTING ||
+        task.status === TASK_STATUS_RUNNING ||
+        task.status === TASK_STATUS_PAUSED
+      ) {
         return getTaskProgress(task.id).catch(err => {
           console.error('get task progress failed')
           console.error(err)
@@ -198,20 +203,32 @@ export default taskType => {
       // console.log(resArr)
       const statusArr = resArr.map((res, index) => {
         let status = {}
-        if (res.suspended) {
+        if (res.suspended || res.status === 'Pending') {
           status.suspended = true
         } else if (res.error) {
           console.log(`task ${index} failed !`)
           status.failed = true
           status.failMsg = res.error.message || 'task failed'
-        } else if (res.transferred === res.total) {
+        } else if (res.status === 'Error') {
+          console.log(`task ${index} failed !`)
+          status.failed = true
+          status.failMsg = res.errMsg || 'task failed'
+        } else if (res.status === 'Finished') {
           console.log(`task ${index} finished !`)
-          status.transferredData = res.transferred
-          status.wholeDataLength = res.total
           status.finished = true
-        } else {
           status.transferredData = res.transferred
           status.wholeDataLength = res.total
+        } else if (res.status === 'Running') {
+          status.running = true
+          status.transferredData = res.transferred
+          status.wholeDataLength = res.total
+        } else if (res.status === 'Paused') {
+          status.paused = true
+          status.transferredData = res.transferred
+          status.wholeDataLength = res.total
+        } else {
+          status.suspended = true
+          console.error('get a unknown state job')
         }
         return status
       })
@@ -228,12 +245,20 @@ export default taskType => {
           failNotif(context.state.taskQueue[idx])
           return context.commit(STORE_KEYS.MUT_FAIL_TASK, { idx, msg: status.failMsg })
         }
+        if (status.running) {
+          console.log('found a running task')
+          context.commit(STORE_KEYS.MUT_START_TASK, idx)
+          return context.commit(STORE_KEYS.MUT_SET_PROGRESS, { idx, ...status })
+        }
+        if (status.paused) {
+          console.log('found a paused task')
+          context.commit(STORE_KEYS.MUT_PAUSE_TASK, idx)
+          return context.commit(STORE_KEYS.MUT_SET_PROGRESS, { idx, ...status })
+        }
         if (status.suspended) {
           console.log('found a suspended task')
           return true
         }
-        console.log('found a running task')
-        return context.commit(STORE_KEYS.MUT_SET_PROGRESS, { idx, ...status })
       })
       return statusArr
     })
