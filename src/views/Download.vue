@@ -6,7 +6,7 @@
     <template slot="operations" slot-scope="operationProps">
       <span class="task-operate-btn pause-btn" v-if="operationProps.task.status === TASK_STATUS_RUNNING" @click="f_pause(operationProps.index)"><i class="app-icon icon-pause"></i></span>
       <span class="task-operate-btn pause-btn" v-if="operationProps.task.status === TASK_STATUS_PAUSED" @click="f_resume(operationProps.index)"><i class="app-icon icon-play"></i></span>
-      <span class="task-operate-btn cancel-btn" v-if="!operationProps.task.finished" @click="f_cancel(operationProps.index)"><i class="el-icon el-icon-close"></i></span>
+      <span class="task-operate-btn cancel-btn" v-if="operationProps.task.status === TASK_STATUS_RUNNING || operationProps.task.status === TASK_STATUS_PAUSED" @click="f_cancel(operationProps.index)"><i class="el-icon el-icon-close"></i></span>
       <!-- <span class="task-operate-btn open-btn" v-if="operationProps.task.status === TASK_STATUS_FAIL" @click="f_resume(operationProps.index)"><i class="el-icon el-icon-refresh"></i></span> -->
       <span class="task-operate-btn open-btn" v-if="operationProps.task.status === TASK_STATUS_SUCC" @click="f_open(operationProps.index)"><i class="app-icon icon-open"></i></span>
       <span class="task-operate-btn delete-btn" v-if="operationProps.task.finished" @click="f_delete(operationProps.index)"><i class="el-icon el-icon-delete"></i></span>

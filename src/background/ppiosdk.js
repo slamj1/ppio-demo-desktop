@@ -1,11 +1,8 @@
 import path from 'path'
 import poss from 'poss-sdk'
-import { BOOTSTRAP_HOST, INDEXER_URL } from '../constants/ports'
+// import { BOOTSTRAP_HOST, INDEXER_URL } from '../constants/ports'
 
-const possIns = poss.create({
-  indexerUrl: INDEXER_URL,
-  bootstrapip: BOOTSTRAP_HOST,
-})
+const possIns = poss.create()
 console.log('poss instance created')
 console.log('poss path: ', possIns.possBin)
 if (process.env.NODE_ENV === 'production') {

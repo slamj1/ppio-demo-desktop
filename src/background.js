@@ -38,8 +38,6 @@ global.poss = poss
 global.uploadTaskManager = new TaskManager({ type: 'upload' })
 global.downloadTaskManager = new TaskManager({ type: 'download' })
 
-console.log(global.uploadTaskManager.getTasks())
-
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will

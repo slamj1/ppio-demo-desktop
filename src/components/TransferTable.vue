@@ -23,9 +23,11 @@
             :percentage="scope.row.transferProgress"
             :show-text="true"
             :status="getProgressStatus(scope.row)"></el-progress>
+        <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_STARTING">creating task...</span>
+        <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_DELETING">deleting task...</span>
         <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_RUNNING">{{scope.row.displayTransferSpeed}}</span>
         <span class="transfer-progress-text left-time" v-if="scope.row.status === TASK_STATUS_RUNNING">{{scope.row.displayLeftTime}}</span>
-        <span class="transfer-progress-text failed" v-else-if="scope.row.status === TASK_STATUS_FAIL">{{scope.row.failMsg}}</span>
+        <span class="transfer-progress-text failed" v-if="scope.row.status === TASK_STATUS_FAIL">{{scope.row.failMsg}}</span>
       </template>
     </el-table-column>
     <el-table-column width="120">
@@ -37,14 +39,16 @@
 </template>
 
 <script>
-import { TASK_STATUS_FAIL, TASK_STATUS_RUNNING } from '../constants/task'
+import { TASK_STATUS_STARTING, TASK_STATUS_DELETING, TASK_STATUS_RUNNING, TASK_STATUS_FAIL } from '../constants/task'
 
 export default {
   name: 'transfer-list',
   data() {
     return {
-      TASK_STATUS_FAIL,
+      TASK_STATUS_STARTING,
+      TASK_STATUS_DELETING,
       TASK_STATUS_RUNNING,
+      TASK_STATUS_FAIL,
     }
   },
   props: ['tableName', 'tableData'],

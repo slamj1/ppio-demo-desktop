@@ -30,7 +30,6 @@ import { getChiPrice } from '../services/user'
 import { listTasks } from '../services/task'
 import { TASK_STATUS_SUCC, TASK_STATUS_PAUSED, TASK_STATUS_FAIL } from '../constants/task'
 
-Vue.config.devtools = true
 Vue.use(Vuex)
 
 const logger = createLogger({

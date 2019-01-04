@@ -30,7 +30,6 @@
     "lodash.clonedeep": "^4.5.0",
     "lodash.throttle": "^4.1.1",
     "moment": "^2.22.2",
-    "poss-sdk": "^0.0.1-alpha.10",
     "safe-buffer": "^5.1.2",
     "sanitize.css": "^8.0.0",
     "vue": "^2.5.17",
