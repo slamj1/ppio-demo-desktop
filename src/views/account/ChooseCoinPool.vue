@@ -7,7 +7,7 @@
       <div class="coin-pool-select-wrapper">
         <el-select
           class="coin-pool-selector"
-          v-model="cpoolCode"
+          v-model="selectedCpoolHost"
           :disabled="notUseCpool"
           placeholder="Please select a coin pool host">
           <el-option
@@ -23,7 +23,7 @@
       <el-button v-if="subscribing" :loading="checking" id="payment-confirm-button" type="primary" @click="f_confirmSubscription" size="large">I've subscribed a plan</el-button>
       <p class="coin-pool-intro">
         Coin Pool is an individual business entity is responsible for its own profits and losses.	Users purchase services provided by the Coin Pool,the Coin Pool will handle all payments on behalf of the user.We provide you a test coin pool which you can find at
-        <a @click="f_goCpool">{{testCpoolSite}}</a>
+        <a @click="f_goCpool">here</a>
       </p>
       <!-- <h3>Do not use a coin pool</h3>
       <div class="checkbox-container">
@@ -36,23 +36,24 @@
   </popup>
 </template>
 <script>
+import { remote } from 'electron'
 import { shell, clipboard } from 'electron'
 import Popup from '../../components/Popup'
 import { getCpoolSubscriptionInfo } from '../../services/cpool'
 import { AVAILABLE_CPOOLS } from '../../constants/constants'
 
+const poss = remote.getGlobal('poss')
+
 export default {
   name: 'choose-cpool',
   data() {
     return {
-      cpoolCode: '',
-      cpoolHostList: AVAILABLE_CPOOLS,
+      selectedCpoolHost: '',
+      cpoolHostList: Object.keys(poss.cpoolServices),
       bindingCpoolHost: '',
       subscribing: false,
       checking: false,
       notUseCpool: false,
-      testCpoolSite: 'http://192.168.50.125:1235',
-      testCpoolLinkPage: 'http://192.168.50.125:1235/purchase.html',
     }
   },
   components: {
@@ -64,6 +65,13 @@ export default {
       return this.account.getAddressString()
     },
   },
+  watch: {
+    selectedCpool(val) {
+      console.log('cpool changed')
+      console.log(this.cpoolHostList)
+      console.log(val)
+    },
+  },
   methods: {
     f_copy() {
       clipboard.writeText(this.curAddress)
@@ -73,9 +81,15 @@ export default {
         return
       }
       console.log('open purchase page')
-      this.bindingCpoolHost = this.cpoolCode
+      this.bindingCpoolHost = this.selectedCpoolHost
       this.subscribing = true
-      shell.openExternal(this.testCpoolLinkPage)
+      const selectedCpoolService = poss.getCpoolService(this.selectedCpoolHost)
+      if (selectedCpoolService) {
+        const cpoolPurchaseUrl = selectedCpoolService.apiList.purchase.url
+        shell.openExternal(cpoolPurchaseUrl)
+      } else {
+        this.$message.error('Coin pool unavailable')
+      }
     },
     f_confirmSubscription() {
       this.checking = true
@@ -94,7 +108,12 @@ export default {
     },
     f_goCpool() {
       console.log('go to coin pool page')
-      shell.openExternal(this.testCpoolSite)
+      const selectedCpoolService = poss.getCpoolService(this.selectedCpoolHost)
+      if (selectedCpoolService) {
+        shell.openExternal(selectedCpoolService.site)
+      } else {
+        this.$message.error('Coin pool unavailable')
+      }
     },
   },
 }

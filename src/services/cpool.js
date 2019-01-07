@@ -1,12 +1,15 @@
 import { remote } from 'electron'
-import { AVAILABLE_CPOOLS } from '../constants/constants'
+// import { AVAILABLE_CPOOLS } from '../constants/constants'
 
 const poss = remote.getGlobal('poss')
 
 export const initCpoolData = () => {
   if (process.env.IS_CPOOL === 'true') {
     // init cpool services
-    poss.initCpoolServices()
+    return poss.initCpoolServices().then(res => {
+      console.log(res)
+      return res
+    })
   }
   return Promise.resolve()
 }
@@ -14,19 +17,21 @@ export const initCpoolData = () => {
 export const iterateCpools = address => {
   console.log('iterating cpools')
   return Promise.all(
-    AVAILABLE_CPOOLS.map(cpoolHost =>
-      getCpoolSubscriptionInfo(cpoolHost, address)
+    poss.cpoolList.map(cpool =>
+      getCpoolSubscriptionInfo(cpool.host, address)
         .then(res => {
           console.log(res)
           return {
-            host: cpoolHost,
+            host: cpool.host,
+            site: cpool.site,
             address: res.account_id,
             binded: true,
           }
         })
         .catch(() =>
           Promise.resolve({
-            host: cpoolHost,
+            host: cpool.host,
+            site: cpool.site,
             address: '',
             binded: false,
           }),

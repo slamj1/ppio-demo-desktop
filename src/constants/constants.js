@@ -11,4 +11,4 @@ export const BG_TASK_GET_PROGRESS_INTERVAL = 5000 // the time interval of updati
 
 export const walletUrl = 'https://pp.io'
 
-export const AVAILABLE_CPOOLS = ['http://192.168.50.233:10001']
+export const AVAILABLE_CPOOLS = ['http://api.ppool.pp.io']

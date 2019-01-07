@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'production') {
   )
   console.log('prod poss path: ', possIns.possBin)
 } else {
-  possIns.setPossBinPath(path.join(process.cwd(), './node_modules/poss-sdk/bin/poss'))
+  possIns.setPossBinPath(path.join(process.cwd(), './node_modules/poss-sdk/bin/poss_mac'))
   console.log('dev poss path: ', possIns.possBin)
 }
 console.log(possIns.baseParams)

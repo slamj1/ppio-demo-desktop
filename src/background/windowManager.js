@@ -25,7 +25,6 @@ export default {
         options,
       ),
     )
-    console.log(this.window)
 
     if (isDevelopment) {
       let url = ''
