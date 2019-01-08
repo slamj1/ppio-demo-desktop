@@ -21,7 +21,7 @@
       <span slot="header">Upload File</span>
       <div class="step-content step-0" slot="step-0">
         <div class="file-container">
-          <img src="@/assets/img/file.png" class="file-icon" :alt="filename">
+          <span class="file-icon" :class="'file-icon_' + fileType"></span>
           <el-input v-model="filename" class="file-name-input"></el-input>
         </div>
       </div>
@@ -96,7 +96,6 @@ export default {
   name: 'upload',
   data: () => ({
     filename: 'PPIO upload filename',
-    fileType: 'plain',
     customStorageDays: '1',
     chiPrice: 100,
     curStep: 0,
@@ -115,6 +114,9 @@ export default {
     PaymentTable,
   },
   computed: {
+    fileType() {
+      return getFileType(this.filename)
+    },
     isCpoolMode() {
       return this.$isCpoolPackage
     },
@@ -200,11 +202,8 @@ export default {
         path: this.filePath,
       }
       this.filename = filename
-      this.fileType = getFileType(filename)
-      console.log(this.file)
       this.f_estimateCost()
     }
-    // TODO: get ongoing contract from sdk, concat with locally-persisted task queue
   },
   methods: {
     f_getTaskOptions() {

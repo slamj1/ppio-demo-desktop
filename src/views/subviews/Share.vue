@@ -3,7 +3,7 @@
     <popup class="popup" @close="f_close">
       <span slot="header">Share File</span>
       <div class="content" slot="content">
-        <img src="@/assets/img/file.png" class="file-icon" :alt="file && file.filename">
+        <span class="file-icon" :class="'file-icon_' + fileType"></span>
         <p class="file-name">{{file && file.filename}}</p>
         <p class="share-hint">Sharing a file means everyone who knows the file's share code can access it. And you can not recall this action unless you delete this file.</p>
         <div class="code-wrap" v-if="shareCode">
@@ -21,6 +21,7 @@
 import Popup from '../../components/Popup'
 import StepPopup from '../../components/StepPopup'
 import { getShareCode } from '../../services/file'
+import getFileType from '../../utils/getFileType'
 
 const { clipboard } = require('electron')
 
@@ -30,6 +31,14 @@ export default {
     shareCode: null,
   }),
   props: ['file', 'fileIndex'], // file is a /store/PPFilele.js object
+  computed: {
+    fileType() {
+      if (this.file) {
+        return getFileType(this.file.filename)
+      }
+      return 'plain'
+    },
+  },
   components: {
     Popup,
     StepPopup,
@@ -66,7 +75,9 @@ export default {
     text-align: center;
     padding: 40px 60px;
     .file-icon {
-      width: 60px;
+      height: 58px;
+      width: 48px;
+      margin-bottom: 10px;
     }
     .file-name {
       margin-top: 10px;

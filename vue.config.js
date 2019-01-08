@@ -21,8 +21,21 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
-        // options placed here will be merged with default configuration and passed to electron-builder
-        // asar: false,
+        appId: 'com.ppio-demo.app',
+        productName: 'PPIO-demo',
+        copyright: 'Copyright © 2019 PPLabs.org',
+        mac: {
+          category: 'public.app-category.productivity',
+          target: ['dmg'],
+          icon: 'public/icons/icon.icns',
+        },
+        dmg: {
+          title: 'PPIO-demo installation',
+          icon: 'public/icons/icon.icns',
+        },
+        win: {
+          target: ['nsis'],
+        },
         asarUnpack: [
           '**/node_modules/poss-sdk/*',
           '**/src/background.js',

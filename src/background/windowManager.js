@@ -20,6 +20,8 @@ export default {
         {
           width: this.navigateCache || options.routerPath ? 1000 : 300,
           height: this.navigateCache || options.routerPath ? 670 : 300,
+          minWidth: 830,
+          minHeight: 560,
           titleBarStyle: 'hidden',
         },
         options,

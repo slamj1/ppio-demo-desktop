@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import createLogger from 'vuex/dist/logger'
-import storage from 'localforage'
+import storage from '../utils/storage'
 
 import userStore from './user'
 import fileListStore from './fileList'

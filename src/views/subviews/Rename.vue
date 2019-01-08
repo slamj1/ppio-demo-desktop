@@ -7,7 +7,7 @@
         class="popup-wrap">
       <span slot="header">Rename File</span>
       <div class="step-content step-0" slot="step-0">
-        <img src="@/assets/img/file.png" class="file-icon" :alt="filename">
+        <span class="file-icon" :class="'file-icon_' + fileType"></span>
         <el-input class="file-name-input" v-model="filename"></el-input>
       </div>
 
@@ -48,6 +48,7 @@ import StepPopup from '../../components/StepPopup'
 import PaymentTable from '../../components/PaymentTable'
 import { ACT_RENAME_FILE } from '../../constants/store'
 import { chiToPPCoin } from '../../utils/units'
+import getFileType from '../../utils/getFileType'
 
 export default {
   name: 'rename',
@@ -67,6 +68,12 @@ export default {
     PaymentTable,
   },
   computed: {
+    fileType() {
+      if (this.file) {
+        return getFileType(this.filename)
+      }
+      return 'plain'
+    },
     recChiPrice() {
       return this.$store.state.recChiPrice.storage
     },

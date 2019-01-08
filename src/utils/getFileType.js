@@ -1,11 +1,11 @@
 import mime from 'mime-types'
 
-const fileTypes = ['audio', 'video', 'pdf', 'image', 'plain']
-
 export default filename => {
   const mimeType = mime.lookup(filename)
   console.log(`mime type of ${filename}: ${mimeType}`)
-
+  if (!mimeType) {
+    return 'plain'
+  }
   if (
     mimeType.match('ms-powerpoint') ||
     mimeType.match('officedocument.presentationml.presentation')
@@ -27,11 +27,15 @@ export default filename => {
   if (mimeType.match('compressed') || mimeType.match('zip') || mimeType.match('gzip')) {
     return 'zip'
   }
+  if (mimeType.match('application/pdf')) {
+    return 'pdf'
+  }
 
   let type = ''
-  for (let i = 0; i < fileTypes.length; i++) {
-    if (mimeType.match(fileTypes[i])) {
-      type = fileTypes[i]
+  const mediaTypes = ['audio', 'video', 'image']
+  for (let i = 0; i < mediaTypes.length; i++) {
+    if (mimeType.match(`${mediaTypes[i]}/`)) {
+      type = mediaTypes[i]
       break
     }
   }

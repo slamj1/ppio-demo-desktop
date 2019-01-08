@@ -138,9 +138,12 @@ $file-item-width: 105px;
 
   .filename {
     width: $file-item-width;
+    display: -webkit-box;
     overflow: hidden;
-    white-space: nowrap;
     text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
   }
 
   &.selected .filename {

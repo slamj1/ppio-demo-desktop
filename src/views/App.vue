@@ -10,7 +10,7 @@
 <script>
 import fs from 'fs'
 import { remote } from 'electron'
-import storage from 'localforage'
+import storage from '../utils/storage'
 import { APP_STATE_PERSIST_KEY } from '../constants/constants'
 import {
   MUT_REPLACE_STATE_HOOK,

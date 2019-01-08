@@ -1,4 +1,0 @@
-{"NodeType":"user","Account":"502a8d786eacc72634a6c49a0765cb09493e1f16c8e3562a6b83a63a","QoSType":"hardware","Session":244782129,"Uptime":115,"Data":{"CPU":"","MemorySize":8589934592,"DiskSize":0,"DiskIO":0,"DownloadBandwidth":0,"UploadBandwidth":0}}
-{"NodeType":"user","Account":"502a8d786eacc72634a6c49a0765cb09493e1f16c8e3562a6b83a63a","QoSType":"appevent","Session":244782129,"Uptime":1118,"Data":{"Type":"online","Uptime":1118}}
-{"NodeType":"user","Account":"502a8d786eacc72634a6c49a0765cb09493e1f16c8e3562a6b83a63a","QoSType":"hardware","Session":2951267502,"Uptime":167,"Data":{"CPU":"","MemorySize":8589934592,"DiskSize":0,"DiskIO":0,"DownloadBandwidth":0,"UploadBandwidth":0}}
-{"NodeType":"user","Account":"502a8d786eacc72634a6c49a0765cb09493e1f16c8e3562a6b83a63a","QoSType":"appevent","Session":2951267502,"Uptime":1168,"Data":{"Type":"online","Uptime":1168}}

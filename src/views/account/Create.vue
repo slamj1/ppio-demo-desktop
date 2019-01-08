@@ -26,7 +26,7 @@
         <el-alert v-show="errorMsg !== ''" :title="errorMsg" type="error" :closable="false"></el-alert>
         <div class="button-wrap" style="text-align: left;">
           <el-button type="primary" class="back-button" plain @click="f_goStep(1)">Back</el-button>
-          <el-button :loading="confirmLoading" type="primary" class="repeat-button" @click="f_confirm">Confirm</el-button>
+          <el-button :loading="confirmLoading || startingApp" type="primary" class="repeat-button" @click="f_confirm">Confirm</el-button>
         </div>
       </template>
       <p>Already have an account? <router-link :to="{ name: 'account/import' }">Log in</router-link></p>
@@ -54,6 +54,7 @@ export default {
     errorMsg: '',
     confirmLoading: false,
   }),
+  props: ['startingApp'],
   methods: {
     f_copy() {
       clipboard.writeText(this.mnemonic)

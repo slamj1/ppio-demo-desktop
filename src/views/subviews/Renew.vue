@@ -7,7 +7,7 @@
         class="popup-wrap">
       <span slot="header">Renew File</span>
       <div class="step-content step-0" slot="step-0">
-        <img src="@/assets/img/file.png" class="file-icon" :alt="file.filename">
+        <span class="file-icon" :class="'file-icon_' + fileType"></span>
         <p class="file-name">{{file.filename}}</p>
       </div>
 
@@ -72,6 +72,7 @@ import PaymentTable from '../../components/PaymentTable'
 import { renewFile } from '../../services/file'
 import { getEstimateCost } from '../../services/upload'
 import { chiToPPCoin } from '../../utils/units'
+import getFileType from '../../utils/getFileType'
 
 export default {
   name: 'renew',
@@ -92,6 +93,12 @@ export default {
     PaymentTable,
   },
   computed: {
+    fileType() {
+      if (this.file) {
+        return getFileType(this.file.filename)
+      }
+      return 'plain'
+    },
     recChiPrice() {
       return this.$store.state.recChiPrice.storage
     },

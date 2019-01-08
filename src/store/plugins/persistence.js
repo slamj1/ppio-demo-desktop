@@ -1,6 +1,6 @@
-import storage from 'localforage'
 import throttle from 'lodash.throttle'
 import { APP_STATE_PERSIST_KEY } from '../../constants/constants'
+import storage from '../../utils/storage'
 
 export default store => {
   store.subscribe(

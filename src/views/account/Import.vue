@@ -17,7 +17,6 @@
   </div>
 </template>
 <script>
-import storage from 'localforage'
 import bip39 from 'bip39'
 import fs from 'fs'
 import path from 'path'
@@ -25,6 +24,7 @@ import { USER_STATE_PERSIST_KEY } from '../../constants/constants'
 import { MUT_REPLACE_STATE_HOOK } from '../../constants/store'
 import { login } from '../../services/user'
 import createUserDir from '../../utils/createUserDir'
+import storage from '../../utils/storage'
 
 export default {
   name: 'import-account',

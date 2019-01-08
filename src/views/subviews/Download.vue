@@ -2,10 +2,10 @@
   <div class="download-page">
     <popup v-if="isCpoolMode" class="popup" @close="f_close">
       <span slot="header">Download File</span>
-      <div class="content" slot="content">
+      <div v-if="!!file" class="content" slot="content">
         <div class="line-wrap file-container">
-          <img src="@/assets/img/file.png" class="file-icon" :alt="file && file.filename">
-          <p class="file-name">{{file && file.filename}}</p>
+          <span class="file-icon" :class="'file-icon_' + fileType"></span>
+          <p class="file-name">{{file.filename}}</p>
         </div>
       </div>
       <template slot="footer">
@@ -21,9 +21,9 @@
       <span slot="header">Download File</span>
       <div class="step-content step-0" slot="step-0">
         <div class="inner-wrap">
-          <div class="line-wrap file-container">
-            <img src="@/assets/img/file.png" class="file-icon" :alt="file && file.filename">
-            <p class="file-name">{{file && file.filename}}</p>
+          <div v-if="!!file" class="line-wrap file-container">
+            <span class="file-icon" :class="'file-icon_' + fileType"></span>
+            <p class="file-name">{{file.filename}}</p>
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
@@ -64,6 +64,7 @@ import { DL_TASK } from '../../constants/store'
 import { getEstimateCost } from '../../services/download'
 import { chiToPPCoin } from '../../utils/units'
 import { TaskFile } from '../../store/PPFile'
+import getFileType from '../../utils/getFileType'
 
 export default {
   name: 'download',
@@ -83,6 +84,12 @@ export default {
     PaymentTable,
   },
   computed: {
+    fileType() {
+      if (this.file) {
+        return getFileType(this.file.filename)
+      }
+      return 'plain'
+    },
     isCpoolMode() {
       return this.$isCpoolPackage
     },
@@ -218,7 +225,9 @@ export default {
   }
 
   .file-icon {
-    width: 60px;
+    height: 58px;
+    width: 48px;
+    margin-bottom: 10px;
   }
   .file-name {
     margin-top: 10px;
