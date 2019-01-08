@@ -271,11 +271,11 @@ export default {
       // TODO: What do we need to store in metadata?
       const putParams = {
         file: new TaskFile({
-          key: this.filename,
-          filename: this.filename,
+          key: this.filename.trim(),
+          filename: this.filename.trim(),
           size: this.file.size,
         }),
-        objectKey: this.filename,
+        objectKey: this.filename.trim(),
         ...options,
       }
       return this.$store

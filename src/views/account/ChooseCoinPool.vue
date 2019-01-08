@@ -36,8 +36,7 @@
   </popup>
 </template>
 <script>
-import { remote } from 'electron'
-import { shell, clipboard } from 'electron'
+import { remote, shell, clipboard } from 'electron'
 import Popup from '../../components/Popup'
 import { getCpoolSubscriptionInfo } from '../../services/cpool'
 

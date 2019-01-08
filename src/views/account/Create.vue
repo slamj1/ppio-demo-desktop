@@ -108,15 +108,13 @@ export default {
             this.$emit('setAccount', account)
             const datadir = createUserDir(address)
             if (datadir) {
-              this.$emit('setDatadir', this.dataDir)
-              this.$emit('startApp', true)
-            } else {
-              this.$message.error('Create data directory failed.')
+              this.$emit('setDatadir', datadir)
+              return this.$emit('startApp', true)
             }
-          } else {
-            this.errorMsg = 'Seed phrase or password is wrong'
-            return false
+            return this.$message.error('Create data directory failed.')
           }
+          this.errorMsg = 'Seed phrase or password is wrong'
+          return false
         })
         .catch(err => {
           console.error(err)

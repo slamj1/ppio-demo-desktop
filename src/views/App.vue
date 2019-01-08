@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" @dragover="f_onDragover">
     <div class="app-global-loading" v-if="initializing">
       <p>Initializing....</p>
     </div>
@@ -74,6 +74,10 @@ export default {
       })
   },
   methods: {
+    f_onDragover(e) {
+      e.preventDefault()
+      e.dataTransfer.dropEffect = 'none'
+    },
     f_setCpool(params) {
       console.log('setting cpool')
       if (!this.$isCpoolPackage) {

@@ -22,7 +22,7 @@
       </div>
       <el-button class="refresh-btn" icon="el-icon-refresh" circle @click="f_refreshList"></el-button>
     </el-header>
-    <el-main class="app-main">
+    <el-main class="app-main" @dragover.native="f_onDragover" @drop.native="f_onDrop">
       <div v-if="fileList.length === 0" class="empty">
         <img src="../assets/img/files-empty.png" alt="empty">
         <p>You haven't uploaded any file yet.</p>
@@ -89,6 +89,8 @@ export default {
     this.$vueBus.$on(this.$events.GET_FILE_DONE, () => {
       console.log('Files page get file listener')
     })
+
+    console.log(this.$refs.filesContainer)
   },
 
   activated() {
@@ -114,6 +116,17 @@ export default {
     ...mapActions({
       getFileList: ACT_GET_FILE_LIST,
     }),
+    f_onDragover(e) {
+      e.preventDefault()
+      e.stopPropagation()
+      e.dataTransfer.dropEffect = 'copy'
+    },
+    f_onDrop(e) {
+      e.preventDefault()
+      console.log('drop')
+      console.log(e.dataTransfer.files[0])
+      this.$vueBus.$emit(this.$events.OPEN_UPLOAD_FILE, e.dataTransfer.files[0].path)
+    },
     f_getFileList() {
       if (this.fetchingData) {
         return Promise.resolve()

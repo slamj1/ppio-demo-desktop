@@ -69,11 +69,10 @@ export default {
             }
             const datadir = createUserDir()
             if (datadir) {
-              this.$emit('setDatadir', this.dataDir)
-              this.$emit('startApp', true)
-            } else {
-              this.$message.error('Create data directory failed.')
+              this.$emit('setDatadir', datadir)
+              return this.$emit('startApp', true)
             }
+            return this.$message.error('Create data directory failed.')
           })
         })
         .catch(err => {

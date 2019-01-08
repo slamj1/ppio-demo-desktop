@@ -39,7 +39,12 @@
 </template>
 
 <script>
-import { TASK_STATUS_STARTING, TASK_STATUS_DELETING, TASK_STATUS_RUNNING, TASK_STATUS_FAIL } from '../constants/task'
+import {
+  TASK_STATUS_STARTING,
+  TASK_STATUS_DELETING,
+  TASK_STATUS_RUNNING,
+  TASK_STATUS_FAIL,
+} from '../constants/task'
 
 export default {
   name: 'transfer-list',

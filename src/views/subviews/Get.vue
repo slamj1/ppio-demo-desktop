@@ -68,7 +68,7 @@ export default {
       key: '',
       size: 0,
       filename: '',
-      fileType: 'plain'
+      fileType: 'plain',
     },
     curStep: 0,
     radio: 1,
