@@ -1,6 +1,5 @@
 import path from 'path'
 import poss from 'poss-sdk'
-// import { BOOTSTRAP_HOST, INDEXER_URL } from '../constants/ports'
 
 const possIns = poss.create()
 console.log('poss instance created')

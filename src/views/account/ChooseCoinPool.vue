@@ -40,7 +40,6 @@ import { remote } from 'electron'
 import { shell, clipboard } from 'electron'
 import Popup from '../../components/Popup'
 import { getCpoolSubscriptionInfo } from '../../services/cpool'
-import { AVAILABLE_CPOOLS } from '../../constants/constants'
 
 const poss = remote.getGlobal('poss')
 
@@ -63,13 +62,6 @@ export default {
   computed: {
     curAddress: function() {
       return this.account.getAddressString()
-    },
-  },
-  watch: {
-    selectedCpool(val) {
-      console.log('cpool changed')
-      console.log(this.cpoolHostList)
-      console.log(val)
     },
   },
   methods: {

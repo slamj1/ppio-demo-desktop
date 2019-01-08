@@ -251,15 +251,15 @@ export default {
                 fileIndex: this.fileList.indexOf(this.operatingFile),
               })
               .then(() => {
-                this.$notify.success({
-                  title: `delete file success`,
+                this.$message.success({
+                  message: 'delete file success',
                   duration: 2000,
                 })
                 return this.f_selectFile(-1)
               })
               .catch(err => {
                 console.error(err)
-                this.$notify.error({ title: 'Deletion failed!', duration: 2000 })
+                this.$message.error({ message: 'Deletion failed!', duration: 2000 })
               })
           }
         },

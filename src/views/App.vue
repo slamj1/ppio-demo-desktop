@@ -93,6 +93,7 @@ export default {
         this.$store.commit(MUT_SET_USER_CPOOL, {
           cpoolHost: params.cpoolHost,
           cpoolAddress: params.cpoolAddress,
+          cpoolSite: params.cpoolSite,
         })
         return true
       })

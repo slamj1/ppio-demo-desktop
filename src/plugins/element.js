@@ -66,6 +66,19 @@ Vue.use(Badge)
 Vue.use(Popover)
 Vue.use(Loading)
 
+const baseMessageConfig = { duration: 2000, showClose: true }
+const GlobalMessage = options => Message(Object.assign({}, baseMessageConfig, options))
+const messageTypes = ['success', 'warning', 'info', 'error']
+messageTypes.forEach(type => {
+  GlobalMessage[type] = options => {
+    if (typeof options === 'string') {
+      options = Object.assign({}, baseMessageConfig, { message: options })
+    }
+    options.type = type
+    return GlobalMessage(options)
+  }
+})
+
 Vue.prototype.$notify = Notification
-Vue.prototype.$message = Message
+Vue.prototype.$message = GlobalMessage
 Vue.prototype.$loading = Loading.service

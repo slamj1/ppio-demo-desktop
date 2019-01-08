@@ -24,6 +24,7 @@ import path from 'path'
 import { USER_STATE_PERSIST_KEY } from '../../constants/constants'
 import { MUT_REPLACE_STATE_HOOK } from '../../constants/store'
 import { login } from '../../services/user'
+import createUserDir from '../../utils/createUserDir'
 
 export default {
   name: 'import-account',
@@ -66,8 +67,13 @@ export default {
                 return this.$emit('startApp', true)
               }
             }
-            console.log('choose data dir')
-            return this.$router.push({ name: 'account/choose-dir' })
+            const datadir = createUserDir()
+            if (datadir) {
+              this.$emit('setDatadir', this.dataDir)
+              this.$emit('startApp', true)
+            } else {
+              this.$message.error('Create data directory failed.')
+            }
           })
         })
         .catch(err => {

@@ -188,7 +188,7 @@ export default {
             .catch(err => {
               console.error(err)
               this.preparingDownload = false
-              this.$notify.error({ title: err.message, duration: 2000 })
+              this.$message.error({ message: err.message, duration: 2000 })
             })
         },
       )

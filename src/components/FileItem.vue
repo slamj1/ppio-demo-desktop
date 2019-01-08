@@ -5,7 +5,7 @@
                 'broken': file.status === FILE_STATUS_BROKEN,
                 'selected': selected}">
     <div class="file-icon-wrap">
-      <span class="file-icon"></span><span class="file-icon-status"></span>
+      <span class="file-icon" :class="'file-icon_' + fileType"></span><span class="file-icon-status"></span>
     </div>
     <p class="filename">
       {{file.filename}}
@@ -15,12 +15,14 @@
 </template>
 <script>
 import * as FILE_STATUS from '../constants/file'
+import getFileType from '../utils/getFileType'
 
 export default {
   name: 'fileitem',
   data() {
     return {
       ...FILE_STATUS,
+      fileType: '',
     }
   },
   props: ['file', 'selected'],
@@ -37,6 +39,11 @@ export default {
         return `${this.file.daysLeft} days left`
       }
     },
+  },
+  mounted() {
+    if (this.file) {
+      this.fileType = getFileType(this.file.filename)
+    }
   },
   methods: {
     f_delete() {
@@ -92,13 +99,8 @@ $file-item-width: 105px;
   }
 
   .file-icon {
-    display: inline-block;
     width: 62px;
     height: 74px;
-    border-radius: 8px;
-    background-image: url(~@/assets/img/file.png);
-    @include general-bg;
-    overflow: hidden;
   }
 
   &.secure,

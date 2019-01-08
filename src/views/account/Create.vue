@@ -38,6 +38,7 @@ import fs from 'fs'
 import bip39 from 'bip39'
 import { clipboard, remote } from 'electron'
 import { login, generateNewAccount } from '../../services/user'
+import createUserDir from '../../utils/createUserDir'
 
 const dialog = remote.dialog
 
@@ -56,8 +57,8 @@ export default {
   methods: {
     f_copy() {
       clipboard.writeText(this.mnemonic)
-      this.$notify.success({
-        title: 'Copy seed phrase success!',
+      this.$message.success({
+        message: 'Copy seed phrase success!',
         duration: 2000,
       })
     },
@@ -68,7 +69,7 @@ export default {
             if (err) {
               console.log(err)
             } else {
-              this.$notify.success('Save seed phrase success!')
+              this.$message.success('Save seed phrase success!')
             }
           })
         }
@@ -102,13 +103,18 @@ export default {
       login({ seedphrase: this.repeatMnemonic, password: this.repeatPassword })
         .then(account => {
           const address = account.getAddressString()
+          this.confirmLoading = false
           if (this.account.getAddressString() === address) {
             this.$emit('setAccount', account)
-            this.confirmLoading = false
-            return this.$router.push({ name: 'account/choose-dir' })
+            const datadir = createUserDir(address)
+            if (datadir) {
+              this.$emit('setDatadir', this.dataDir)
+              this.$emit('startApp', true)
+            } else {
+              this.$message.error('Create data directory failed.')
+            }
           } else {
             this.errorMsg = 'Seed phrase or password is wrong'
-            this.confirmLoading = false
             return false
           }
         })

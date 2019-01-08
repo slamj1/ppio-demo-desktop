@@ -1,5 +1,4 @@
 import { remote } from 'electron'
-// import { AVAILABLE_CPOOLS } from '../constants/constants'
 
 const poss = remote.getGlobal('poss')
 

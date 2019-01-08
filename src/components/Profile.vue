@@ -30,9 +30,12 @@
 </template>
 
 <script>
-import { clipboard } from 'electron'
+import { clipboard, shell, remote } from 'electron'
 import moment from 'moment'
 import { chiToPPCoin } from '../utils/units'
+import { walletUrl } from '../constants/constants'
+
+const poss = remote.getGlobal('poss')
 
 export default {
   computed: {
@@ -126,7 +129,14 @@ export default {
       }
     },
     f_renew() {
-      console.log('renew cpool service')
+      if (this.isCpoolMode) {
+        const cpoolHost = this.userData.cpoolData.cpoolHost
+        console.log(cpoolHost)
+        const rechargeUrl = poss.getCpoolService(cpoolHost).apiList.purchase.url
+        shell.openExternal(rechargeUrl)
+      } else {
+        shell.openExternal(walletUrl)
+      }
     },
   },
 }

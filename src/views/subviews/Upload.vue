@@ -4,7 +4,7 @@
       <span slot="header">Upload File</span>
       <div class="content" slot="content">
         <div class="line-wrap file-container">
-          <img src="@/assets/img/file.png" class="file-icon" :alt="filename">
+          <span class="file-icon" :class="'file-icon_' + fileType"></span>
           <el-input v-model="filename" class="file-name-input"></el-input>
         </div>
       </div>
@@ -81,6 +81,7 @@
 </template>
 <script>
 import fs from 'fs'
+import path from 'path'
 import filesize from 'filesize'
 import Popup from '../../components/Popup'
 import StepPopup from '../../components/StepPopup'
@@ -89,11 +90,13 @@ import { UL_TASK } from '../../constants/store'
 import { getEstimateCost } from '../../services/upload'
 import { chiToPPCoin } from '../../utils/units'
 import { TaskFile } from '../../store/PPFile'
+import getFileType from '../../utils/getFileType'
 
 export default {
   name: 'upload',
   data: () => ({
     filename: 'PPIO upload filename',
+    fileType: 'plain',
     customStorageDays: '1',
     chiPrice: 100,
     curStep: 0,
@@ -190,12 +193,14 @@ export default {
     if (this.filePath) {
       const fileStats = fs.statSync(this.filePath)
       console.log(fileStats)
+      const filename = this.filePath.split(path.sep).slice(-1)[0]
       this.file = {
         size: fileStats.size,
-        filename: this.filePath.split('/').slice(-1)[0],
+        filename,
         path: this.filePath,
       }
-      this.filename = this.filePath.split('/').slice(-1)[0]
+      this.filename = filename
+      this.fileType = getFileType(filename)
       console.log(this.file)
       this.f_estimateCost()
     }

@@ -133,3 +133,26 @@ a {
     background-image: url('~@/assets/img/icon-upload_active.png');
   }
 }
+
+$file-types: "ppt",
+  "xls",
+  "doc",
+  "zip",
+  "audio",
+  "video",
+  "pdf",
+  "image",
+  "plain";
+.file-icon {
+  display: inline-block;
+  border-radius: 8px;
+  background-image: url(~@/assets/img/file.png);
+  @include general-bg;
+  overflow: hidden;
+
+  @each $type in $file-types {
+    &.file-icon_#{$type} {
+      background-image: url('~@/assets/img/file_#{$type}.png');
+    }
+  }
+}

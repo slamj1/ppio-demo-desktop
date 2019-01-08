@@ -16,7 +16,7 @@
       <div class="step-content step-1" slot="step-1">
         <div class="inner-wrap">
           <div class="fileinfo-wrap">
-            <img src="@/assets/img/file.png" class="file-icon" :alt="fileInfo && fileInfo.filename">
+            <span class="file-icon" :class="'file-icon_' + fileInfo.fileType"></span>
             <p class="file-name">{{fileInfo && fileInfo.filename}}</p>
           </div>
           <div class="line-wrap">
@@ -58,12 +58,18 @@ import { DL_TASK } from '../../constants/store'
 import { getEstimateCost } from '../../services/download'
 import { chiToPPCoin } from '../../utils/units'
 import { TaskFile } from '../../store/PPFile'
+import getFileType from '../../utils/getFileType'
 
 export default {
   name: 'get-file',
   data: () => ({
     shareCode: '',
-    fileInfo: null,
+    fileInfo: {
+      key: '',
+      size: 0,
+      filename: '',
+      fileType: 'plain'
+    },
     curStep: 0,
     radio: 1,
     chiPrice: 100,
@@ -170,6 +176,7 @@ export default {
             size: fileInfo.size,
             filename: fileInfo.key.split('/').slice(-1)[0],
           }
+          this.fileInfo.fileType = getFileType(this.fileInfo.filename)
           this.gettingFileInfo = false
           this.f_estimateCost()
           return this.curStep++
@@ -225,7 +232,7 @@ export default {
             .catch(err => {
               console.error(err)
               this.preparingDownload = false
-              this.$notify.error({ title: err.message, duration: 2000 })
+              this.$message.error({ message: err.message, duration: 2000 })
             })
         },
       )
@@ -252,7 +259,9 @@ export default {
   .fileinfo-wrap {
     text-align: center;
     .file-icon {
-      width: 50px;
+      height: 58px;
+      width: 48px;
+      margin-bottom: 10px;
     }
     .file-name {
       height: 40px;
