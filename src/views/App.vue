@@ -1,9 +1,6 @@
 <template>
   <div id="app" @dragover="f_onDragover">
-    <div class="app-global-loading" v-if="initializing">
-      <p>Initializing....</p>
-    </div>
-    <router-view @startApp="f_startApp"></router-view>
+    <router-view @startApp="f_startApp" :startingApp="initializing"></router-view>
   </div>
 </template>
 
@@ -119,6 +116,7 @@ export default {
         }`,
       )
       console.log(initConfig)
+      this.initializing = true
       return this.f_setCpool(initConfig)
         .then(() => {
           console.log('starting daemon')
@@ -133,7 +131,6 @@ export default {
         })
         .then(() => {
           console.log('data init finished')
-          this.initializing = false
           remote.getCurrentWindow().setSize(1000, 670, false)
           console.log('get user data success')
           this.$vueBus.$emit(this.$events.APP_INIT_FINISHED)
@@ -143,6 +140,7 @@ export default {
           this.$store.dispatch(ACT_SYNC_POSS_TASKS)
           // start polling task status
           this.$store.dispatch(ACT_START_POLLING_TASK_PROGRESS)
+          this.initializing = false
           if (!this.$route.path.match('home')) {
             // jumpt to file page if not at home/xx route
             return this.$router.push({ name: 'files' })
@@ -152,6 +150,8 @@ export default {
         .catch(err => {
           console.error('get user data failed, redirecting to import account page')
           console.error(err)
+          this.$message.error('App start failed.')
+          this.initializing = false
           return this.$store
             .dispatch(ACT_LOGOUT)
             .then(() => this.$router.push({ name: 'account/import' }))

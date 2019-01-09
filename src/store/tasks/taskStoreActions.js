@@ -184,11 +184,7 @@ export default taskType => {
 
     const statusGetters = context.state.taskQueue.map(task => {
       // get task status
-      if (
-        task.status === TASK_STATUS_STARTING ||
-        task.status === TASK_STATUS_RUNNING ||
-        task.status === TASK_STATUS_PAUSED
-      ) {
+      if (task.status === TASK_STATUS_STARTING || task.status === TASK_STATUS_RUNNING) {
         return getTaskProgress(task.id).catch(err => {
           console.error('get task progress failed')
           console.error(err)

@@ -73,7 +73,7 @@ export default {
       }
 
       if (rowData.status === TASK_STATUS_FAIL) {
-        return 'exeption'
+        return 'exception'
       }
 
       return 'text'

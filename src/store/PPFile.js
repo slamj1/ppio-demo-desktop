@@ -31,6 +31,10 @@ export class HomeListFile extends PPFile {
     this.metadata = fileData.metadata || null
     this.startTime = fileData.startTime || 0 // timestamp in seconds
     this.expireTime = fileData.expireTime || 0 // timestamp in seconds
+    if (!fileData.copyCount) {
+      console.error('no copy count')
+    }
+    this.copyCount = fileData.copyCount || 5
     this.duration = this.expireTime - this.startTime
     if (this.startTime && this.duration) {
       this.daysLeft = Math.ceil(

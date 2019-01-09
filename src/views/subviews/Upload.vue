@@ -95,6 +95,7 @@ import getFileType from '../../utils/getFileType'
 export default {
   name: 'upload',
   data: () => ({
+    file: null,
     filename: 'PPIO upload filename',
     customStorageDays: '1',
     chiPrice: 100,

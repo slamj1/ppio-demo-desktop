@@ -6,7 +6,7 @@
       <p class="name">PPDISK-demo</p>
     </div>
     <div class="right-content">
-      <router-view @startApp="f_startApp" @setAccount="f_setAccount" @setDatadir="f_setDatadir" :starting-app="startingApp" :cur-account="curAccount"></router-view>
+      <router-view @startApp="f_startApp" @setAccount="f_setAccount" @setDatadir="f_setDatadir" :starting-app="startingApp || initializing" :cur-account="curAccount"></router-view>
     </div>
   </div>
 </template>
@@ -26,8 +26,9 @@ export default {
       address: '',
     },
     showChooseCpool: false,
-    startingApp: false,
+    initializing: false,
   }),
+  props: ['startingApp'],
   components: {
     ChooseCoinPool,
   },
@@ -52,7 +53,7 @@ export default {
       })
     },
     f_startApp(isInit) {
-      this.startingApp = true
+      this.initializing = true
       console.log(this.bindedCpool)
       console.log(this.showChooseCpool)
       this.f_checkCpool()
@@ -70,21 +71,24 @@ export default {
               return initApp(initConfig)
                 .then(() => {
                   console.log('daemon inited')
+                  this.initializing = false
                   return this.$emit('startApp', initConfig)
                 })
                 .catch(err => {
-                  this.startingApp = false
+                  this.initializing = false
                   console.error(err)
                 })
             }
+            this.initializing = false
             return this.$emit('startApp', initConfig)
           }
+          this.initializing = false
           this.showChooseCpool = true
           return false
         })
         .catch(err => {
           console.error(err)
-          this.startingApp = false
+          this.initializing = false
           // this.showChooseCpool = true
         })
     },
@@ -96,7 +100,7 @@ export default {
     },
     f_cancelCpool() {
       this.showChooseCpool = false
-      this.startingApp = false
+      this.initializing = false
       this.bindedCpool = {
         host: '',
         address: '',

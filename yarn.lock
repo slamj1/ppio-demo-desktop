@@ -7344,9 +7344,9 @@ posix-character-classes@^0.1.0:
   version "0.1.1"
   resolved "https://registry.npmjs.org/posix-character-classes/-/posix-character-classes-0.1.1.tgz#01eac0fe3b5af71a2a6c02feabb8c1fef7e00eab"
 
-poss-sdk@^0.0.1-alpha.21:
-  version "0.0.1-alpha.21"
-  resolved "http://127.0.0.1:4000/poss-sdk/-/poss-sdk-0.0.1-alpha.21.tgz#5d91fa6908b8377192c2cda6e8bd0eff4d79f577"
+poss-sdk@^0.0.1-alpha.26:
+  version "0.0.1-alpha.26"
+  resolved "http://127.0.0.1:4000/poss-sdk/-/poss-sdk-0.0.1-alpha.26.tgz#6208fc21ec2132b1f579f4b8c1919197e6401b2c"
   dependencies:
     portscanner "^2.2.0"
     request-promise "^4.2.2"

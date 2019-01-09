@@ -19,7 +19,6 @@
 </template>
 <script>
 import Popup from '../../components/Popup'
-import StepPopup from '../../components/StepPopup'
 import { getShareCode } from '../../services/file'
 import getFileType from '../../utils/getFileType'
 
@@ -41,7 +40,6 @@ export default {
   },
   components: {
     Popup,
-    StepPopup,
   },
   mounted() {
     this.f_genShareCode()

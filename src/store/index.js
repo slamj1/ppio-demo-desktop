@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import createLogger from 'vuex/dist/logger'
+// import createLogger from 'vuex/dist/logger'
 import storage from '../utils/storage'
 
 import userStore from './user'
@@ -32,16 +32,16 @@ import { TASK_STATUS_SUCC, TASK_STATUS_PAUSED, TASK_STATUS_FAIL } from '../const
 
 Vue.use(Vuex)
 
-const logger = createLogger({
-  collapsed: false,
-  transformer(state) {
-    return state
-  },
-  mutationTransformer(mutation) {
-    return mutation
-  },
-  logger: console,
-})
+// const logger = createLogger({
+//   collapsed: false,
+//   transformer(state) {
+//     return state
+//   },
+//   mutationTransformer(mutation) {
+//     return mutation
+//   },
+//   logger: console,
+// })
 
 const initialState = () => ({
   appMode: process.env.IS_CPOOL === 'true' ? APP_MODE_COINPOOL : APP_MODE_NON_COINPOOL,
@@ -52,7 +52,7 @@ const initialState = () => ({
 
 export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
-  plugins: [statePersistence, taskSync, logger],
+  plugins: [statePersistence, taskSync],
   state: initialState,
   modules: {
     user: userStore,
@@ -82,19 +82,21 @@ export default new Vuex.Store({
   actions: {
     [ACT_CLEAR_DATA](context) {
       console.log('clearing data action for user ', context.state.user.uid)
-      storage
-        .setItem(`${USER_STATE_PERSIST_KEY}_${context.state.user.uid}`, context.state)
-        .then(() => {
-          context.commit(MUT_CLEAR_DATA)
-          context.commit(MUT_CLEAR_USER_DATA)
-          context.commit(MUT_CLEAR_FILE_DATA)
-          context.commit(MUT_CLEAR_TASK_DATA)
-          return true
-        })
-        .catch(err => {
-          console.error(err)
-          return Promise.reject(err)
-        })
+      if (context.state.user.uid.length > 0) {
+        storage
+          .setItem(`${USER_STATE_PERSIST_KEY}_${context.state.user.uid}`, context.state)
+          .then(() => {
+            context.commit(MUT_CLEAR_DATA)
+            context.commit(MUT_CLEAR_USER_DATA)
+            context.commit(MUT_CLEAR_FILE_DATA)
+            context.commit(MUT_CLEAR_TASK_DATA)
+            return true
+          })
+          .catch(err => {
+            console.error(err)
+            return Promise.reject(err)
+          })
+      }
     },
     [ACT_START_POLLING_CHI_PRICE]({ commit }) {
       console.log('start polling chi price')
@@ -120,7 +122,7 @@ export default new Vuex.Store({
       console.log('syncing task list from poss')
       return listTasks().then(res => {
         console.log(res)
-        res.map(task => {
+        res.filter(task => task.type === 'Put' || task.type === 'Get').map(task => {
           let taskQueue, finishedQueue
           let matchedLocalTask = null
           let matchedLocalTaskIdx = -1

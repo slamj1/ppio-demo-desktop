@@ -45,6 +45,7 @@
     <Renew v-if="showPopups.renewFile" :file="renewingFile"></Renew>
     <Rename v-if="showPopups.renameFile" :file="renamingFile"></Rename>
     <Share v-if="showPopups.shareFile" :file="sharingFile" :fileIndex="sharingFileIndex"></Share>
+    <Delete v-if="showPopups.deleteFile" :file="deletingFile" :fileIndex="deletingFileIndex"></Delete>
     <Feedback v-if="showFeedback" @close="showFeedback = false"></Feedback>
   </el-container>
 </template>
@@ -71,6 +72,7 @@ import Renew from './subviews/Renew'
 import Rename from './subviews/Rename'
 import Share from './subviews/Share'
 import Upload from './subviews/Upload'
+import Delete from './subviews/Delete'
 import BillingRecords from './BillingRecords'
 import Feedback from './Feedback'
 
@@ -86,6 +88,7 @@ export default {
         renewFile: false,
         shareFile: false,
         uploadFile: false,
+        deleteFile: false,
         billingRecords: false,
         renameFile: false,
       },
@@ -94,6 +97,8 @@ export default {
       sharingFileIndex: -1,
       renamingFile: null,
       renewingFile: null,
+      deletingFile: null,
+      deletingFileIndex: -1,
       uploadingFilePath: '',
       showFeedback: false,
     }
@@ -108,6 +113,7 @@ export default {
     Share,
     Upload,
     Feedback,
+    Delete,
   },
   computed: {
     ...mapState({
@@ -293,6 +299,29 @@ export default {
       this.$vueBus.$on(this.$events.CLOSE_BILLING_RECORDS, () => {
         console.log('close billing records')
         this.showPopups.billingRecords = false
+      })
+
+      // delete file
+      // open delete file
+      this.$vueBus.$on(this.$events.OPEN_DELETE_FILE, payload => {
+        console.log('open delete file ', payload.file)
+        this.showPopups.deleteFile = true
+        this.deletingFile = payload.file
+        this.deletingFileIndex = payload.fileIndex
+      })
+      // close delete file
+      this.$vueBus.$on(this.$events.CLOSE_DELETE_FILE, () => {
+        console.log('close delete file')
+        this.showPopups.deleteFile = false
+        this.deletingFile = null
+        this.deletingFileIndex = -1
+      })
+      // deleted file
+      this.$vueBus.$on(this.$events.DELETE_FILE_DONE, () => {
+        console.log('delete file done')
+        this.showPopups.deleteFile = false
+        this.deletingFile = null
+        this.deletingFileIndex = -1
       })
     },
   },

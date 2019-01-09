@@ -44,7 +44,7 @@
 import { mapState, mapActions } from 'vuex'
 import { remote } from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
-import { ACT_GET_FILE_LIST, ACT_REMOVE_FILE } from '../constants/store'
+import { ACT_GET_FILE_LIST } from '../constants/store'
 import FileItem from '../components/FileItem'
 import * as FILE_STATUS from '../constants/file'
 
@@ -248,38 +248,42 @@ export default {
       }
       console.log('deleting file')
       console.log(this.operatingFile)
-      dialog.showMessageBox(
-        this.$remote.getCurrentWindow(),
-        {
-          type: 'info',
-          buttons: ['ok', 'cancel'],
-          defaultId: 0,
-          message: `Are you sure to delete "${this.operatingFile.filename}"?`,
-        },
-        index => {
-          if (index === 0) {
-            this.$store
-              .dispatch(ACT_REMOVE_FILE, {
-                file: this.operatingFile,
-                fileIndex: this.fileList.indexOf(this.operatingFile),
-              })
-              .then(() => {
-                this.$message.success({
-                  message: 'delete file success',
-                  duration: 2000,
-                })
-                return this.f_selectFile(-1)
-              })
-              .catch(err => {
-                console.error(err)
-                this.$message.error({ message: 'Deletion failed!', duration: 2000 })
-              })
-          }
-        },
-      )
+      this.$vueBus.$emit(this.$events.OPEN_DELETE_FILE, {
+        file: this.operatingFile,
+        fileIndex: this.fileList.indexOf(this.operatingFile),
+      })
+      // dialog.showMessageBox(
+      //   this.$remote.getCurrentWindow(),
+      //   {
+      //     type: 'info',
+      //     buttons: ['ok', 'cancel'],
+      //     defaultId: 0,
+      //     message: `Are you sure to delete "${this.operatingFile.filename}"?`,
+      //   },
+      //   index => {
+      //     if (index === 0) {
+      //       this.$store
+      //         .dispatch(ACT_REMOVE_FILE, {
+      //           file: this.operatingFile,
+      //           fileIndex: this.fileList.indexOf(this.operatingFile),
+      //         })
+      //         .then(() => {
+      //           this.$message.success({
+      //             message: 'delete file success',
+      //             duration: 2000,
+      //           })
+      //           return this.f_selectFile(-1)
+      //         })
+      //         .catch(err => {
+      //           console.error(err)
+      //           this.$message.error({ message: 'Deletion failed!', duration: 2000 })
+      //         })
+      //     }
+      //   },
+      // )
     },
     f_chooseUploadFile() {
-      remote.dialog.showOpenDialog(
+      dialog.showOpenDialog(
         remote.getCurrentWindow(),
         {
           message: 'Select the file to upload',

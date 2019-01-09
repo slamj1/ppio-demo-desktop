@@ -21,6 +21,9 @@ const EVENTS = {
   UPLOAD_FILE_DONE: 'done-upload-file',
   OPEN_BILLING_RECORDS: 'open-billing-records',
   CLOSE_BILLING_RECORDS: 'close-billing-records',
+  OPEN_DELETE_FILE: 'open-delete-file',
+  CLOSE_DELETE_FILE: 'close-delete-file',
+  DELETE_FILE_DONE: 'done-delete-fine',
 }
 
 export default EVENTS

@@ -93,13 +93,13 @@ export default {
     PaymentTable,
   },
   computed: {
-    fileType() {
+    fileType: function() {
       if (this.file) {
         return getFileType(this.file.filename)
       }
       return 'plain'
     },
-    recChiPrice() {
+    recChiPrice: function() {
       return this.$store.state.recChiPrice.storage
     },
     totalCost: function() {
@@ -108,7 +108,7 @@ export default {
     storageCost: function() {
       return chiToPPCoin(this.storageChi * this.chiPrice).toFixed(4)
     },
-    fileSizeStr() {
+    fileSizeStr: function() {
       return filesize(this.file.size)
     },
     paymentData: function() {
@@ -122,7 +122,7 @@ export default {
         totalCost: this.totalCost,
       }
     },
-    storageDays() {
+    storageDays: function() {
       let days = 0
       switch (this.radio) {
         case 1:
@@ -141,7 +141,7 @@ export default {
       }
       return days
     },
-    storageTimeStr() {
+    storageTimeStr: function() {
       if (!this.storageDays) {
         return ''
       }
@@ -153,7 +153,7 @@ export default {
         return `${this.storageDays} Days`
       }
     },
-    taskOptions() {
+    taskOptions: function() {
       return {
         storageTime: this.storageDays ? this.storageDays * 24 * 3600 : 0,
         copyCount: parseInt(this.copyCount),

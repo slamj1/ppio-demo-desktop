@@ -13,7 +13,7 @@
           min-width="280">
       </el-table-column>
     </el-table>
-    <div class="total-cost">
+    <div v-if="paymentData.totalCost !== undefined" class="total-cost">
       <p><b>Total:</b> {{paymentData.totalCost}} PPCoin</p>
     </div>
   </div>

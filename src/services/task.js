@@ -28,7 +28,7 @@ export const resumeTask = taskId => {
 export const deleteTask = taskId => {
   console.log('deleting task')
   console.log(taskId)
-  return poss.deleteTask({ taskId })
+  return poss.deleteTaskSync({ taskId })
 }
 
 export const getTaskProgress = taskId => {

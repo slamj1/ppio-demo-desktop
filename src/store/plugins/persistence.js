@@ -21,8 +21,6 @@ export default store => {
           .setItem(APP_STATE_PERSIST_KEY, state)
           .then(res => {
             console.log('app state persisted')
-            console.log(res)
-            console.log(state)
             return res
           })
           .catch(err => {

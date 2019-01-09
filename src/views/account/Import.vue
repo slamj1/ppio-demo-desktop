@@ -35,6 +35,9 @@ export default {
     importing: false,
   }),
   props: ['startingApp'],
+  activated() {
+    this.importing = false
+  },
   methods: {
     f_import() {
       if (!bip39.validateMnemonic(this.mnemonic)) {
@@ -67,7 +70,7 @@ export default {
                 return this.$emit('startApp', true)
               }
             }
-            const datadir = createUserDir()
+            const datadir = createUserDir(address)
             if (datadir) {
               this.$emit('setDatadir', datadir)
               return this.$emit('startApp', true)

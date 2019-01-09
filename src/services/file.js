@@ -47,22 +47,23 @@ export const getObjectList = bucket =>
         // bid，part-deal, deal, pending-end, end
         getObjectStatus(object.key)
           .then(res => {
-            console.log('get contract details success for: ', object.key)
+            console.log('get object status success for: ', object.key)
             console.log(res)
             const expireTime = Math.round(new Date(res.expires).getTime() / 1000)
-            return Object.assign(object, { expireTime })
+            const copyCount = res.contracts[0].Contracts.length
+            return Object.assign(object, { expireTime, copyCount })
           })
-          .then(object =>
-            headObject(object.key).then(res => {
-              console.log('get object details success for: ', object.key)
-              console.log(res)
-              const finalObject = Object.assign({}, object, {
-                metadata: res.metadata,
-              })
-              console.log(finalObject)
-              return finalObject
-            }),
-          )
+          // .then(object =>
+          //   headObject(object.key).then(res => {
+          //     console.log('head object success for: ', object.key)
+          //     console.log(res)
+          //     const finalObject = Object.assign({}, object, {
+          //       metadata: res.metadata,
+          //     })
+          //     console.log(finalObject)
+          //     return finalObject
+          //   }),
+          // )
           .catch(err => {
             console.log('get object details error')
             console.error(err)
@@ -83,7 +84,7 @@ export const getObjectList = bucket =>
 export const getObjectStatus = objectKey => {
   console.log('get object status')
   console.log(objectKey)
-  return poss.objectStatus({ key: objectKey }).catch(err => {
+  return poss.objectStatusSync({ key: objectKey }).catch(err => {
     console.error('get upload object status error')
     console.error(err)
     return Promise.reject(err)
@@ -106,7 +107,17 @@ export const renameFile = (oriKey, newKey) => {
 
 export const deleteFile = objectKey => {
   console.log('delete file service fired ', objectKey)
-  return poss.deleteObject({ key: objectKey })
+  return poss
+    .deleteObject({ key: objectKey })
+    .then(taskId => {
+      console.log('Delete object task created. Task id: ', taskId)
+      return taskId
+    })
+    .catch(err => {
+      console.error('delete object error')
+      console.error(err)
+      throw err
+    })
 }
 
 export const renewFile = params => {
