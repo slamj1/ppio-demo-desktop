@@ -41,6 +41,7 @@ export default taskType => {
     }
     state.taskQueue = state.taskQueue.map(storageTaskConverter)
     state.finishedQueue = state.finishedQueue.map(storageTaskConverter)
+    state.updateTaskTimer = null
   }
 
   const restoreTasks = (state, payload) => {

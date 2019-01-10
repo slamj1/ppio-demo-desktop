@@ -43,40 +43,7 @@ export const getObjectList = bucket =>
         filename: object.key.split('/').slice(-1)[0],
         size: object.length,
       }))
-      const getDetailsReqArr = objectList.map(object =>
-        // bid，part-deal, deal, pending-end, end
-        getObjectStatus(object.key)
-          .then(res => {
-            console.log('get object status success for: ', object.key)
-            console.log(res)
-            const expireTime = Math.round(new Date(res.expires).getTime() / 1000)
-            const copyCount = res.contracts[0].Contracts.length
-            return Object.assign(object, { expireTime, copyCount })
-          })
-          // .then(object =>
-          //   headObject(object.key).then(res => {
-          //     console.log('head object success for: ', object.key)
-          //     console.log(res)
-          //     const finalObject = Object.assign({}, object, {
-          //       metadata: res.metadata,
-          //     })
-          //     console.log(finalObject)
-          //     return finalObject
-          //   }),
-          // )
-          .catch(err => {
-            console.log('get object details error')
-            console.error(err)
-            return Promise.resolve(null)
-          }),
-      )
-
-      return Promise.all(getDetailsReqArr).then(detailedObjectList => {
-        console.log(detailedObjectList)
-        return detailedObjectList
-          .filter(res => !!res)
-          .sort((a, b) => a.startTime - b.startTime)
-      })
+      return objectList.filter(res => !!res).sort((a, b) => a.startTime - b.startTime)
     }
     return []
   })
@@ -84,11 +51,19 @@ export const getObjectList = bucket =>
 export const getObjectStatus = objectKey => {
   console.log('get object status')
   console.log(objectKey)
-  return poss.objectStatusSync({ key: objectKey }).catch(err => {
-    console.error('get upload object status error')
-    console.error(err)
-    return Promise.reject(err)
-  })
+  return poss
+    .objectStatusSync({ key: objectKey })
+    .then(res => {
+      console.log('get object status success for: ', objectKey)
+      console.log(res)
+      const expireTime = Math.round(new Date(res.expires).getTime() / 1000)
+      return { expireTime }
+    })
+    .catch(err => {
+      console.error('get upload object status error')
+      console.error(err)
+      return Promise.reject(err)
+    })
 }
 
 export const headObject = objectKey => {
@@ -118,6 +93,15 @@ export const deleteFile = objectKey => {
       console.error(err)
       throw err
     })
+}
+
+export const deleteFileSync = objectKey => {
+  console.log('delete file (sync) service fired ', objectKey)
+  return poss.deleteObjectSync({ key: objectKey }).catch(err => {
+    console.error('delete object error')
+    console.error(err)
+    throw err
+  })
 }
 
 export const renewFile = params => {

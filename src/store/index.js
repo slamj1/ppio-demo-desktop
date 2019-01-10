@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import createLogger from 'vuex/dist/logger'
 import storage from '../utils/storage'
 
 import userStore from './user'
@@ -31,17 +30,6 @@ import { listTasks } from '../services/task'
 import { TASK_STATUS_SUCC, TASK_STATUS_PAUSED, TASK_STATUS_FAIL } from '../constants/task'
 
 Vue.use(Vuex)
-
-// const logger = createLogger({
-//   collapsed: false,
-//   transformer(state) {
-//     return state
-//   },
-//   mutationTransformer(mutation) {
-//     return mutation
-//   },
-//   logger: console,
-// })
 
 const initialState = () => ({
   appMode: process.env.IS_CPOOL === 'true' ? APP_MODE_COINPOOL : APP_MODE_NON_COINPOOL,

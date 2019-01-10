@@ -35,8 +35,10 @@ export default {
         return 'Expired'
       } else if (this.file.status === this.FILE_STATUS_BROKEN) {
         return 'Pending or lost'
-      } else {
+      } else if (this.file.daysLeft >= 0) {
         return `${this.file.daysLeft} days left`
+      } else {
+        return ''
       }
     },
   },

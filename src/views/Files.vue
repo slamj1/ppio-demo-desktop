@@ -3,27 +3,27 @@
     <el-header class="app-header" @click.native.stop="">
       <div class="header-btn-group">
         <template v-if="selectedFileKey !== ''">
-          <el-button size="small" type="primary" :loading="preparingDl" @click="f_download"><i class="app-icon icon-download"></i> Download</el-button>
-          <el-button size="small" type="primary" plain :loading="preparingShare" @click="f_share"><i class="app-icon icon-share"></i> Share</el-button>
+          <el-button size="small" type="primary" @click="f_download"><i class="app-icon icon-download"></i> Download</el-button>
+          <el-button size="small" type="primary" plain @click="f_share"><i class="app-icon icon-share"></i> Share</el-button>
           <el-dropdown class="header-dropdown-menu" size="small" trigger="click">
               <span class="el-dropdown-link">
                 More<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item v-if="!isCpoolMode" :loading="preparingRenew" @click.native="f_renew">Renew</el-dropdown-item>
-              <el-dropdown-item :loading="preparingDel" @click.native="f_delete">Delete</el-dropdown-item>
+              <el-dropdown-item v-if="!isCpoolMode" @click.native="f_renew">Renew</el-dropdown-item>
+              <el-dropdown-item @click.native="f_delete">Delete</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
         <template v-else>
-          <el-button size="small" type="primary" :loading="preparingUl" @click="f_chooseUploadFile"><i class="app-icon icon-upload"></i> Upload</el-button>
-          <el-button size="small" type="primary" plain :loading="preparingGet" @click="f_get"><i class="app-icon icon-get"></i> Get</el-button>
+          <el-button size="small" type="primary" @click="f_chooseUploadFile"><i class="app-icon icon-upload"></i> Upload</el-button>
+          <el-button size="small" type="primary" plain @click="f_get"><i class="app-icon icon-get"></i> Get</el-button>
         </template>
       </div>
       <el-button class="refresh-btn" icon="el-icon-refresh" circle @click="f_refreshList"></el-button>
     </el-header>
     <el-main class="app-main" @dragover.native="f_onDragover" @drop.native="f_onDrop">
-      <div v-if="fileList.length === 0" class="empty">
+      <div v-if="fileList.length === 0 && !fetchingData" class="empty">
         <img src="../assets/img/files-empty.png" alt="empty">
         <p>You haven't uploaded any file yet.</p>
       </div>
@@ -55,13 +55,6 @@ export default {
     return {
       mode: APP_MODE_COINPOOL,
       APP_MODE_COINPOOL: APP_MODE_COINPOOL,
-      preparingDl: false,
-      preparingShare: false,
-      preparingRename: false,
-      preparingRenew: false,
-      preparingDel: false,
-      preparingUl: false,
-      preparingGet: false,
       selectedFileKey: '',
       refreshingData: false,
       fetchingData: false,

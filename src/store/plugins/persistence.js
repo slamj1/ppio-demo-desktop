@@ -1,5 +1,6 @@
 import throttle from 'lodash.throttle'
 import { APP_STATE_PERSIST_KEY } from '../../constants/constants'
+import { MUT_SET_POLLING_TASK_TIMER } from '../../constants/store'
 import storage from '../../utils/storage'
 
 export default store => {
@@ -14,6 +15,11 @@ export default store => {
           !mutation.type.match('clear') // There are 4 clear mutation types, all matches "clear", will be triggered when logging out.
         ) {
           console.log('not setting state')
+          return
+        }
+
+        if (mutation.type === MUT_SET_POLLING_TASK_TIMER) {
+          console.log(`not setting state, (${mutation.type})`)
           return
         }
         console.log('setting app state to storage')

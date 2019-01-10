@@ -42,6 +42,10 @@ module.exports = {
         },
         win: {
           target: ['nsis'],
+          icon: 'public/icons/icon.ico',
+        },
+        linux: {
+          target: ['deb'],
         },
         asarUnpack: [
           '**/node_modules/poss-sdk/*',

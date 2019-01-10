@@ -2,6 +2,7 @@ import {
   MUT_SET_FILE_LIST,
   MUT_REMOVE_FILE,
   ACT_GET_FILE_LIST,
+  ACT_GET_FILE_LIST_DETAILS,
   ACT_REFRESH_FILE_LIST,
   ACT_REMOVE_FILE,
   ACT_RENAME_FILE,
@@ -10,7 +11,7 @@ import {
   MUT_REPLACE_STATE_HOOK,
   UL_TASK,
 } from '../constants/store'
-import { getObjectList, renameFile } from '../services/file'
+import { getObjectList, getObjectStatus, renameFile } from '../services/file'
 import { HomeListFile } from './PPFile'
 
 const initialState = () => ({
@@ -30,6 +31,8 @@ const store = {
       state.fileList = state.fileList.map(fileConverter)
     },
     [MUT_SET_FILE_LIST](state, fileList) {
+      console.log('setting file list to store')
+      console.log(fileList)
       state.fileList = fileList.map(file => new HomeListFile(file))
     },
     [MUT_REMOVE_FILE](state, idx) {
@@ -54,14 +57,33 @@ const store = {
     [ACT_GET_FILE_LIST](context) {
       return getObjectList()
         .then(fileList => {
+          console.log('get file list done')
           console.log(fileList)
-          return context.commit(MUT_SET_FILE_LIST, fileList)
+          context.commit(MUT_SET_FILE_LIST, fileList)
+          context.dispatch(ACT_GET_FILE_LIST_DETAILS)
+          return fileList
         })
         .catch(err => {
           console.log('set file list error')
           console.log(err)
           return Promise.reject(err)
         })
+    },
+    [ACT_GET_FILE_LIST_DETAILS](context) {
+      console.log('getting object details')
+      const getDetailsReqArr = context.state.fileList.map(file =>
+        getObjectStatus(file.key)
+          .then(res => Object.assign({}, file, { expireTime: res.expireTime }))
+          .catch(err => {
+            console.log('get object details error')
+            console.error(err)
+            return Promise.resolve(file)
+          }),
+      )
+      return Promise.all(getDetailsReqArr).then(detailedFileList => {
+        console.log(detailedFileList)
+        return context.commit(MUT_SET_FILE_LIST, detailedFileList)
+      })
     },
     /**
      * @deprecated Renaming a file has been deprecated for IndexData cannot be synced automatically

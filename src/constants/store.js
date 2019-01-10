@@ -22,6 +22,7 @@ export const MUT_CLEAR_USER_DATA = 'mutation_clearUserData'
 
 export const MUT_SET_FILE_LIST = 'mutation_setFileList'
 export const ACT_GET_FILE_LIST = 'action_getFileList'
+export const ACT_GET_FILE_LIST_DETAILS = 'action_getFileListDetails'
 export const MUT_REMOVE_FILE = 'mutation_removeFile'
 export const ACT_REMOVE_FILE = 'action_removeFile'
 export const ACT_RENAME_FILE = 'action_renameFile'
@@ -34,6 +35,8 @@ export const MUT_CLEAR_FILE_DATA = 'mutation_clearFileData'
 export const ACT_RESTORE_BG_TASKS = 'action_restoreBackgroundTasks'
 export const ACT_SYNC_POSS_TASKS = 'action_syncTasksFromPoss'
 export const ACT_START_POLLING_TASK_PROGRESS = 'action_startPollingTaskProgress'
+export const MUT_SET_POLLING_TASK_TIMER = 'mutation_setPollingTaskTimer'
+
 export const DL_TASK = {
   MUT_RESTORE_BG_TASKS: 'mutation_restoreBackgroundDownloadTask',
   MUT_ADD_TASK: 'mutation_addDownloadTask',

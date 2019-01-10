@@ -7,6 +7,7 @@ import {
   TASK_TYPE_DOWNLOAD,
   ACT_RESTORE_BG_TASKS,
   ACT_START_POLLING_TASK_PROGRESS,
+  MUT_SET_POLLING_TASK_TIMER,
 } from '../../constants/store'
 import { startUpload } from '../../services/upload'
 import { startDownload } from '../../services/download'
@@ -58,8 +59,7 @@ export default taskType => {
         return deleteTask(err.taskId)
           .then(() => {
             console.log('deleted task ', err.taskId)
-            deleteFile(payload.file.key)
-            return Promise.reject(err.error)
+            return deleteFile(payload.file.key)
           })
           .catch(err => {
             console.error('delete task failed')
@@ -132,6 +132,7 @@ export default taskType => {
     if (!taskToDelete) {
       return Promise.reject(new Error('task not exist!'))
     }
+    context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, { idx, status: TASK_STATUS_DELETING })
     return deleteTask(taskToDelete.id)
       .then(() => {
         console.log('deleted task ', taskToDelete.id)
@@ -151,6 +152,8 @@ export default taskType => {
   }
   const a_getTaskProgress = context => {
     const failNotif = task => {
+      console.log('show fail notification')
+      console.log(task)
       const notifContent =
         taskType === TASK_TYPE_UPLOAD ? 'Upload failed!' : 'Download failed!'
       const taskPageName = taskType === TASK_TYPE_UPLOAD ? 'upload-list' : 'download-list'
@@ -284,13 +287,17 @@ export default taskType => {
     }
   }
 
-  const a_startTasksPolling = ({ dispatch }) => {
-    console.log('start polling tasks')
+  const a_startTasksPolling = ({ state, dispatch, commit }) => {
+    if (state.updateTaskTimer) {
+      console.log('task polling timer exists')
+      return
+    }
     const updateTasks = () => {
       dispatch(STORE_KEYS.ACT_GET_PROGRESS).catch(err => {
         console.error(err)
       })
-      setTimeout(updateTasks, TASK_GET_PROGRESS_INTERVAL)
+      const timer = setTimeout(updateTasks, TASK_GET_PROGRESS_INTERVAL)
+      commit(MUT_SET_POLLING_TASK_TIMER, timer)
     }
     updateTasks()
   }

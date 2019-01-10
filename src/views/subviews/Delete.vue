@@ -7,7 +7,7 @@
           <p class="delete-hint">Are you sure to delete this file?</p>
           <span class="file-icon" :class="'file-icon_' + fileType"></span>
           <p class="file-name">{{file && file.filename}}</p>
-          <PaymentTable :payment-data="paymentData"></PaymentTable>
+          <!--<PaymentTable :payment-data="paymentData"></PaymentTable>-->
         </div>
         <template slot="footer">
           <el-button class="button" :loading="preparingDelete" @click="f_confirm" size="mini" type="primary">Yes</el-button>
@@ -38,7 +38,7 @@ import filesize from 'filesize'
 import Popup from '../../components/Popup'
 import PaymentTable from '../../components/PaymentTable'
 import getFileType from '../../utils/getFileType'
-import { getEstimateRefund } from '../../services/upload'
+// import { getEstimateRefund } from '../../services/upload'
 import { deleteFile } from '../../services/file'
 import { getTaskProgress } from '../../services/task'
 import { ACT_REMOVE_FILE } from '../../constants/store'
@@ -67,46 +67,36 @@ export default {
     PaymentTable,
   },
   computed: {
-    steps: function() {
-      if (this.$isCpoolPackage) {
-        return ['Confirm', 'Delete']
-      } else {
-        return ['Confirm', 'Payment', 'Delete']
-      }
-    },
     fileType: function() {
       if (this.file) {
         return getFileType(this.file.filename)
       }
       return 'plain'
     },
-    recChiPrice: function() {
-      return this.$store.state.recChiPrice.storage
-    },
     fileSizeStr: function() {
       return filesize(this.file.size)
     },
-    storageTimeLeft: function() {
-      return this.file.expireTime - Date.now()
-    },
-    storageTimeStr: function() {
-      const daysLeft = Math.ceil((this.storageTimeLeft / 60) * 60 * 24)
-      console.log('storage days: ', daysLeft)
-      if (daysLeft > 1) {
-        return `${daysLeft} Days`
-      }
-      return `${daysLeft} Day`
-    },
-    paymentData: function() {
-      return {
-        list: [
-          {
-            product: `Storage refund: ${this.fileSizeStr}/${this.storageTimeStr}`,
-            fee: `${this.storageRefund} PPCoin(Funds)`,
-          },
-        ],
-      }
-    },
+    // storageTimeLeft: function() {
+    //   return this.file.expireTime - Date.now()
+    // },
+    // storageTimeStr: function() {
+    //   const daysLeft = Math.ceil((this.storageTimeLeft / 60) * 60 * 24)
+    //   console.log('storage days: ', daysLeft)
+    //   if (daysLeft > 1) {
+    //     return `${daysLeft} Days`
+    //   }
+    //   return `${daysLeft} Day`
+    // },
+    // paymentData: function() {
+    //   return {
+    //     list: [
+    //       {
+    //         product: `Storage refund: ${this.fileSizeStr}/${this.storageTimeStr}`,
+    //         fee: `${this.storageRefund} PPCoin(Funds)`,
+    //       },
+    //     ],
+    //   }
+    // },
     deleteStatus: function() {
       if (this.deleteFinished) {
         return 'success'
@@ -129,27 +119,28 @@ export default {
   },
   mounted() {
     console.log(this.file)
-    this.f_estimateRefund()
+    // this.f_estimateRefund()
   },
   methods: {
-    f_estimateRefund() {
-      if (!this.file) {
-        return
-      }
-      return getEstimateRefund({
-        size: this.file.size,
-        copyCount: this.file.copyCount,
-        storageTime: this.storageTimeLeft,
-      }).then(res => {
-        console.log(res)
-        this.storageRefund = res
-        return res
-      })
-    },
+    // f_estimateRefund() {
+    //   if (!this.file) {
+    //     return
+    //   }
+    //   return getEstimateRefund({
+    //     size: this.file.size,
+    //     copyCount: this.file.copyCount,
+    //     storageTime: this.storageTimeLeft,
+    //   }).then(res => {
+    //     console.log(res)
+    //     this.storageRefund = res
+    //     return res
+    //   })
+    // },
     f_close() {
       if (this.deleting) {
         return
       }
+      clearTimeout(this.deleteTimer)
       this.$vueBus.$emit(this.$events.CLOSE_DELETE_FILE)
     },
     f_confirm() {
@@ -180,6 +171,7 @@ export default {
             this.deleteFinished = true
             this.deleteProgress = 100
             this.deleting = false
+            clearTimeout(this.deleteTimer)
             this.$store.dispatch(ACT_REMOVE_FILE, {
               file: this.file,
               fileIndex: this.fileIndex,
@@ -188,6 +180,7 @@ export default {
             this.deleteFailed = true
             this.failMsg = res.errMsg || 'deletion failed'
             this.deleting = false
+            clearTimeout(this.deleteTimer)
           } else if (res.transferred && res.total) {
             this.deleteProgress = res.transferred / res.total
             this.deleteTimer = setTimeout(() => {

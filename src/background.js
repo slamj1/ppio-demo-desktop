@@ -1,5 +1,5 @@
 'use strict'
-import { app, protocol, Menu } from 'electron'
+import { app, protocol, Menu, globalShortcut, BrowserWindow } from 'electron'
 import poss from './background/ppiosdk'
 import TaskManager from './background/taskManager'
 import windowManager from './background/windowManager'
@@ -65,6 +65,11 @@ app.on('activate', () => {
 app.on('ready', () => {
   console.log('app is ready')
   Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate))
+  globalShortcut.register('CommandOrControl+Alt+I', () => {
+    console.log('open devtools')
+    let focusWin = BrowserWindow.getFocusedWindow()
+    focusWin && focusWin.toggleDevTools()
+  })
   return windowManager.createWindow()
 })
 
