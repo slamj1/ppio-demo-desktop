@@ -40,6 +40,7 @@ export default {
         })
         .catch(err => {
           console.error(err)
+          this.submitting = false
           this.$message.success('We have received your feedback, thanks!')
         })
     },

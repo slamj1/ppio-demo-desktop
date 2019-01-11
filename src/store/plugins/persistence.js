@@ -1,6 +1,6 @@
 import throttle from 'lodash.throttle'
 import { APP_STATE_PERSIST_KEY } from '../../constants/constants'
-import { MUT_SET_POLLING_TASK_TIMER } from '../../constants/store'
+import { UL_TASK, DL_TASK } from '../../constants/store'
 import storage from '../../utils/storage'
 
 export default store => {
@@ -18,7 +18,10 @@ export default store => {
           return
         }
 
-        if (mutation.type === MUT_SET_POLLING_TASK_TIMER) {
+        if (
+          mutation.type === UL_TASK.MUT_SET_POLLING_TASK_TIMER ||
+          mutation.type === DL_TASK.MUT_SET_POLLING_TASK_TIMER
+        ) {
           return
         }
         console.log('setting app state to storage')

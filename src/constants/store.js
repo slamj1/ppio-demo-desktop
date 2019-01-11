@@ -35,7 +35,6 @@ export const MUT_CLEAR_FILE_DATA = 'mutation_clearFileData'
 export const ACT_RESTORE_BG_TASKS = 'action_restoreBackgroundTasks'
 export const ACT_SYNC_POSS_TASKS = 'action_syncTasksFromPoss'
 export const ACT_START_POLLING_TASK_PROGRESS = 'action_startPollingTaskProgress'
-export const MUT_SET_POLLING_TASK_TIMER = 'mutation_setPollingTaskTimer'
 
 export const DL_TASK = {
   MUT_RESTORE_BG_TASKS: 'mutation_restoreBackgroundDownloadTask',
@@ -56,6 +55,7 @@ export const DL_TASK = {
   ACT_GET_PROGRESS: 'action_getDownloadProgress',
   GET_TASK_COUNT: 'getter_downloadTaskCount',
   MUT_SET_TASK_STATUS: 'mutation_setDownloadTaskStatus',
+  MUT_SET_POLLING_TASK_TIMER: 'mutation_setPollingDownloadTaskTimer',
 }
 
 export const UL_TASK = {
@@ -77,6 +77,7 @@ export const UL_TASK = {
   ACT_GET_PROGRESS: 'action_getUploadProgress',
   GET_TASK_COUNT: 'getter_uploadTaskCount',
   MUT_SET_TASK_STATUS: 'mutation_setUploadTaskStatus',
+  MUT_SET_POLLING_TASK_TIMER: 'mutation_setPollingUploadTaskTimer',
 }
 
 export const TASK_TYPE_DOWNLOAD = 'taskType_download'

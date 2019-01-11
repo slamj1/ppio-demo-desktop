@@ -6,7 +6,6 @@ import {
   MUT_CLEAR_TASK_DATA,
   TASK_TYPE_UPLOAD,
   TASK_TYPE_DOWNLOAD,
-  MUT_SET_POLLING_TASK_TIMER,
 } from '../../constants/store'
 
 export default class TaskStore {
@@ -22,7 +21,8 @@ export default class TaskStore {
     }
     // define store data
     const initialState = () => ({
-      updateTaskTimer: null,
+      updateUploadTaskTimer: null,
+      updateDownloadTaskTimer: null,
       taskQueue: [],
       finishedQueue: [],
     })
@@ -41,20 +41,10 @@ export default class TaskStore {
         state[key] = initState[key]
       })
       // stop task status polling
-      if (state.updateTaskTimer) {
-        clearTimeout(state.updateTaskTimer)
-      }
-      state.updateTaskTimer = null
-    }
-    this.mutations[MUT_SET_POLLING_TASK_TIMER] = (state, timer) => {
-      if (timer) {
-        state.updateTaskTimer = timer
-        return
-      }
-      if (state.updateTaskTimer) {
-        clearTimeout(state.updateTaskTimer)
-      }
-      state.updateTaskTimer = null
+      clearTimeout(state.updateUploadTaskTimer)
+      clearTimeout(state.updateDownloadTaskTimer)
+      state.updateUploadTaskTimer = null
+      state.updateDownloadTaskTimer = null
     }
     this.actions = taskActions(TASK_TYPE)
   }

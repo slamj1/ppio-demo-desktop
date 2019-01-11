@@ -7,7 +7,6 @@ import {
   TASK_TYPE_DOWNLOAD,
   ACT_RESTORE_BG_TASKS,
   ACT_START_POLLING_TASK_PROGRESS,
-  MUT_SET_POLLING_TASK_TIMER,
 } from '../../constants/store'
 import { startUpload } from '../../services/upload'
 import { startDownload } from '../../services/download'
@@ -292,16 +291,21 @@ export default taskType => {
   }
 
   const a_startTasksPolling = ({ state, dispatch, commit }) => {
-    if (state.updateTaskTimer) {
-      console.log('task polling timer exists')
+    if (taskType === TASK_TYPE_UPLOAD && state.updateUploadTaskTimer) {
+      console.log('upload task polling timer exists')
       return
     }
+    if (taskType === TASK_TYPE_DOWNLOAD && state.updateDownloadTaskTimer) {
+      console.log('download task polling timer exists')
+      return
+    }
+
     const updateTasks = () => {
       dispatch(STORE_KEYS.ACT_GET_PROGRESS).catch(err => {
         console.error(err)
       })
       const timer = setTimeout(updateTasks, TASK_GET_PROGRESS_INTERVAL)
-      commit(MUT_SET_POLLING_TASK_TIMER, timer)
+      commit(STORE_KEYS.MUT_SET_POLLING_TASK_TIMER, timer)
     }
     updateTasks()
   }

@@ -23,7 +23,6 @@ export default {
           minWidth: 830,
           minHeight: 560,
           titleBarStyle: 'hidden',
-          frame: false,
           center: true,
         },
         options,

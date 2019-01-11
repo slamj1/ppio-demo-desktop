@@ -29,7 +29,7 @@ module.exports = {
     electronBuilder: {
       builderOptions: {
         appId: 'com.ppio-demo.app',
-        productName: 'PPIO-demo',
+        productName: process.env.IS_CPOOL === 'true' ? 'PPIO-demo_cpool' : 'PPIO-demo',
         copyright: 'Copyright © 2019 PPLabs.org',
         mac: {
           category: 'public.app-category.productivity',

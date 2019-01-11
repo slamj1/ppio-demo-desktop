@@ -60,7 +60,7 @@ export const getObjectStatus = objectKey => {
       return { expireTime }
     })
     .catch(err => {
-      console.error('get upload object status error')
+      console.error('get object status error')
       console.error(err)
       return Promise.reject(err)
     })
@@ -69,7 +69,7 @@ export const getObjectStatus = objectKey => {
 export const headObject = objectKey => {
   console.log('getting object metadata')
   return poss.headObject({ key: objectKey }).catch(err => {
-    console.error('get upload object status error')
+    console.error('head object error')
     console.error(err)
     return Promise.reject(err)
   })
@@ -116,7 +116,7 @@ export const renewFile = params => {
     })
     .then(res => res)
     .catch(err => {
-      console.error('get upload object status error')
+      console.error('renew file error')
       console.error(err)
       return Promise.reject(err)
     })

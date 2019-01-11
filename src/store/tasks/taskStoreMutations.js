@@ -51,7 +51,8 @@ export default taskType => {
     }
     state.taskQueue = state.taskQueue.map(storageTaskConverter)
     state.finishedQueue = state.finishedQueue.map(storageTaskConverter)
-    state.updateTaskTimer = null
+    state.updateUploadTaskTimer = null
+    state.updateDownloadTaskTimer = null
   }
 
   const restoreTasks = (state, payload) => {
@@ -131,6 +132,26 @@ export default taskType => {
     state.taskQueue.splice(idx, 1)
   }
 
+  const m_setPollingTaskTimer = (state, timer) => {
+    if (timer) {
+      if (taskType === TASK_TYPE_UPLOAD) {
+        state.updateUploadTaskTimer = timer
+      }
+      if (taskType === TASK_TYPE_DOWNLOAD) {
+        state.updateDownloadTaskTimer = timer
+      }
+      return
+    }
+    if (taskType === TASK_TYPE_UPLOAD) {
+      clearTimeout(state.updateUploadTaskTimer)
+      state.updateUploadTaskTimer = null
+    }
+    if (taskType === TASK_TYPE_DOWNLOAD) {
+      clearTimeout(state.updateDownloadTaskTimer)
+      state.updateDownloadTaskTimer = null
+    }
+  }
+
   return {
     [MUT_REPLACE_STATE_HOOK]: replaceHook,
     [STORE_KEYS.MUT_RESTORE_BG_TASKS]: restoreTasks,
@@ -144,5 +165,6 @@ export default taskType => {
     [STORE_KEYS.MUT_REMOVE_TASK]: m_removeTask,
     [STORE_KEYS.MUT_CANCEL_TASK]: m_cancelTask,
     [STORE_KEYS.MUT_SET_TASK_STATUS]: m_setTaskStatus,
+    [STORE_KEYS.MUT_SET_POLLING_TASK_TIMER]: m_setPollingTaskTimer,
   }
 }
