@@ -132,7 +132,11 @@ export default taskType => {
     if (!taskToDelete) {
       return Promise.reject(new Error('task not exist!'))
     }
-    context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, { idx, status: TASK_STATUS_DELETING })
+    context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, {
+      idx,
+      status: TASK_STATUS_DELETING,
+      isFinished: true,
+    })
     return deleteTask(taskToDelete.id)
       .then(() => {
         console.log('deleted task ', taskToDelete.id)

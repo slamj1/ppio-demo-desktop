@@ -27,7 +27,7 @@
           <p v-if="deleteFinished" class="delete-success-msg">Delete finished</p>
         </div>
         <template slot="footer">
-          <el-button class="button" :loading="deleting" @click="f_close" size="mini" type="primary">Ok</el-button>
+          <el-button class="button" v-if="!deleting" @click="f_close" size="mini" type="primary">Ok</el-button>
         </template>
       </template>
     </popup>
@@ -137,9 +137,9 @@ export default {
     //   })
     // },
     f_close() {
-      if (this.deleting) {
-        return
-      }
+      // if (this.deleting) {
+      //   return
+      // }
       clearTimeout(this.deleteTimer)
       this.$vueBus.$emit(this.$events.CLOSE_DELETE_FILE)
     },

@@ -17,12 +17,13 @@
       <template scope="scope">
         <el-progress
             class="transmit-progress"
-            v-if="scope.row.status !== TASK_STATUS_FAIL"
+            v-if="!scope.row.finished"
             :width="180"
             :stroke-width="4"
             :percentage="scope.row.transferProgress"
             :show-text="true"
             :status="getProgressStatus(scope.row)"></el-progress>
+        <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_SUCC">finished</span>
         <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_STARTING">creating task...</span>
         <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_DELETING">deleting task...</span>
         <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_RUNNING">{{scope.row.displayTransferSpeed}}</span>
@@ -44,6 +45,7 @@ import {
   TASK_STATUS_DELETING,
   TASK_STATUS_RUNNING,
   TASK_STATUS_FAIL,
+  TASK_STATUS_SUCC,
 } from '../constants/task'
 
 export default {
@@ -54,6 +56,7 @@ export default {
       TASK_STATUS_DELETING,
       TASK_STATUS_RUNNING,
       TASK_STATUS_FAIL,
+      TASK_STATUS_SUCC,
     }
   },
   props: ['tableName', 'tableData'],

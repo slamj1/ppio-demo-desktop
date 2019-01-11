@@ -6,7 +6,11 @@ import {
   UL_TASK,
 } from '../../constants/store'
 import { DownloadTask, UploadTask } from './Task'
-import { TASK_STATUS_RUNNING } from '../../constants/task'
+import {
+  TASK_STATUS_RUNNING,
+  TASK_STATUS_DELETING,
+  TASK_STATUS_UNKNOWN,
+} from '../../constants/task'
 
 export default taskType => {
   let STORE_KEYS
@@ -34,10 +38,16 @@ export default taskType => {
     console.log('replace state hook fired for task list')
     // if restored from local storage, all running tasks should be paused, for calling "GetJobProgress" on an already paused task will throw error
     const storageTaskConverter = task => {
+      let taskIns
       if (task.status === TASK_STATUS_RUNNING) {
-        return taskConverter(task).pause()
+        taskIns = taskConverter(task).pause()
+      } else {
+        taskIns = taskConverter(task)
       }
-      return taskConverter(task)
+      if (taskIns.status === TASK_STATUS_DELETING) {
+        taskIns.status = TASK_STATUS_UNKNOWN
+      }
+      return taskIns
     }
     state.taskQueue = state.taskQueue.map(storageTaskConverter)
     state.finishedQueue = state.finishedQueue.map(storageTaskConverter)
@@ -63,8 +73,11 @@ export default taskType => {
 
   const m_setTaskStatus = (state, payload) => {
     console.log('setting task status ', payload.idx)
-    console.log(state.taskQueue[payload.idx])
-    state.taskQueue[payload.idx].setStatus(payload.status)
+    if (payload.isFinished) {
+      state.finishedQueue[payload.idx].setStatus(payload.status)
+    } else {
+      state.taskQueue[payload.idx].setStatus(payload.status)
+    }
   }
 
   const m_setTaskProgress = (state, payload) => {

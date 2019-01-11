@@ -209,6 +209,7 @@ export default {
         filePath => {
           console.log(filePath)
           if (!filePath) {
+            this.preparingDownload = false
             return
           }
           const getParams = {

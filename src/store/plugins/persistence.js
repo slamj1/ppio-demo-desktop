@@ -14,12 +14,11 @@ export default store => {
           (state.dataDir.length === 0 || state.user.uid.length === 0) &&
           !mutation.type.match('clear') // There are 4 clear mutation types, all matches "clear", will be triggered when logging out.
         ) {
-          console.log('not setting state')
+          console.log('Will not set state if user has not login.')
           return
         }
 
         if (mutation.type === MUT_SET_POLLING_TASK_TIMER) {
-          console.log(`not setting state, (${mutation.type})`)
           return
         }
         console.log('setting app state to storage')
