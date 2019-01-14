@@ -10,6 +10,7 @@ export default store => {
         // store vuex state on every mutation
         // TODO: add mutation filter, only [metadata, filelist, usage, download/upload task add/remove] can trigger persistence
         // Prevent persisting on app start
+        console.log(mutation.type)
         if (
           (state.dataDir.length === 0 || state.user.uid.length === 0) &&
           !mutation.type.match('clear') // There are 4 clear mutation types, all matches "clear", will be triggered when logging out.

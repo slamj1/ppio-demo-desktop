@@ -77,8 +77,6 @@ export class Task {
       (length - this.lastTransferredData) /
         ((TASK_GET_PROGRESS_INTERVAL * this.speedCheckerTick) / 1000),
     )
-    console.log(length, this.lastTransferredData, this.speedCheckerTick)
-    console.log(speed)
     this.setTransferSpeed(speed)
     if (this.speedCheckerTick === 5) {
       this.lastTransferredData = length
@@ -90,15 +88,11 @@ export class Task {
         console.error('transfer backed more than 16MB')
       }
     }
-    console.log(
-      `calculating transfer progress: ${this.transferredData}, ${this.wholeDataLength}`,
-    )
     if (this.wholeDataLength === 0) {
       this.transferProgress = 0
     } else {
       this.transferProgress = (this.transferredData * 100) / this.wholeDataLength
     }
-    console.log('progress set: ', this.transferProgress)
     return this
   }
 

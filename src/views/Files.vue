@@ -48,7 +48,7 @@ import { ACT_GET_FILE_LIST } from '../constants/store'
 import FileItem from '../components/FileItem'
 import * as FILE_STATUS from '../constants/file'
 
-const { Menu, MenuItem, dialog } = remote
+const { Menu, MenuItem, dialog, getCurrentWindow } = remote
 export default {
   name: 'file',
   data() {
@@ -206,7 +206,7 @@ export default {
     },
     f_rightClickFile(idx) {
       this.f_selectFile(idx)
-      this.contextMenu.popup({ window: remote.getCurrentWindow() })
+      this.contextMenu.popup({ window: getCurrentWindow() })
     },
     f_share() {
       if (!this.operatingFile) {
@@ -246,7 +246,7 @@ export default {
         fileIndex: this.fileList.indexOf(this.operatingFile),
       })
       // dialog.showMessageBox(
-      //   this.$remote.getCurrentWindow(),
+      //   getCurrentWindow(),
       //   {
       //     type: 'info',
       //     buttons: ['ok', 'cancel'],
@@ -277,7 +277,7 @@ export default {
     },
     f_chooseUploadFile() {
       dialog.showOpenDialog(
-        remote.getCurrentWindow(),
+        getCurrentWindow(),
         {
           message: 'Select the file to upload',
           properties: ['openFile'],

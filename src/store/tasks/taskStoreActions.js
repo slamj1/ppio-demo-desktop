@@ -201,8 +201,7 @@ export default taskType => {
       }
     })
     return Promise.all(statusGetters).then(resArr => {
-      // console.log('all upload task progress got: ')
-      // console.log(resArr)
+      // TODO: refactor
       const statusArr = resArr.map((res, index) => {
         let status = {}
         if (res.suspended || res.status === 'Pending') {
@@ -238,7 +237,7 @@ export default taskType => {
       statusArr.forEach((status, idx) => {
         if (status.finished) {
           console.log('found a succ task')
-          context.commit(STORE_KEYS.MUT_SET_PROGRESS, { idx, ...status })
+          // context.commit(STORE_KEYS.MUT_SET_PROGRESS, { idx, ...status })
           succNotif(context.state.taskQueue[idx])
           return context.commit(STORE_KEYS.MUT_FINISH_TASK, idx)
         }
