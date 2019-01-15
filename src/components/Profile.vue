@@ -62,12 +62,12 @@ export default {
           },
           {
             key: 'func',
-            label: 'Funds',
+            label: 'Total Spending',
             val: `${chiToPPCoin(this.userData.funds).toFixed()} PPCoin`,
           },
           {
             key: 'record',
-            label: 'Record',
+            label: 'Sransition Records',
             val: '',
           },
           {

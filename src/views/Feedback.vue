@@ -2,9 +2,9 @@
   <popup class="feedback-popup" @close="f_close" width="500">
     <span slot="header">Feedback</span>
     <div class="content" slot="content">
-      <h3>Help us to improve our product</h3>
-      <el-input type="textarea" class="msg-input" v-model="feedbackContent" :rows="4" resize="none"></el-input>
-      <el-checkbox class="upload-checkbox" v-model="uploadLog"><p class="hint">Upload log file. (If checked, your poss log file will be uploaded.)</p></el-checkbox>
+      <h3>Please help us in product upgrading.</h3>
+      <el-input type="textarea" class="msg-input" placeholder="Your suggestion..." v-model="feedbackContent" :rows="4" resize="none"></el-input>
+      <el-checkbox class="upload-checkbox" v-model="uploadLog"><p class="hint">Upload log file. (If checked, your log file will be uploaded.)</p></el-checkbox>
       <p class="hint"></p>
       <el-button class="submit-btn" :loading="submitting" @click="f_submit" type="primary">Submit</el-button>
     </div>

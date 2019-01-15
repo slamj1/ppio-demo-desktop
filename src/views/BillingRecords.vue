@@ -18,10 +18,10 @@
       </el-table-column>
       <el-table-column
           prop="comment"
-          label="Product">
+          label="Item">
       </el-table-column>
       <el-table-column
-          label="Transaction"
+          label="Cost"
           width="240">
         <template slot-scope="scope">
           <p class="billing-amount">{{f_getPPCoinAmount(scope.row.amount)}}</p>

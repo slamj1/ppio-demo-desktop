@@ -5,7 +5,7 @@
       <div class="content" slot="content">
         <span class="file-icon" :class="'file-icon_' + fileType"></span>
         <p class="file-name">{{file && file.filename}}</p>
-        <p class="share-hint">Sharing a file means everyone who knows the file's share code can access it. And you can not recall this action unless you delete this file.</p>
+        <p class="share-hint">Anyone who gets the share code can access it. The only way to stop sharing is to delete the file.</p>
         <div class="code-wrap" v-if="shareCode">
           <label class="share-code-label">Share Code:</label>
           <p class="share-code-container">{{shareCode}}</p>

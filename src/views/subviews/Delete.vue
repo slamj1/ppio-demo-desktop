@@ -24,7 +24,7 @@
               :percentage="deleteProgress"
               :status="deleteStatus"></el-progress>
           <p v-if="deleteFailed" class="delete-fail-msg">{{failMsg}}</p>
-          <p v-if="deleteFinished" class="delete-success-msg">Delete finished</p>
+          <p v-if="deleteFinished" class="delete-success-msg">Finished</p>
         </div>
         <template slot="footer">
           <el-button class="button" v-if="!deleting" @click="f_close" size="mini" type="primary">Ok</el-button>

@@ -37,7 +37,7 @@
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
-            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input> <span> chi</span>
+            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input> <span> wei</span>
             <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}}</span>
           </div>
           <div class="line-wrap">
@@ -116,7 +116,7 @@ export default {
         list: [
           {
             product: `Storage: ${this.fileSizeStr}/${this.storageTimeStr}`,
-            fee: `${this.storageCost} PPCoin(Funds)`,
+            fee: `${this.storageCost} PPCoin`,
           },
         ],
         totalCost: this.totalCost,

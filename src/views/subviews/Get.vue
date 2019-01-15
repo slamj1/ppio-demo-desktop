@@ -6,7 +6,7 @@
         :steps="steps"
         @close="f_close"
         class="popup-wrap">
-      <span slot="header">Get File</span>
+      <span slot="header">Download file by share code</span>
       <div class="step-content step-0" slot="step-0">
         <div class="inner-wrap">
           <el-input type="textarea" resize="none" :rows="4" v-model="shareCode" class="share-code-input" placeholder="Enter the share code start with poss://"></el-input>
@@ -22,7 +22,7 @@
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
             <el-input class="price-input" v-model="chiPrice" size="mini"></el-input> <span>chi</span>
-            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}} chi</span>
+            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}} wei</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Total Chi:</label>
