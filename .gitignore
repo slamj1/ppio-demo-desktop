@@ -28,3 +28,5 @@ ppio.log
 #Electron-builder output
 /dist_electron
 .history
+
+src/poss-bin
