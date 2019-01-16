@@ -27,8 +27,8 @@
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
-            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input><span> chi</span>
-            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}} wei</span>
+            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input><span> {{$minimalUnit}}</span>
+            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}} {{$minimalUnit}}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Total Chi:</label>

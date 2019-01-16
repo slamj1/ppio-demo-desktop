@@ -4,7 +4,7 @@ import { remote } from 'electron'
 const poss = remote.getGlobal('poss')
 
 const timeToExpireDate = storageTime =>
-  moment(Date.now() + storageTime * 1000).format('YYYY-MM-DD')
+  moment(Date.now() + storageTime * 1000 + 60 * 1000).toISOString()
 
 /**
  * @typedef {Object} UploadCost
@@ -21,12 +21,14 @@ const timeToExpireDate = storageTime =>
 export const getEstimateCost = params => {
   console.log('request upload file cost')
   console.log(params)
+  const postParams = {
+    size: params.size,
+    copies: params.copyCount,
+    expires: timeToExpireDate(params.storageTime),
+  }
+  console.log(postParams)
   return poss
-    .putCost({
-      size: params.size,
-      copies: params.copyCount,
-      expires: timeToExpireDate(params.storageTime),
-    })
+    .putCost(postParams)
     .then(costs => {
       // The total upload cost contains two parts: storage and upload
       const storageCost = parseInt(costs.miner)

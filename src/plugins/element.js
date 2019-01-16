@@ -30,6 +30,7 @@ import {
   Notification,
   Loading,
   Message,
+  Dialog,
 } from 'element-ui'
 import '@/assets/css/element-theme.scss'
 import lang from 'element-ui/lib/locale/lang/en'
@@ -65,6 +66,7 @@ Vue.use(TableColumn)
 Vue.use(Badge)
 Vue.use(Popover)
 Vue.use(Loading)
+Vue.use(Dialog)
 
 const baseMessageConfig = { duration: 2000, showClose: true }
 const GlobalMessage = options => Message(Object.assign({}, baseMessageConfig, options))

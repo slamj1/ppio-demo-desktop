@@ -1,18 +1,20 @@
 import path from 'path'
-import poss from 'poss-sdk'
+import Poss from 'poss-sdk'
+import getPossBinFilename from '../utils/getPossBinFilename'
 
-const possIns = poss.create()
+console.log(getPossBinFilename())
+
+const possBinPath = path.join(
+  path.dirname(__dirname),
+  process.env.NODE_ENV === 'development' ? 'src/poss-bin' : 'extraResources',
+  getPossBinFilename(),
+)
+console.log(possBinPath)
+
+const possIns = new Poss({
+  possExecutablePath: possBinPath,
+})
 console.log('poss instance created')
 console.log('poss path: ', possIns.possBin)
-if (process.env.NODE_ENV === 'production') {
-  possIns.setPossBinPath(
-    possIns.possBin.replace('app.asar', 'app.asar.unpacked/node_modules/poss-sdk'),
-  )
-  console.log('prod poss path: ', possIns.possBin)
-} else {
-  possIns.setPossBinPath(path.join(process.cwd(), './node_modules/poss-sdk/bin/poss_mac'))
-  console.log('dev poss path: ', possIns.possBin)
-}
-console.log(possIns.baseParams)
 
 export default possIns

@@ -5,47 +5,44 @@ import safeBuffer from 'safe-buffer'
 
 const poss = remote.getGlobal('poss')
 
-export const login = (seedphrase, password) => {
+export const getAccount = (seedphrase, password) => {
   console.log('calling login method')
   console.log(seedphrase, password)
-  return new Promise((resolve, reject) => {
-    try {
-      const oriKey = bip39.mnemonicToSeedHex(seedphrase, password)
-      console.log('orikey:', oriKey)
-      const privKey = oriKey
-        .split('')
-        .filter((char, idx) => !!(idx % 2))
-        .join('')
-      console.log('privkey:', privKey)
-      const account = new ppwallet.Account(safeBuffer.Buffer.from(privKey, 'hex'))
-      console.log(account.getPrivateKeyString())
-      console.log('address:', account.getAddressString())
-      resolve(account)
-    } catch (err) {
-      console.error('login failed')
-      console.error(err)
-      reject(err)
-    }
-  })
+  try {
+    const oriKey = bip39.mnemonicToSeedHex(seedphrase, password)
+    console.log('orikey:', oriKey)
+    const privKey = oriKey
+      .split('')
+      .filter((char, idx) => !!(idx % 2))
+      .join('')
+    console.log('privkey:', privKey)
+    const account = new ppwallet.Account(safeBuffer.Buffer.from(privKey, 'hex'))
+    console.log(account.getPrivateKeyString())
+    console.log('address:', account.getAddressString())
+    return account
+  } catch (err) {
+    console.error('login failed')
+    console.error(err)
+    throw err
+  }
 }
 
-export const loginWithKeystore = (keyStoreJson, password) => {
+export const getAccountWithKeystore = (keyStoreJson, password) => {
   console.log('calling loginWithKeystore method')
   console.log(keyStoreJson)
   console.log(password)
-  return new Promise((resolve, reject) => {
-    try {
-      const account = ppwallet.Account.fromAddress(keyStoreJson.address)
-      account.fromKey(keyStoreJson, password)
-      console.log(account.getPrivateKeyString())
-      console.log('address:', account.getAddressString())
-      resolve(account)
-    } catch (err) {
-      console.error('login failed')
-      console.error(err)
-      reject(err)
-    }
-  })
+
+  try {
+    const account = ppwallet.Account.fromAddress(keyStoreJson.address)
+    account.fromKey(keyStoreJson, password)
+    console.log(account.getPrivateKeyString())
+    console.log('address:', account.getAddressString())
+    return account
+  } catch (err) {
+    console.error('login failed')
+    console.error(err)
+    throw err
+  }
 }
 
 export const generateNewAccount = password => {

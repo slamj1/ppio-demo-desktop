@@ -20,8 +20,8 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 300px;
-  height: 300px;
+  width: 100%;
+  height: 100%;
   text-align: center;
   background-color: #fff;
 
@@ -39,10 +39,11 @@ export default {
   }
 
   .loading {
-    position: absolute;
+    /*position: absolute;
     bottom: 25px;
     left: 50%;
-    margin-left: -18px;
+    margin-left: -18px;*/
+    margin-top: 20px;
 
     img {
       width: 30px;

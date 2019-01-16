@@ -28,12 +28,13 @@ export const init = params => {
     })
 }
 
-export const startDaemon = (datadir, privateKey) => {
-  console.log('starting daemon service')
+export const startDaemon = (datadir, passphrase, privateKey) => {
+  console.log('starting daemon service, ', datadir, passphrase, privateKey)
   return poss
     .startDaemon({
       datadir: datadir,
-      walletKey: privateKey ? `0x${privateKey}` : undefined,
+      keyPassphrase: passphrase,
+      walletKey: privateKey,
     })
     .catch(err => {
       console.error('daemon start failed')

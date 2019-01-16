@@ -35,6 +35,12 @@ module.exports = {
           category: 'public.app-category.productivity',
           target: ['dmg'],
           icon: 'public/icons/icon.icns',
+          extraResources: [
+            {
+              from: 'src/poss-bin/poss_mac',
+              to: 'extraResources/poss_mac',
+            },
+          ],
         },
         dmg: {
           title: 'PPIO-demo installation',
@@ -43,15 +49,23 @@ module.exports = {
         win: {
           target: ['nsis'],
           icon: 'public/icons/icon.ico',
+          extraResources: [
+            {
+              from: 'src/poss-bin/poss_win.exe',
+              to: 'extraResources/poss_win.exe',
+            },
+          ],
         },
         linux: {
           target: ['deb'],
+          extraResources: [
+            {
+              from: 'src/poss-bin/poss_linux',
+              to: 'extraResources/poss_linux',
+            },
+          ],
         },
-        asarUnpack: [
-          '**/node_modules/poss-sdk/*',
-          '**/src/background.js',
-          '**/src/background/ppiosdk.js',
-        ],
+        asarUnpack: ['**/src/background.js', '**/src/background/ppiosdk.js'],
       },
     },
   },

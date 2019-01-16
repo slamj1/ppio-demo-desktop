@@ -12,7 +12,7 @@
           @row-click="handleClick">
         <el-table-column
             prop="label"
-            :width="100"
+            :width="130"
             class-name="profile-table-key">
         </el-table-column>
         <el-table-column
@@ -115,6 +115,7 @@ export default {
   methods: {
     f_copyAddress() {
       clipboard.writeText(this.userData.address)
+      this.$message.success('Address copied!')
     },
     f_logout() {
       this.$emit('logout')

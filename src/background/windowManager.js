@@ -18,8 +18,8 @@ export default {
     this.window = new BrowserWindow(
       Object.assign(
         {
-          width: this.navigateCache || options.routerPath ? 1000 : 300,
-          height: this.navigateCache || options.routerPath ? 670 : 300,
+          width: 1000,
+          height: 670,
           minWidth: 830,
           minHeight: 560,
           titleBarStyle: 'hidden',

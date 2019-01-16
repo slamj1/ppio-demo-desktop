@@ -116,7 +116,7 @@ class TaskManager {
           console.log('found a paused task')
           return true
         }
-        console.log('found a running task')
+
         return this.setProgress(idx, status)
       })
       return statusArr

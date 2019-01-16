@@ -143,10 +143,12 @@ export default taskType => {
       return
     }
     if (taskType === TASK_TYPE_UPLOAD) {
+      console.log('clearing upload task timer')
       clearTimeout(state.updateUploadTaskTimer)
       state.updateUploadTaskTimer = null
     }
     if (taskType === TASK_TYPE_DOWNLOAD) {
+      console.log('clearing download task timer')
       clearTimeout(state.updateDownloadTaskTimer)
       state.updateDownloadTaskTimer = null
     }

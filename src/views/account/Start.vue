@@ -52,7 +52,7 @@ export default {
         return res
       })
     },
-    f_startApp(isInit) {
+    f_startApp(payload) {
       this.initializing = true
       console.log(this.bindedCpool)
       console.log(this.showChooseCpool)
@@ -64,10 +64,11 @@ export default {
             const initConfig = {
               datadir: this.datadir,
               privateKey: this.curAccount.getPrivateKeyString(),
+              passphrase: payload.passphrase,
             }
             initConfig.cpoolHost = this.bindedCpool.host
             initConfig.cpoolAddress = this.bindedCpool.address
-            if (isInit) {
+            if (payload.isInit) {
               return initApp(initConfig)
                 .then(() => {
                   console.log('daemon inited')

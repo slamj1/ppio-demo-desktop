@@ -16,7 +16,7 @@
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
             <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input>
-            <span>wei</span>
+            <span>{{$minimalUnit}}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Limit:</label>

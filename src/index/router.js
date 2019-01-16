@@ -47,7 +47,7 @@ export default new Router({
       component: Start,
       children: [
         {
-          path: '/',
+          path: '',
           redirect: 'import',
         },
         {

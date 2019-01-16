@@ -17,7 +17,13 @@
         </template>
       </div>
       <!--<el-button class="keystore-button" type="primary" >Upload keystore file</el-button>-->
-      <el-input type="password" placeholder="Enter your password" required v-model="password" class="password-input"></el-input>
+      <el-input
+          type="password"
+          placeholder="Enter your password"
+          required
+          v-model="password"
+          class="password-input"
+          @keyup.native.enter="f_import"></el-input>
       <el-alert v-show="errorMsg !== ''" :title="errorMsg" type="error" :closable="false"></el-alert>
       <el-button :loading="importing || startingApp" class="login-button" type="primary" @click="f_import">Confirm</el-button>
       <!--<p>Don't have an account? <router-link class="wallet-link" :to="{ name: 'account/create' }">Generate one</router-link></p>-->
@@ -32,7 +38,7 @@ import path from 'path'
 import { shell, remote } from 'electron'
 import { USER_STATE_PERSIST_KEY, walletUrl } from '../../constants/constants'
 import { MUT_REPLACE_STATE_HOOK } from '../../constants/store'
-import { loginWithKeystore } from '../../services/user'
+import { getAccountWithKeystore } from '../../services/user'
 import createUserDir from '../../utils/createUserDir'
 import storage from '../../utils/storage'
 
@@ -110,34 +116,41 @@ export default {
       }
       this.importing = true
 
-      loginWithKeystore(this.keystoreJson, this.password)
-        .then(account => {
-          const address = account.getAddressString()
-          console.log(`${USER_STATE_PERSIST_KEY}_${address}`)
-          this.$emit('setAccount', account)
-          return storage.getItem(`${USER_STATE_PERSIST_KEY}_${address}`).then(val => {
-            this.importing = false
-            console.log('persisted state got for import page')
-            console.log(val)
-            if (val && val.dataDir.length > 0 && val.user.uid.length > 0) {
-              this.$store.replaceState(val)
-              this.$store.commit(MUT_REPLACE_STATE_HOOK)
-              this.$emit('setDatadir', val.dataDir)
-              if (fs.existsSync(path.resolve(val.dataDir, './poss.conf'))) {
-                console.log('user exists, starting app')
-                return this.$emit('startApp')
-              } else {
-                console.log('config file does not exist, initing app')
-                return this.$emit('startApp', true)
-              }
+      let account
+      try {
+        account = getAccountWithKeystore(this.keystoreJson, this.password)
+      } catch (err) {
+        this.errorMsg = err.message
+        this.importing = false
+        return false
+      }
+      const address = account.getAddressString()
+      console.log(`${USER_STATE_PERSIST_KEY}_${address}`)
+      this.$emit('setAccount', account)
+      return storage
+        .getItem(`${USER_STATE_PERSIST_KEY}_${address}`)
+        .then(val => {
+          this.importing = false
+          console.log('persisted state got for import page')
+          console.log(val)
+          if (val && val.dataDir.length > 0 && val.user.uid.length > 0) {
+            this.$store.replaceState(val)
+            this.$store.commit(MUT_REPLACE_STATE_HOOK)
+            this.$emit('setDatadir', val.dataDir)
+            if (fs.existsSync(path.resolve(val.dataDir, './poss.conf'))) {
+              console.log('user exists, starting app')
+              return this.$emit('startApp', { passphrase: this.password })
+            } else {
+              console.log('config file does not exist, initing app')
+              return this.$emit('startApp', { isInit: true, passphrase: this.password })
             }
-            const datadir = createUserDir(address)
-            if (datadir) {
-              this.$emit('setDatadir', datadir)
-              return this.$emit('startApp', true)
-            }
-            return this.$message.error('Create data directory failed.')
-          })
+          }
+          const datadir = createUserDir(address)
+          if (datadir) {
+            this.$emit('setDatadir', datadir)
+            return this.$emit('startApp', { isInit: true, passphrase: this.password })
+          }
+          return this.$message.error('Create data directory failed.')
         })
         .catch(err => {
           this.errorMsg = err.toString()

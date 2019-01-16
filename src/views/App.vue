@@ -1,11 +1,27 @@
 <template>
   <div id="app" @dragover="f_onDragover">
+    <el-dialog
+        class="passphrase-dialog"
+        title="Need passphrase"
+        :visible.sync="needPassphrase"
+        width="50%"
+        :show-close="false"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :before-close="handlePassphraseClose">
+      <el-input class="passphrase-input" type="password" v-model="passphrase" @keyup.native.enter="f_startAppWithPassphrase"></el-input>
+      <el-alert class="passphrase-alert" v-show="passphraseErrMsg.length > 0" type="error" :closable="false">{{passphraseErrMsg}}</el-alert>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="f_startAppWithPassphrase" :loading="initializing">OK</el-button>
+      </span>
+    </el-dialog>
     <router-view @startApp="f_startApp" :startingApp="initializing"></router-view>
   </div>
 </template>
 
 <script>
 import fs from 'fs'
+import path from 'path'
 import { remote } from 'electron'
 import storage from '../utils/storage'
 import { APP_STATE_PERSIST_KEY } from '../constants/constants'
@@ -21,12 +37,19 @@ import {
 } from '../constants/store'
 import { startDaemon } from '../services/daemon'
 import { initCpoolData, saveCpoolConfig, clearCpoolConfig } from '../services/cpool'
+import { getAccountWithKeystore } from '../services/user'
+
+const poss = remote.getGlobal('poss')
 
 export default {
   name: 'app',
   data() {
     return {
       initializing: false, // not used
+      needPassphrase: false,
+      passphrase: '',
+      startDaemonConfig: null,
+      passphraseErrMsg: '',
     }
   },
   mounted() {
@@ -63,14 +86,14 @@ export default {
         this.initializing = false
         this.$store
           .dispatch(ACT_LOGOUT)
-          .then(() => {
-            remote.getCurrentWindow().setSize(1000, 670, false)
-            return this.$router.push({ name: 'account/import' })
-          })
+          .then(() => this.$router.push({ name: 'account/import' }))
           .catch(() => {})
       })
   },
   methods: {
+    handlePassphraseClose() {
+      return false
+    },
     f_onDragover(e) {
       e.preventDefault()
       e.dataTransfer.dropEffect = 'none'
@@ -81,7 +104,7 @@ export default {
         return clearCpoolConfig(params.datadir)
       }
       if (!params.cpoolHost || !params.cpoolAddress) {
-        return Promise.reject(new Error('no cpool data'))
+        throw new Error('no cpool data')
       }
       console.log('saving cpool data to config file')
       console.log(params.cpoolHost, params.cpoolAddress)
@@ -104,23 +127,66 @@ export default {
      * @param {object | string} account
      * @returns {Promise}
      */
+    f_startAppWithPassphrase() {
+      console.log(this.passphrase)
+      if (this.passphrase.length === 0) {
+        this.passphraseErrMsg = 'Passphrase required.'
+        return null
+      }
+      this.f_startApp(
+        Object.assign({}, this.startDaemonConfig, { passphrase: this.passphrase }),
+      )
+    },
     f_startApp(initConfig) {
-      try {
-        fs.readdirSync(initConfig.datadir)
-      } catch (err) {
-        return Promise.reject(err)
+      if (!fs.existsSync(initConfig.datadir)) {
+        throw new Error('Data dir does not exist')
+      }
+      console.log('test passphrase')
+      this.initializing = true
+      if (poss.runningDaemonPort === 0 && !initConfig.passphrase) {
+        console.log('no passphrase')
+        this.startDaemonConfig = initConfig
+        this.needPassphrase = true
+        this.initializing = false
+        return null
+      }
+      if (poss.runningDaemonPort === 0 && !initConfig.privateKey) {
+        // check whether password and keystore file is valid
+        try {
+          const keystorePath = path.resolve(initConfig.datadir, 'wallet/keystore.dat')
+          const keystoreStr = fs.readFileSync(keystorePath)
+          const keystoreJson = JSON.parse(keystoreStr)
+          console.log(keystoreJson)
+          getAccountWithKeystore(keystoreJson, initConfig.passphrase)
+          // passphrase valid
+          this.needPassphrase = false
+          this.passphrase = ''
+          this.passphraseErrMsg = ''
+        } catch (err) {
+          this.initializing = false
+          if (err.message.match('wrong passphrase')) {
+            this.passphraseErrMsg = 'Wrong passphrase.'
+            this.needPassphrase = true
+            this.passphrase = ''
+            return null
+          }
+          throw err
+        }
       }
       console.log(
-        `starting app at ${initConfig.datadir}, with private key: ${
-          initConfig.privateKey
-        }`,
+        `starting app at ${initConfig.datadir}, with passphrase: ${
+          initConfig.passphrase
+        }, and private key: ${initConfig.privateKey}`,
       )
       console.log(initConfig)
-      this.initializing = true
       return this.f_setCpool(initConfig)
         .then(() => {
           console.log('starting daemon')
-          return startDaemon(initConfig.datadir, initConfig.privateKey)
+          return startDaemon(
+            initConfig.datadir,
+            initConfig.passphrase,
+            initConfig.privateKey,
+          )
         })
         .then(port => {
           console.log('daemon started at port ', port)
@@ -131,7 +197,6 @@ export default {
         })
         .then(() => {
           console.log('data init finished')
-          remote.getCurrentWindow().setSize(1000, 670, false)
           console.log('get user data success')
           this.$vueBus.$emit(this.$events.APP_INIT_FINISHED)
           // restore tasks from background task manager
@@ -177,5 +242,11 @@ export default {
   color: #ccc;
   font-weight: bold;
   font-size: 40px;
+}
+.passphrase-dialog {
+  -webkit-app-region: no-drag;
+}
+.passphrase-input {
+  margin-bottom: 20px;
 }
 </style>

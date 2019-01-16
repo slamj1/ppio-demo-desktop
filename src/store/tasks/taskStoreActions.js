@@ -35,6 +35,17 @@ export default taskType => {
   const a_createTask = (context, payload) => {
     console.log('create task')
     const startTask = taskType === TASK_TYPE_UPLOAD ? startUpload : startDownload
+    if (context.state.taskQueue.length === 5) {
+      let action = ''
+      if (taskType === TASK_TYPE_UPLOAD) {
+        action = 'download'
+      } else if (taskType === TASK_TYPE_DOWNLOAD) {
+        action = 'upload'
+      }
+      return Promise.reject(
+        new Error(`You can only ${action} up to  5 files simultaneously.`),
+      )
+    }
     return startTask(payload)
       .then(taskId => {
         console.log('task started')
@@ -236,23 +247,19 @@ export default taskType => {
 
       statusArr.forEach((status, idx) => {
         if (status.finished) {
-          console.log('found a succ task')
           // context.commit(STORE_KEYS.MUT_SET_PROGRESS, { idx, ...status })
           succNotif(context.state.taskQueue[idx])
           return context.commit(STORE_KEYS.MUT_FINISH_TASK, idx)
         }
         if (status.failed) {
-          console.log('found a fail task')
           failNotif(context.state.taskQueue[idx])
           return context.commit(STORE_KEYS.MUT_FAIL_TASK, { idx, msg: status.failMsg })
         }
         if (status.running) {
-          console.log('found a running task')
           context.commit(STORE_KEYS.MUT_START_TASK, idx)
           return context.commit(STORE_KEYS.MUT_SET_PROGRESS, { idx, ...status })
         }
         if (status.paused) {
-          console.log('found a paused task')
           context.commit(STORE_KEYS.MUT_PAUSE_TASK, idx)
           return context.commit(STORE_KEYS.MUT_SET_PROGRESS, { idx, ...status })
         }
@@ -298,7 +305,6 @@ export default taskType => {
       console.log('download task polling timer exists')
       return
     }
-
     const updateTasks = () => {
       dispatch(STORE_KEYS.ACT_GET_PROGRESS).catch(err => {
         console.error(err)

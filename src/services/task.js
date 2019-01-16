@@ -31,12 +31,11 @@ export const deleteTask = taskId => {
   return poss.deleteTaskSync({ taskId })
 }
 
-export const getTaskProgress = taskId => {
-  console.log('getting task progress for ', taskId)
-  return poss
+export const getTaskProgress = taskId =>
+  poss
     .getJobProgress({ taskId })
     .then(res => {
-      console.log('task progress got')
+      console.log('task progress got', taskId)
       console.log(res)
       return {
         status: res.JobState, // Pending, Running, Paused, Finished, Error
@@ -50,4 +49,3 @@ export const getTaskProgress = taskId => {
       console.error(err)
       return Promise.reject(err)
     })
-}
