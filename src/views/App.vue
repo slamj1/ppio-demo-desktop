@@ -12,6 +12,7 @@
       <el-input class="passphrase-input" type="password" v-model="passphrase" @keyup.native.enter="f_startAppWithPassphrase"></el-input>
       <el-alert class="passphrase-alert" v-show="passphraseErrMsg.length > 0" type="error" :closable="false">{{passphraseErrMsg}}</el-alert>
       <span slot="footer" class="dialog-footer">
+        <el-button @click="f_goImport">Re-import</el-button>
         <el-button type="primary" @click="f_startAppWithPassphrase" :loading="initializing">OK</el-button>
       </span>
     </el-dialog>
@@ -37,7 +38,7 @@ import {
 } from '../constants/store'
 import { startDaemon } from '../services/daemon'
 import { initCpoolData, saveCpoolConfig, clearCpoolConfig } from '../services/cpool'
-import { getAccountWithKeystore } from '../services/user'
+import { getAccountFromKeystore } from '../services/user'
 
 const poss = remote.getGlobal('poss')
 
@@ -122,6 +123,9 @@ export default {
         return true
       })
     },
+    f_goImport() {
+      this.$router.push({ name: 'account/import' })
+    },
     /**
      * start daemon with account
      * @param {object | string} account
@@ -157,7 +161,7 @@ export default {
           const keystoreStr = fs.readFileSync(keystorePath)
           const keystoreJson = JSON.parse(keystoreStr)
           console.log(keystoreJson)
-          getAccountWithKeystore(keystoreJson, initConfig.passphrase)
+          getAccountFromKeystore(keystoreJson, initConfig.passphrase)
           // passphrase valid
           this.needPassphrase = false
           this.passphrase = ''

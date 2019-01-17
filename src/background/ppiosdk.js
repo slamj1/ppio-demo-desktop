@@ -15,6 +15,6 @@ const possIns = new Poss({
   possExecutablePath: possBinPath,
 })
 console.log('poss instance created')
-console.log('poss path: ', possIns.possBin)
+console.log('poss path: ', possIns.possPath)
 
 export default possIns

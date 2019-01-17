@@ -31,6 +31,8 @@ import {
   Loading,
   Message,
   Dialog,
+  Tabs,
+  TabPane,
 } from 'element-ui'
 import '@/assets/css/element-theme.scss'
 import lang from 'element-ui/lib/locale/lang/en'
@@ -67,6 +69,8 @@ Vue.use(Badge)
 Vue.use(Popover)
 Vue.use(Loading)
 Vue.use(Dialog)
+Vue.use(Tabs)
+Vue.use(TabPane)
 
 const baseMessageConfig = { duration: 2000, showClose: true }
 const GlobalMessage = options => Message(Object.assign({}, baseMessageConfig, options))

@@ -111,7 +111,7 @@ export const renewFile = params => {
       key: params.objectKey,
       chiprice: params.chiPrice,
       copies: params.copyCount,
-      expires: moment(Date.now() + params.storageTime * 1000).format('YYYY-MM-DD'),
+      expires: moment(Date.now() + params.storageTime * 1000).toISOString(),
       encrypt: params.isSecure,
     })
     .then(res => res)

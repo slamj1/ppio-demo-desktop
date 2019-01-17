@@ -19,6 +19,7 @@ export default {
   name: 'Start',
   data: () => ({
     name: 'test',
+    initConfig: {},
     curAccount: null,
     datadir: '',
     bindedCpool: {
@@ -58,22 +59,26 @@ export default {
       console.log(this.showChooseCpool)
       this.f_checkCpool()
         .then(() => {
+          console.log('starting app')
+          console.log(this.curAccount)
+          this.initConfig = {
+            datadir: this.datadir,
+            privateKey: this.curAccount.getPrivateKeyString(),
+            passphrase: payload.passphrase,
+          }
           if (!this.$isCpoolPackage || this.bindedCpool.host.length > 0) {
-            console.log('starting app')
-            console.log(this.curAccount)
-            const initConfig = {
-              datadir: this.datadir,
-              privateKey: this.curAccount.getPrivateKeyString(),
-              passphrase: payload.passphrase,
-            }
-            initConfig.cpoolHost = this.bindedCpool.host
-            initConfig.cpoolAddress = this.bindedCpool.address
+            this.initConfig.cpoolHost = this.$isCpoolPackage
+              ? this.bindedCpool.host
+              : undefined
+            this.initConfig.cpoolAddress = this.$isCpoolPackage
+              ? this.bindedCpool.address
+              : undefined
             if (payload.isInit) {
-              return initApp(initConfig)
+              return initApp(this.initConfig)
                 .then(() => {
                   console.log('daemon inited')
                   this.initializing = false
-                  return this.$emit('startApp', initConfig)
+                  return this.$emit('startApp', this.initConfig)
                 })
                 .catch(err => {
                   this.initializing = false
@@ -81,7 +86,7 @@ export default {
                 })
             }
             this.initializing = false
-            return this.$emit('startApp', initConfig)
+            return this.$emit('startApp', this.initConfig)
           }
           this.initializing = false
           this.showChooseCpool = true
@@ -112,7 +117,7 @@ export default {
       this.bindedCpool.host = cpoolData.host
       this.bindedCpool.address = cpoolData.address
       this.showChooseCpool = false
-      this.f_startApp(true)
+      this.f_startApp(true, this.initConfig.passphrase)
     },
   },
 }

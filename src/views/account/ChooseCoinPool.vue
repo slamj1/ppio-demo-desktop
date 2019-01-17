@@ -66,6 +66,7 @@ export default {
   methods: {
     f_copy() {
       clipboard.writeText(this.curAddress)
+      this.$message.success('address copied')
     },
     f_goSubscribe() {
       if (this.notUseCpool) {

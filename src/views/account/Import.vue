@@ -1,32 +1,50 @@
 <template>
   <div class="account">
     <div class="tip-wrap">
-      <p class="title">Log in</p>
-      <div class="attention-wrap">
-        <p>Your seed phrase and password are VERY IMPORTANT. Once lost, all your data will be in danger. Please keep them carefully!</p>
-      </div>
+      <p class="title">Import</p>
     </div>
     <div class="form-wrap">
-      <p class="title">Provide your keystore file and password</p>
-      <!--<el-input type="textarea" :autofocus="true" :rows="4" resize="none" required placeholder="Enter your seed phrase" v-model="mnemonic" class="seed-phrase-input"></el-input>-->
-      <div class="keystore-drag-area" @click="f_uploadKeystore" @dragover="f_onDragover" @drop="f_onDrop">
-        <p class="keystore-file-name" v-if="addressInKeystore.length > 0">{{addressInKeystore}}</p>
-        <template v-else>
-          <i class="el-icon-plus"></i>
-          <p class="keystore-file-hint">Drop your keystore file here</p>
-        </template>
-      </div>
-      <!--<el-button class="keystore-button" type="primary" >Upload keystore file</el-button>-->
-      <el-input
-          type="password"
-          placeholder="Enter your password"
-          required
-          v-model="password"
-          class="password-input"
-          @keyup.native.enter="f_import"></el-input>
-      <el-alert v-show="errorMsg !== ''" :title="errorMsg" type="error" :closable="false"></el-alert>
-      <el-button :loading="importing || startingApp" class="login-button" type="primary" @click="f_import">Confirm</el-button>
-      <!--<p>Don't have an account? <router-link class="wallet-link" :to="{ name: 'account/create' }">Generate one</router-link></p>-->
+      <el-tabs v-model="curTab">
+        <el-tab-pane label="Import from keystore" name="keystore">
+          <p class="title">Provide your keystore file and passphrase</p>
+          <div class="keystore-drag-area" @click="f_uploadKeystore" @dragover="f_onDragover" @drop="f_onDrop">
+            <p class="keystore-file-name" v-if="addressInKeystore.length > 0">{{addressInKeystore}}</p>
+            <template v-else>
+              <i class="el-icon-plus"></i>
+              <p class="keystore-file-hint">Drop your keystore file here</p>
+            </template>
+          </div>
+          <!--<el-button class="keystore-button" type="primary" >Upload keystore file</el-button>-->
+          <el-input
+              type="password"
+              placeholder="Enter your passphrase"
+              required
+              v-model="keystorePassphrase"
+              class="password-input"
+              @keyup.native.enter="f_importFromKeystore"></el-input>
+          <el-alert v-show="errorMsg !== ''" :title="errorMsg" type="error" :closable="false"></el-alert>
+          <el-button :loading="importing || startingApp" class="login-button" type="primary" @click="f_importFromKeystore">Confirm</el-button>
+        </el-tab-pane>
+        <!--<el-tab-pane label="Import from private key" name="privatekey">-->
+          <!--<p class="title">Provide your private key</p>-->
+          <!--<el-input-->
+              <!--type="textarea"-->
+              <!--placeholder="Enter your private key"-->
+              <!--required-->
+              <!--v-model="privateKey"-->
+              <!--class="privatekey-input"-->
+              <!--@keyup.native.enter="f_importFromPrivatekey"></el-input>-->
+          <!--<el-input-->
+              <!--type="password"-->
+              <!--placeholder="Enter your passphrase"-->
+              <!--required-->
+              <!--v-model="password"-->
+              <!--class="password-input"-->
+              <!--@keyup.native.enter="f_importFromPrivatekey"></el-input>-->
+          <!--<el-alert v-show="errorMsg !== ''" :title="errorMsg" type="error" :closable="false"></el-alert>-->
+          <!--<el-button :loading="importing || startingApp" class="login-button" type="primary" @click="f_importFromPrivatekey">Confirm</el-button>-->
+        <!--</el-tab-pane>-->
+      </el-tabs>
       <p>Don't have an account? <span class="wallet-link" @click="f_gotoWallet">Generate one</span></p>
     </div>
   </div>
@@ -38,7 +56,7 @@ import path from 'path'
 import { shell, remote } from 'electron'
 import { USER_STATE_PERSIST_KEY, walletUrl } from '../../constants/constants'
 import { MUT_REPLACE_STATE_HOOK } from '../../constants/store'
-import { getAccountWithKeystore } from '../../services/user'
+import { getAccountFromKeystore, getAccountFromPrivatekey } from '../../services/user'
 import createUserDir from '../../utils/createUserDir'
 import storage from '../../utils/storage'
 
@@ -47,10 +65,13 @@ const { dialog, getCurrentWindow } = remote
 export default {
   name: 'import-account',
   data: () => ({
-    password: '',
+    curTab: 'keystore',
+    keystorePassphrase: '',
+    privkeyPassphrase: '',
     mnemonic: '',
     errorMsg: '',
     keystoreJson: null,
+    privateKey: '',
     addressInKeystore: '',
     importing: false,
   }),
@@ -101,29 +122,48 @@ export default {
     f_gotoWallet() {
       shell.openExternal(walletUrl)
     },
-    f_import() {
-      // if (!bip39.validateMnemonic(this.mnemonic)) {
-      //   this.$message.error('Seed phrase invalid!')
-      //   return
-      // }
-      if (this.password.length === 0) {
-        this.$message.error('Password is empty!')
+    f_importFromPrivatekey() {
+      if (this.importing) {
+        return
+      }
+      if (this.privkeyPassphrase.length === 0) {
+        this.$message.error('Passphrase is empty!')
+        return
+      }
+      if (this.privateKey.length === 0) {
+        this.$message.error('Please input your private key!')
+        return
+      }
+      try {
+        const account = getAccountFromPrivatekey(this.privateKey)
+        this.f_import(account)
+      } catch (err) {
+        this.errorMsg = err.message
+        return false
+      }
+    },
+    f_importFromKeystore() {
+      if (this.importing) {
+        return
+      }
+      if (this.keystorePassphrase.length === 0) {
+        this.$message.error('Passphrase is empty!')
         return
       }
       if (!this.keystoreJson) {
         this.$message.error('Please provide your keystore file!')
         return
       }
-      this.importing = true
-
-      let account
       try {
-        account = getAccountWithKeystore(this.keystoreJson, this.password)
+        const account = getAccountFromKeystore(this.keystoreJson, this.keystorePassphrase)
+        this.f_import(account, this.keystorePassphrase)
       } catch (err) {
         this.errorMsg = err.message
-        this.importing = false
         return false
       }
+    },
+    f_import(account, passphrase) {
+      this.importing = true
       const address = account.getAddressString()
       console.log(`${USER_STATE_PERSIST_KEY}_${address}`)
       this.$emit('setAccount', account)
@@ -139,16 +179,16 @@ export default {
             this.$emit('setDatadir', val.dataDir)
             if (fs.existsSync(path.resolve(val.dataDir, './poss.conf'))) {
               console.log('user exists, starting app')
-              return this.$emit('startApp', { passphrase: this.password })
+              return this.$emit('startApp', { passphrase })
             } else {
               console.log('config file does not exist, initing app')
-              return this.$emit('startApp', { isInit: true, passphrase: this.password })
+              return this.$emit('startApp', { isInit: true, passphrase })
             }
           }
           const datadir = createUserDir(address)
           if (datadir) {
             this.$emit('setDatadir', datadir)
-            return this.$emit('startApp', { isInit: true, passphrase: this.password })
+            return this.$emit('startApp', { isInit: true, passphrase })
           }
           return this.$message.error('Create data directory failed.')
         })
