@@ -30,8 +30,8 @@ function getFileStatus(objectStatus) {
   return fileStatus
 }
 
-export const getObjectList = bucket =>
-  poss.listObjects(bucket ? { bucket } : null).then(res => {
+export const getObjectList = () =>
+  poss.callMethod('ListObjects').then(res => {
     console.log('get file list')
     console.log(res)
     if (res) {
@@ -52,7 +52,7 @@ export const getObjectStatus = objectKey => {
   console.log('get object status')
   console.log(objectKey)
   return poss
-    .objectStatusSync({ key: objectKey })
+    .callMethod('ObjectStatusSync', { key: objectKey })
     .then(res => {
       console.log('get object status success for: ', objectKey)
       console.log(res)
@@ -68,22 +68,17 @@ export const getObjectStatus = objectKey => {
 
 export const headObject = objectKey => {
   console.log('getting object metadata')
-  return poss.headObject({ key: objectKey }).catch(err => {
+  return poss.callMethod('HeadObject', { key: objectKey }).catch(err => {
     console.error('head object error')
     console.error(err)
     return Promise.reject(err)
   })
 }
 
-export const renameFile = (oriKey, newKey) => {
-  console.log('renaming file ', oriKey, newKey)
-  return poss.renameObject({ key: newKey, source: `${APP_BUCKET_NAME}/${oriKey}` })
-}
-
 export const deleteFile = objectKey => {
   console.log('delete file service fired ', objectKey)
   return poss
-    .deleteObject({ key: objectKey })
+    .callMethod('DeleteObject', { key: objectKey })
     .then(taskId => {
       console.log('Delete object task created. Task id: ', taskId)
       return taskId
@@ -95,24 +90,14 @@ export const deleteFile = objectKey => {
     })
 }
 
-export const deleteFileSync = objectKey => {
-  console.log('delete file (sync) service fired ', objectKey)
-  return poss.deleteObjectSync({ key: objectKey }).catch(err => {
-    console.error('delete object error')
-    console.error(err)
-    throw err
-  })
-}
-
 export const renewFile = params => {
   console.log('renew object')
   return poss
-    .renewObject({
+    .callMethod('RenewObject', {
       key: params.objectKey,
       chiprice: params.chiPrice,
       copies: params.copyCount,
       expires: moment(Date.now() + params.storageTime * 1000).toISOString(),
-      encrypt: params.isSecure,
     })
     .then(res => res)
     .catch(err => {
@@ -123,7 +108,7 @@ export const renewFile = params => {
 }
 
 export const getShareCode = objectKey =>
-  poss.shareObject({ key: objectKey }).catch(err => {
+  poss.callMethod('ShareObject', { key: objectKey }).catch(err => {
     console.error('get share code failed')
     console.error(err)
     return Promise.reject(err)

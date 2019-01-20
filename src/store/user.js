@@ -195,7 +195,7 @@ const store = {
         .catch(err => {
           console.log('get metadata failed')
           console.error(err)
-          if (err.error && err.error.message === 'user is not exists') {
+          if (err.error && err.error.message.match('user is not exists')) {
             return context.dispatch(ACT_FLUSH_USER_INDEX_DATA, context.state.metadata)
           }
           context.commit(MUT_WRITE_USER_INDEX_DATA, null)

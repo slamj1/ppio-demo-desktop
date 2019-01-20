@@ -127,8 +127,8 @@ export default taskType => {
         console.log('cancelling task failed ', taskToCancel.id)
         console.error(err)
         if (
-          err.message === 'task not found' ||
-          err.message === 'this account has not put this chunk yet'
+          err.message.match('task not found') ||
+          err.message.match('this account has not put this chunk yet')
         ) {
           return context.commit(STORE_KEYS.MUT_CANCEL_TASK, idx)
         }
@@ -158,7 +158,7 @@ export default taskType => {
       .catch(err => {
         console.error('delete upload task failed')
         console.error(err.message)
-        if (err.message === 'task not found') {
+        if (err.message.match('task not found')) {
           return context.commit(STORE_KEYS.MUT_REMOVE_TASK, idx)
         }
         return Promise.reject(err)

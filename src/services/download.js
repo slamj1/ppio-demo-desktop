@@ -17,15 +17,11 @@ export const getEstimateCost = params => {
   console.log('request download file cost')
   console.log(params)
   return poss
-    .getCost({
-      size: params.size,
+    .callMethod('GetObjectFunds', {
+      objectsize: params.size,
     })
     .then(costs => {
       console.log(costs)
-      // The total download cost contains only one part, so totalCost === downloadCost
-      // const totalCost = costs.reduce((acc, cur) => cur + acc, 0)
-      // const downloadCost = costs.reduce((acc, cur) => cur + acc, 0)
-      // return { totalCost, downloadCost }
       const minerCost = parseInt(costs.miner)
       const serviceCost = parseInt(costs.service)
       return minerCost + serviceCost
@@ -40,6 +36,7 @@ export const getEstimateCost = params => {
 /**
  * start download, returns object key for taskId
  * @param {object} params
+ * @param {String} params.bucket - bucket name
  * @param {String} params.objectKey
  * @param {String} params.shareCode - share code of file
  * @param {number} params.chiPrice
@@ -52,12 +49,12 @@ export const startDownload = async params => {
   console.log('start download service')
   console.log(params)
   return poss
-    .getObject({
+    .callMethod('GetObject', {
       bucket: params.bucket,
       key: params.objectKey,
-      'share-code': params.shareCode,
+      sharecode: params.shareCode,
       chiprice: params.chiPrice,
-      outfile: params.exportPath,
+      file: params.exportPath,
     })
     .then(taskId => {
       console.log('Download task created. Task id: ', taskId)

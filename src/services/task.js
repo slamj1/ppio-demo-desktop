@@ -4,36 +4,30 @@ const poss = remote.getGlobal('poss')
 
 export const listTasks = () => {
   console.log('list all tasks')
-  return poss.listTasks()
-}
-
-export const getTask = taskId => {
-  console.log('getting task')
-  console.log(taskId)
-  return poss.getTask({ taskId })
+  return poss.callMethod('ListTasks')
 }
 
 export const pauseTask = taskId => {
   console.log('pausing task')
   console.log(taskId)
-  return poss.pauseTask({ taskId })
+  return poss.callMethod('PauseTask', { taskid: taskId })
 }
 
 export const resumeTask = taskId => {
   console.log('resuming task')
   console.log(taskId)
-  return poss.resumeTask({ taskId })
+  return poss.callMethod('ResumeTask', { taskid: taskId })
 }
 
 export const deleteTask = taskId => {
   console.log('deleting task')
   console.log(taskId)
-  return poss.deleteTaskSync({ taskId })
+  return poss.callMethod('DeleteTaskSync', { taskid: taskId })
 }
 
 export const getTaskProgress = taskId =>
   poss
-    .getJobProgress({ taskId })
+    .callMethod('GetJobProgress', { task: taskId })
     .then(res => {
       console.log('task progress got', taskId)
       console.log(res)

@@ -22,13 +22,13 @@ export const getEstimateCost = params => {
   console.log('request upload file cost')
   console.log(params)
   const postParams = {
-    size: params.size,
+    objectsize: params.size,
     copies: params.copyCount,
     expires: timeToExpireDate(params.storageTime),
   }
   console.log(postParams)
   return poss
-    .putCost(postParams)
+    .callMethod('PutObjectFunds', postParams)
     .then(costs => {
       // The total upload cost contains two parts: storage and upload
       const storageCost = parseInt(costs.miner)
@@ -59,14 +59,13 @@ export const startUpload = async params => {
   console.log('start upload service')
   console.log(params)
   return poss
-    .putObject({
+    .callMethod('PutObject', {
       key: params.objectKey,
       body: params.localPath,
       copies: params.copyCount,
       metadata: '',
       expires: timeToExpireDate(params.storageTime),
       chiprice: params.chiPrice,
-      encrypt: params.isSecure,
     })
     .then(taskId => {
       console.log('Upload task created. Task id: ', taskId)

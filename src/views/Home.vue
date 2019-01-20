@@ -43,7 +43,6 @@
     <Download v-if="showPopups.downloadFile" :file="downloadingFile"></Download>
     <Get v-if="showPopups.getFile"></Get>
     <Renew v-if="showPopups.renewFile" :file="renewingFile"></Renew>
-    <Rename v-if="showPopups.renameFile" :file="renamingFile"></Rename>
     <Share v-if="showPopups.shareFile" :file="sharingFile" :fileIndex="sharingFileIndex"></Share>
     <Delete v-if="showPopups.deleteFile" :file="deletingFile" :fileIndex="deletingFileIndex"></Delete>
     <Feedback v-if="showFeedback" @close="showFeedback = false"></Feedback>
@@ -69,7 +68,6 @@ import Profile from '../components/Profile'
 import Download from './subviews/Download'
 import Get from './subviews/Get'
 import Renew from './subviews/Renew'
-import Rename from './subviews/Rename'
 import Share from './subviews/Share'
 import Upload from './subviews/Upload'
 import Delete from './subviews/Delete'
@@ -90,7 +88,6 @@ export default {
         uploadFile: false,
         deleteFile: false,
         billingRecords: false,
-        renameFile: false,
       },
       downloadingFile: null,
       sharingFile: null,
@@ -109,7 +106,6 @@ export default {
     Download,
     Get,
     Renew,
-    Rename,
     Share,
     Upload,
     Feedback,

@@ -6,7 +6,14 @@
       <p class="name">PPDISK-demo</p>
     </div>
     <div class="right-content">
-      <router-view @startApp="f_startApp" @setAccount="f_setAccount" @setDatadir="f_setDatadir" :starting-app="startingApp || initializing" :cur-account="curAccount"></router-view>
+      <router-view
+          @startApp="f_startApp"
+          @setAccount="f_setAccount"
+          @setDatadir="f_setDatadir"
+          @setKeystorePath="f_setKeystorePath"
+          @setPassphrase="f_setPassphrase"
+          :starting-app="startingApp || initializing"
+          :cur-account="curAccount"></router-view>
     </div>
   </div>
 </template>
@@ -22,6 +29,8 @@ export default {
     initConfig: {},
     curAccount: null,
     datadir: '',
+    keystorePath: '',
+    passphrase: '',
     bindedCpool: {
       host: '',
       address: '',
@@ -42,16 +51,22 @@ export default {
       if (this.bindedCpool.host.length > 0) {
         return Promise.resolve()
       }
-      return iterateCpools(this.curAccount.getAddressString()).then(res => {
-        for (let i = 0; i < res.length; i++) {
-          if (res[i].binded === true) {
-            this.bindedCpool.host = res[i].host
-            this.bindedCpool.address = res[i].address
-            break
+      return iterateCpools(this.curAccount.getAddressString())
+        .then(res => {
+          console.log(res)
+          for (let i = 0; i < res.length; i++) {
+            if (res[i].binded === true) {
+              this.bindedCpool.host = res[i].host
+              this.bindedCpool.address = res[i].address
+              break
+            }
           }
-        }
-        return res
-      })
+          return res
+        })
+        .catch(err => {
+          console.error(err)
+          this.initializing = false
+        })
     },
     f_startApp(payload) {
       this.initializing = true
@@ -63,8 +78,8 @@ export default {
           console.log(this.curAccount)
           this.initConfig = {
             datadir: this.datadir,
-            privateKey: this.curAccount.getPrivateKeyString(),
-            passphrase: payload.passphrase,
+            keystorePath: this.keystorePath,
+            passphrase: this.passphrase,
           }
           if (!this.$isCpoolPackage || this.bindedCpool.host.length > 0) {
             this.initConfig.cpoolHost = this.$isCpoolPackage
@@ -73,7 +88,7 @@ export default {
             this.initConfig.cpoolAddress = this.$isCpoolPackage
               ? this.bindedCpool.address
               : undefined
-            if (payload.isInit) {
+            if (payload && payload.isInit) {
               return initApp(this.initConfig)
                 .then(() => {
                   console.log('daemon inited')
@@ -104,6 +119,12 @@ export default {
     f_setDatadir(datadir) {
       this.datadir = datadir
     },
+    f_setKeystorePath(path) {
+      this.keystorePath = path
+    },
+    f_setPassphrase(passphrase) {
+      this.passphrase = passphrase
+    },
     f_cancelCpool() {
       this.showChooseCpool = false
       this.initializing = false
@@ -117,7 +138,7 @@ export default {
       this.bindedCpool.host = cpoolData.host
       this.bindedCpool.address = cpoolData.address
       this.showChooseCpool = false
-      this.f_startApp(true, this.initConfig.passphrase)
+      this.f_startApp(true)
     },
   },
 }

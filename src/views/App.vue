@@ -105,7 +105,7 @@ export default {
         return clearCpoolConfig(params.datadir)
       }
       if (!params.cpoolHost || !params.cpoolAddress) {
-        throw new Error('no cpool data')
+        return Promise.reject(new Error('no cpool data'))
       }
       console.log('saving cpool data to config file')
       console.log(params.cpoolHost, params.cpoolAddress)
@@ -124,6 +124,7 @@ export default {
       })
     },
     f_goImport() {
+      this.needPassphrase = false
       this.$router.push({ name: 'account/import' })
     },
     /**
@@ -143,7 +144,7 @@ export default {
     },
     f_startApp(initConfig) {
       if (!fs.existsSync(initConfig.datadir)) {
-        throw new Error('Data dir does not exist')
+        return Promise.reject(new Error('Data dir does not exist'))
       }
       console.log('test passphrase')
       this.initializing = true
@@ -180,17 +181,17 @@ export default {
       console.log(
         `starting app at ${initConfig.datadir}, with passphrase: ${
           initConfig.passphrase
-        }, and private key: ${initConfig.privateKey}`,
+        }, and keystore: ${initConfig.keystorePath}`,
       )
       console.log(initConfig)
       return this.f_setCpool(initConfig)
         .then(() => {
           console.log('starting daemon')
-          return startDaemon(
-            initConfig.datadir,
-            initConfig.passphrase,
-            initConfig.privateKey,
-          )
+          return startDaemon({
+            datadir: initConfig.datadir,
+            keystorePath: initConfig.keystorePath,
+            passphrase: initConfig.passphrase,
+          })
         })
         .then(port => {
           console.log('daemon started at port ', port)

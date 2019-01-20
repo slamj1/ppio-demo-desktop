@@ -6,7 +6,7 @@ const poss = remote.getGlobal('poss')
 export const listBuckets = () => {
   console.log('listing buckets')
   return poss
-    .listBuckets()
+    .callMethod('ListBuckets')
     .then(res => {
       console.log('user buckets: ')
       console.log(res)
@@ -22,7 +22,7 @@ export const listBuckets = () => {
 export const createBucket = bucketName => {
   console.log('creating bucket: ', bucketName)
   return poss
-    .createBucket({ bucket: bucketName })
+    .callMethod('CreateBucket', { bucket: bucketName })
     .then(res => {
       console.log(`${bucketName} bucket created`)
       return res
@@ -46,23 +46,23 @@ export const checkDefaultBucket = () => {
     .then(res => {
       if (res.indexOf(APP_BUCKET_NAME) > -1) {
         console.log('default bucket exists')
-        poss.setBaseBucket(APP_BUCKET_NAME)
+        poss.setDefaultBucket(APP_BUCKET_NAME)
         return true
       }
       return createDefaultBucket().then(() => {
         console.log('default bucket created')
-        poss.setBaseBucket(APP_BUCKET_NAME)
+        poss.setDefaultBucket(APP_BUCKET_NAME)
         return true
       })
     })
-    .then(() => poss.setBaseBucket(APP_BUCKET_NAME))
+    .then(() => poss.setDefaultBucket(APP_BUCKET_NAME))
 }
 
 // unused
 export const deleteBucket = bucketName => {
   console.log(`deleting bucket ${bucketName}`)
   return poss
-    .deleteBucket({ bucket: bucketName })
+    .callMethod('DeleteBucket', { bucket: bucketName })
     .then(res => {
       console.log(`${bucketName} bucket deleted`)
       return res

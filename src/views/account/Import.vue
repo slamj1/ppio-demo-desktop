@@ -70,6 +70,7 @@ export default {
     privkeyPassphrase: '',
     mnemonic: '',
     errorMsg: '',
+    keystorePath: '',
     keystoreJson: null,
     privateKey: '',
     addressInKeystore: '',
@@ -114,6 +115,7 @@ export default {
         const keystoreJson = JSON.parse(fileContent)
         this.keystoreJson = keystoreJson
         this.addressInKeystore = keystoreJson.address
+        this.keystorePath = filePath
         return keystoreJson
       } catch (err) {
         return null
@@ -167,6 +169,8 @@ export default {
       const address = account.getAddressString()
       console.log(`${USER_STATE_PERSIST_KEY}_${address}`)
       this.$emit('setAccount', account)
+      this.$emit('setKeystorePath', this.keystorePath)
+      this.$emit('setPassphrase', passphrase)
       return storage
         .getItem(`${USER_STATE_PERSIST_KEY}_${address}`)
         .then(val => {
@@ -179,16 +183,16 @@ export default {
             this.$emit('setDatadir', val.dataDir)
             if (fs.existsSync(path.resolve(val.dataDir, './poss.conf'))) {
               console.log('user exists, starting app')
-              return this.$emit('startApp', { passphrase })
+              return this.$emit('startApp')
             } else {
               console.log('config file does not exist, initing app')
-              return this.$emit('startApp', { isInit: true, passphrase })
+              return this.$emit('startApp', { isInit: true })
             }
           }
           const datadir = createUserDir(address)
           if (datadir) {
             this.$emit('setDatadir', datadir)
-            return this.$emit('startApp', { isInit: true, passphrase })
+            return this.$emit('startApp', { isInit: true })
           }
           return this.$message.error('Create data directory failed.')
         })
@@ -220,6 +224,7 @@ export default {
   .keystore-file-name {
     margin-top: 20px;
     padding: 0 20px;
+    text-align: left;
   }
   .keystore-file-hint {
     color: #b1b1b1;

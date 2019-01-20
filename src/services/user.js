@@ -2,6 +2,7 @@ import { remote } from 'electron'
 import ppwallet from 'ppwallet'
 import bip39 from 'bip39'
 import safeBuffer from 'safe-buffer'
+import { queryAccount, getTransferRecords, getRecChiprice } from './indexerApi'
 
 const poss = remote.getGlobal('poss')
 
@@ -83,15 +84,14 @@ export const generateNewAccount = password => {
 }
 
 export const getWalletAddress = () =>
-  poss.walletAccount().then(res => {
+  poss.callMethod('WalletAccount').then(res => {
     console.log(res)
     return res
   })
 
-export const getAccountDetails = walletId => {
-  console.log('getting account details for', walletId)
-  return poss
-    .accountDetails({ walletId })
+export const getAccountDetails = address => {
+  console.log('getting account details for', address)
+  return queryAccount(address)
     .then(res => {
       console.log('account detail got')
       return {
@@ -101,7 +101,7 @@ export const getAccountDetails = walletId => {
       }
     })
     .catch(err => {
-      if (err.message === 'account not exists') {
+      if (err.message.match('account not exists')) {
         return Promise.resolve({
           balance: 0,
           funds: 0,
@@ -115,28 +115,9 @@ export const getAccountDetails = walletId => {
 
 export const getIndexData = () => {
   console.log('getting user index data')
-  return poss.getIndexData().then(res => {
+  return poss.callMethod('ExportIndexdata').then(res => {
     console.log('user index data got ', typeof res)
     console.log(res)
-    /*
-    {
-      "bucket": "ppio-demo",
-      "vpath": "aria1232222-1.34.0.tar.gz",
-      "object": "301b47a13c7c4b08579f6e2fdd7d903cabd9da8e9cfdb93a76f7e6dfb0cbe97a",
-      "length": 3786225,
-      "metadata": "",
-      "put_id": "64715dae-930d-4dc9-96eb-1355287ee2f1",
-      "ctime": "2018-12-13T05:18:51.919884Z",
-      "mtime": "2018-12-13T05:18:51.919884Z",
-      "base_index": {
-        "object": "301b47a13c7c4b08579f6e2fdd7d903cabd9da8e9cfdb93a76f7e6dfb0cbe97a",
-        "length": 3786225,
-        "chunks": [
-          "301b47a13c7c4b08579f6e2fdd7d903cabd9da8e9cfdb93a76f7e6dfb0cbe97a"
-        ]
-      }
-    }
-     */
     console.log(res['poss_index'])
     return {
       pubkey: res.pubkey,
@@ -153,17 +134,8 @@ export const flushIndexdata = () => {
 
 export const getBillingRecords = walletId => {
   console.log('getting billing records')
-  return poss
-    .purchaseRecords({ walletId, start: 0, limit: 50 })
+  return getTransferRecords(walletId)
     .then(res => {
-      /**
-       *
-       Amount: "1628400"
-       Comment: "lock amount of contract's funds"
-       FromAccountID: "ppio1Ykquh4LpQ1k8emVbx29vrCmq4uz5K6zwS"
-       Time: 1545279012
-       ToAccountID: "ppio1Ykquh4LpQ1k8emVbx29vrCmq4uz5K6zwS"
-       */
       console.log('purchase records got: ')
       console.log(res)
       return res.map(item => ({
@@ -181,7 +153,7 @@ export const getBillingRecords = walletId => {
 
 // TODO: what is the unit of chi price? kwei? gwei?
 export const getChiPrice = () =>
-  poss.chiPrice().then(res => ({
+  getRecChiprice().then(res => ({
     storage: parseInt(res.StorageChiPrice),
     download: parseInt(res.DownloadChiPrice),
   }))

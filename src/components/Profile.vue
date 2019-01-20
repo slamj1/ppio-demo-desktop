@@ -12,7 +12,7 @@
           @row-click="handleClick">
         <el-table-column
             prop="label"
-            :width="130"
+            :width="140"
             class-name="profile-table-key">
         </el-table-column>
         <el-table-column
@@ -67,7 +67,7 @@ export default {
           },
           {
             key: 'record',
-            label: 'Sransition Records',
+            label: 'Transaction Records',
             val: '',
           },
           {

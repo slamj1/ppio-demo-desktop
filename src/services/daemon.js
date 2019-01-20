@@ -1,40 +1,63 @@
 import { remote } from 'electron'
+import getPorts from '../background/getPorts'
 
 const poss = remote.getGlobal('poss')
 
 /**
  * init poss.conf in datadir
- * @param {string} datadir - data directory
  * @param {object} params - init configuration
- * @param {string} [params.privateKey] - user's private key
- * @param {string} [params.cpoolUrl] - coin pool's url
- * @param {string} [params.cpoolAddress] - coin pool's address
+ * @param {string} params.datadir - data directory
+ * @param {string} params.keystorePath - keystore path
+ * @param {string} params.passphrase - user passphrase
+ * @param {string} [params.cpoolUrl] - coin pool's url, only works in cpool mode
+ * @param {string} [params.cpoolAddress] - coin pool's address, only works in cpool mode
  */
 export const init = params => {
-  console.log('initing daemon ', params.datadir)
+  console.log('initing daemon')
   console.log(params)
-  console.log(poss)
-  return poss
-    .initDaemon({
-      datadir: params.datadir,
-      walletKey: params.privateKey ? `0x${params.privateKey}` : undefined,
-      cpoolUrl: params.cpoolHost || undefined,
-      cpoolAddress: params.cpoolAddress || undefined,
-    })
-    .catch(err => {
-      console.error('daemon init failed')
-      console.error(err)
-      return Promise.reject(err)
-    })
+  const initParams = {
+    datadir: params.datadir,
+    keystore: params.keystorePath,
+    'key-passphrase': params.passphrase,
+  }
+  if (process.env.IS_CPOOL === 'true') {
+    initParams['cpool-url'] = params.cpoolHost
+    initParams['cpool-account'] = params.cpoolAddress
+  }
+  return poss.initDaemon(initParams).catch(err => {
+    console.error('daemon init failed')
+    console.error(err)
+    return Promise.reject(err)
+  })
 }
 
-export const startDaemon = (datadir, passphrase, privateKey) => {
-  console.log('starting daemon service, ', datadir, passphrase, privateKey)
-  return poss
-    .startDaemon({
-      datadir: datadir,
-      keyPassphrase: passphrase,
-      walletKey: privateKey,
+/**
+ * init poss.conf in datadir
+ * @param {object} params - init configuration
+ * @param {string} params.datadir - data directory
+ * @param {string} params.keystorePath - keystore path
+ * @param {string} params.passphrase - user passphrase
+ */
+export const startDaemon = params => {
+  console.log('starting daemon service')
+  console.log(params)
+  const startParams = {
+    datadir: params.datadir,
+  }
+  if (params.keystorePath) {
+    startParams.keystore = params.keystorePath
+  }
+  if (params.passphrase) {
+    startParams['key-passphrase'] = params.passphrase
+  }
+  return getPorts()
+    .then(port => {
+      startParams.rpcport = port
+      return poss.startDaemon(startParams)
+    })
+    .then(port => {
+      poss.setRPCPort(port)
+      return port
     })
     .catch(err => {
       console.error('daemon start failed')
@@ -46,7 +69,7 @@ export const startDaemon = (datadir, passphrase, privateKey) => {
 export const stopDaemon = () => {
   console.log('stopping daemon service')
   return poss
-    .stopDaemon()
+    .callMethod('StopDaemon')
     .then(port => {
       console.log('stopped daemon on port ', port)
       return port

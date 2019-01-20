@@ -11,7 +11,7 @@ import {
   MUT_REPLACE_STATE_HOOK,
   UL_TASK,
 } from '../constants/store'
-import { getObjectList, getObjectStatus, renameFile } from '../services/file'
+import { getObjectList, getObjectStatus } from '../services/file'
 import { HomeListFile } from './PPFile'
 
 const initialState = () => ({
@@ -139,23 +139,14 @@ const store = {
       })
     },
     /**
+     * @deprecated
      * rename file
      * @param context
      * @param payload
      * @returns {*|void|Promise<any>}
      */
     [ACT_RENAME_FILE](context, payload) {
-      console.log('renaming file ', payload.filename)
-      return renameFile(payload.oriKey, payload.newKey)
-        .then(() => {
-          console.log('renaming file success')
-          return true
-        })
-        .catch(err => {
-          console.error('renaming file failed')
-          console.error(err)
-          throw err
-        })
+      console.log('renaming file not supported')
     },
   },
 }
