@@ -70,4 +70,12 @@ export default {
 
     return this.window
   },
+  focusWindow() {
+    if (this.window === null) {
+      this.createWindow()
+      this.window.show()
+    } else {
+      this.window.show()
+    }
+  },
 }

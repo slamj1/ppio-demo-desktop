@@ -1,5 +1,13 @@
 'use strict'
-import { app, protocol, Menu, globalShortcut, BrowserWindow } from 'electron'
+import {
+  app,
+  protocol,
+  Menu,
+  globalShortcut,
+  BrowserWindow,
+  Tray,
+  nativeImage,
+} from 'electron'
 import poss from './background/ppiosdk'
 import TaskManager from './background/taskManager'
 import windowManager from './background/windowManager'
@@ -40,6 +48,8 @@ global.downloadTaskManager = new TaskManager({ type: 'download' })
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+let tray = null
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 
@@ -47,7 +57,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 protocol.registerStandardSchemes(['app'], { secure: true })
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+  if (process.platform !== 'darwin' && process.platform !== 'win32') {
     app.quit()
   }
 })
@@ -65,6 +75,23 @@ app.on('activate', () => {
 app.on('ready', () => {
   console.log('app is ready')
   Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate))
+
+  const icon = nativeImage.createFromPath('./assets/tray-icon.png')
+  tray = new Tray(icon)
+  tray.setToolTip('PPIO-demo')
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: '退出',
+      click: () => {
+        app.quit()
+      },
+    },
+  ])
+  tray.setContextMenu(contextMenu)
+  tray.on('click', () => {
+    windowManager.focusWindow()
+  })
+
   globalShortcut.register('CommandOrControl+Alt+I', () => {
     console.log('open devtools')
     let focusWin = BrowserWindow.getFocusedWindow()

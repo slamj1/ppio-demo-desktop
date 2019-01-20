@@ -140,7 +140,7 @@ export default {
       return {
         list: [
           {
-            product: `Service cost:'`,
+            product: 'Service cost:',
             fee: `${this.uploadCost} PPCoin`,
           },
           {
