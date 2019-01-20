@@ -7718,9 +7718,9 @@ postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.5:
     source-map "^0.6.1"
     supports-color "^5.5.0"
 
-ppwallet@^0.0.1-alpha1:
-  version "0.0.1-alpha1"
-  resolved "http://127.0.0.1:4000/ppwallet/-/ppwallet-0.0.1-alpha1.tgz#21d450154ef12a8771a059377f82bcc63349643e"
+ppwallet@^0.0.1-alpha4:
+  version "0.0.1-alpha4"
+  resolved "http://127.0.0.1:4000/ppwallet/-/ppwallet-0.0.1-alpha4.tgz#fa27a52b7f6a47ab0d6f16e7d89115d7d05814dc"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^5.0.0"
