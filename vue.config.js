@@ -40,6 +40,10 @@ module.exports = {
               from: 'src/poss-bin/poss_mac',
               to: 'extraResources/poss_mac',
             },
+            {
+              from: 'src/assets/tray-icon.png',
+              to: 'extraResources/tray-icon.png',
+            },
           ],
         },
         dmg: {
@@ -54,6 +58,10 @@ module.exports = {
               from: 'src/poss-bin/poss_win.exe',
               to: 'extraResources/poss_win.exe',
             },
+            {
+              from: 'src/assets/tray-icon.png',
+              to: 'extraResources/tray-icon.png',
+            },
           ],
         },
         linux: {
@@ -62,6 +70,10 @@ module.exports = {
             {
               from: 'src/poss-bin/poss_linux',
               to: 'extraResources/poss_linux',
+            },
+            {
+              from: 'src/assets/tray-icon.png',
+              to: 'extraResources/tray-icon.png',
             },
           ],
         },
