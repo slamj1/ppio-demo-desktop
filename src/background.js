@@ -7,16 +7,19 @@ import {
   BrowserWindow,
   Tray,
   nativeImage,
+  shell,
 } from 'electron'
 import poss from './background/ppiosdk'
 import TaskManager from './background/taskManager'
 import windowManager from './background/windowManager'
+import { HOW_TO_USE, DOWNLOAD_PAGE } from './constants/urls'
+import { version } from '../package.json'
 
 const menuTemplate = [
   {
     label: 'Application',
     submenu: [
-      { label: 'About Application', selector: 'orderFrontStandardAboutPanel:' },
+      { label: 'About PPIO-Demo', selector: 'orderFrontStandardAboutPanel:' },
       { type: 'separator' },
       {
         label: 'Quit',
@@ -37,6 +40,23 @@ const menuTemplate = [
       { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
       { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
       { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' },
+    ],
+  },
+  {
+    label: 'Help',
+    submenu: [
+      {
+        label: 'How to use?',
+        click: function() {
+          shell.openExternal(HOW_TO_USE)
+        },
+      },
+      {
+        label: `Check update (v${version})`,
+        click: function() {
+          shell.openExternal(DOWNLOAD_PAGE)
+        },
+      },
     ],
   },
 ]
@@ -78,7 +98,7 @@ app.on('ready', () => {
 
   const icon = nativeImage.createFromPath('./assets/tray-icon.png')
   tray = new Tray(icon)
-  tray.setToolTip('PPIO-demo')
+  tray.setToolTip('PPIO-Demo')
   const contextMenu = Menu.buildFromTemplate([
     {
       label: '退出',

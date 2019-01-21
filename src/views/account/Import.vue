@@ -1,8 +1,11 @@
 <template>
   <div class="account">
     <div class="tip-wrap">
-      <p class="title">Import</p>
+      <p class="title">Import<a class="tutorial-link" @click="f_goTutorials">(How to use?)</a></p>
     </div>
+    <el-alert type="warning" :closable="false">
+      <p>Alert: this is a demo net-disk app, our service is not stable at the moment. Meaning that your files uploaded might be lost. So DO NOT upload anything important.</p>
+    </el-alert>
     <div class="form-wrap">
       <el-tabs v-model="curTab">
         <el-tab-pane label="Import from keystore" name="keystore">
@@ -45,7 +48,7 @@
           <!--<el-button :loading="importing || startingApp" class="login-button" type="primary" @click="f_importFromPrivatekey">Confirm</el-button>-->
         <!--</el-tab-pane>-->
       </el-tabs>
-      <p>Don't have an account? <span class="wallet-link" @click="f_gotoWallet">Generate one</span></p>
+      <p>Don't have an account? <a class="wallet-link" @click="f_gotoWallet">Generate one</a></p>
     </div>
   </div>
 </template>
@@ -54,11 +57,12 @@
 import fs from 'fs'
 import path from 'path'
 import { shell, remote } from 'electron'
-import { USER_STATE_PERSIST_KEY, walletUrl } from '../../constants/constants'
+import { USER_STATE_PERSIST_KEY } from '../../constants/constants'
 import { MUT_REPLACE_STATE_HOOK } from '../../constants/store'
 import { getAccountFromKeystore, getAccountFromPrivatekey } from '../../services/user'
 import createUserDir from '../../utils/createUserDir'
 import storage from '../../utils/storage'
+import { HOW_TO_USE, WALLET } from '../../constants/urls'
 
 const { dialog, getCurrentWindow } = remote
 
@@ -81,6 +85,9 @@ export default {
     this.importing = false
   },
   methods: {
+    f_goTutorials() {
+      shell.openExternal(HOW_TO_USE)
+    },
     f_onDragover(e) {
       e.preventDefault()
       e.stopPropagation()
@@ -122,7 +129,7 @@ export default {
       }
     },
     f_gotoWallet() {
-      shell.openExternal(walletUrl)
+      shell.openExternal(WALLET)
     },
     f_importFromPrivatekey() {
       if (this.importing) {
@@ -208,6 +215,11 @@ export default {
 <style lang="scss" scoped>
 @import './account.scss';
 
+.tutorial-link {
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
 .wallet-link {
   cursor: pointer;
 }

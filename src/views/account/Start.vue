@@ -3,7 +3,7 @@
     <choose-coin-pool v-if="showChooseCpool" :account="curAccount" @bindCpool="f_bindCpool" @close="f_cancelCpool"></choose-coin-pool>
     <div class="left-content">
       <img src="@/assets/img/back.png" class="logo-img" alt="logo">
-      <p class="name">PPDISK-demo</p>
+      <p class="name">PPIO-Demo</p>
     </div>
     <div class="right-content">
       <router-view
@@ -169,7 +169,7 @@ export default {
   .right-content {
     width: 40%;
     background-color: #fff;
-    padding: 80px 40px 0 40px;
+    padding: 50px 40px 0 40px;
   }
 }
 </style>

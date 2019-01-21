@@ -1,7 +1,7 @@
 <template>
   <div id="splash-container">
     <img class="splash-logo" src="../assets/logo.png" alt="ppio">
-    <h1>PPDisk-Demo</h1>
+    <h1>PPIO-Demo</h1>
     <span class="loading"><img src="../assets/img/splash-loading.svg" alt=""></span>
   </div>
 </template>

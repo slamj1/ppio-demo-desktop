@@ -50,9 +50,9 @@
 </template>
 
 <script>
+import electron from 'electron'
 import filesize from 'filesize'
 import { mapState, mapGetters } from 'vuex'
-import electron from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
 import {
   DL_TASK,
@@ -63,7 +63,7 @@ import {
   ACT_GET_ACCOUNT_DETAILS,
   ACT_GET_USER_CPOOL,
 } from '../constants/store'
-
+import { DOWNLOAD_PAGE } from '../constants/urls'
 import Profile from '../components/Profile'
 import Download from './subviews/Download'
 import Get from './subviews/Get'
@@ -166,7 +166,7 @@ export default {
     },
     f_checkUpdate() {
       this.showProfile = false
-      electron.shell.openExternal('https://pp.io')
+      electron.shell.openExternal(DOWNLOAD_PAGE)
     },
     f_logout() {
       this.$store

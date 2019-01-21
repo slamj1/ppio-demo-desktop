@@ -127,8 +127,12 @@ export default {
       if (this.initializing) {
         return
       }
+      this.initializing = false
       this.needPassphrase = false
-      this.$router.push({ name: 'account/import' })
+      this.$store
+        .dispatch(ACT_LOGOUT)
+        .then(() => this.$router.push({ name: 'account/import' }))
+        .catch(() => this.$router.push({ name: 'account/import' }))
     },
     /**
      * start daemon with account

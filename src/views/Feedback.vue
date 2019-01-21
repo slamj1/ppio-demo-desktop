@@ -2,17 +2,20 @@
   <popup class="feedback-popup" @close="f_close" width="500">
     <span slot="header">Feedback</span>
     <div class="content" slot="content">
-      <h3>Please help us in product upgrading.</h3>
-      <el-input type="textarea" class="msg-input" placeholder="Your suggestion..." v-model="feedbackContent" :rows="4" resize="none"></el-input>
-      <el-checkbox class="upload-checkbox" v-model="uploadLog"><p class="hint">Upload log file. (If checked, your log file will be uploaded.)</p></el-checkbox>
-      <p class="hint"></p>
-      <el-button class="submit-btn" :loading="submitting" @click="f_submit" type="primary">Submit</el-button>
+      <!--<h3>Please help us to improve!</h3>-->
+      <p class="feedback-hint">Please join our gitter to report your problems, or discuss about our products!</p>
+      <!--<el-input type="textarea" class="msg-input" placeholder="Your suggestion..." v-model="feedbackContent" :rows="4" resize="none"></el-input>-->
+      <!--<el-checkbox class="upload-checkbox" v-model="uploadLog"><p class="hint">Upload log file. (If checked, your log file will be uploaded.)</p></el-checkbox>-->
+      <!--<p class="hint"></p>-->
+      <el-button class="submit-btn" @click="f_goGitter" type="primary">Join!</el-button>
     </div>
   </popup>
 </template>
 <script>
+import { shell } from 'electron'
 import Popup from '../components/Popup'
 import feedback from '../services/feedback'
+import { GITTER_URL } from '../constants/urls'
 
 export default {
   data() {
@@ -26,6 +29,10 @@ export default {
     Popup,
   },
   methods: {
+    f_goGitter() {
+      shell.openExternal(GITTER_URL)
+      this.$emit('close')
+    },
     f_submit() {
       if (this.submitting) {
         return false
@@ -61,6 +68,11 @@ export default {
     margin-bottom: 20px;
     font-weight: normal;
     text-align: center;
+  }
+
+  .feedback-hint {
+    font-size: 16px;
+    margin: 30px 0;
   }
 
   .msg-input {

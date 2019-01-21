@@ -18,14 +18,15 @@
         <el-table-column
             class-name="profile-table-val">
           <template slot-scope="scope">
+            <span>{{scope.row.val}}</span>
             <i v-if="scope.row.key === 'record' || scope.row.key === 'checkupdate'" class="el-icon-arrow-right"></i>
-            <p v-else>{{scope.row.val}}</p>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <div class="cpool-renew" @click="f_renew">{{isCpoolMode ? 'Renew service' : 'Recharge'}}</div>
-    <div class="logout-btn" @click="f_logout">Log out</div>
+    <div class="profile-menu-btn cpool-renew" @click="f_renew">{{isCpoolMode ? 'Renew service' : 'Recharge'}}</div>
+    <div class="profile-menu-btn help-btn" @click="f_goTutorials">How to use?</div>
+    <div class="profile-menu-btn logout-btn" @click="f_logout">Log out</div>
   </div>
 </template>
 
@@ -33,7 +34,8 @@
 import { clipboard, shell, remote } from 'electron'
 import moment from 'moment'
 import { chiToPPCoin } from '../utils/units'
-import { walletUrl } from '../constants/constants'
+import { WALLET, HOW_TO_USE } from '../constants/urls'
+import { version } from '../../package.json'
 
 const poss = remote.getGlobal('poss')
 
@@ -77,8 +79,8 @@ export default {
           },
           {
             key: 'checkupdate',
-            label: 'Check update',
-            val: '',
+            label: `Check update`,
+            val: `v${version}`,
           },
         ]
       } else {
@@ -113,6 +115,9 @@ export default {
     },
   },
   methods: {
+    f_goTutorials() {
+      shell.openExternal(HOW_TO_USE)
+    },
     f_copyAddress() {
       clipboard.writeText(this.userData.address)
       this.$message.success('Address copied!')
@@ -128,6 +133,9 @@ export default {
       if (row.key === 'checkupdate') {
         this.$emit('check-update')
       }
+      if (row.key === 'help') {
+        shell.openExternal(HOW_TO_USE)
+      }
     },
     f_renew() {
       if (this.isCpoolMode) {
@@ -136,7 +144,7 @@ export default {
         const rechargeUrl = poss.getCpoolService(cpoolHost).apiList.purchase.url
         shell.openExternal(rechargeUrl)
       } else {
-        shell.openExternal(walletUrl)
+        shell.openExternal(WALLET)
       }
     },
   },
@@ -189,7 +197,8 @@ export default {
   }
 
   .profile-row-record,
-  .profile-row-checkupdate {
+  .profile-row-checkupdate,
+  .profile-row-help {
     cursor: pointer;
   }
 
@@ -201,30 +210,20 @@ export default {
     text-align: right;
   }
 
-  .logout-btn {
+  .profile-menu-btn {
     text-align: center;
     height: 34px;
     line-height: 34px;
     font-size: 14px;
     border-top: 1px solid #dcdfe6;
-    color: #f56c6c;
     cursor: pointer;
 
     &:hover {
       background-color: #f5f7fa;
     }
-  }
 
-  .cpool-renew {
-    text-align: center;
-    height: 34px;
-    line-height: 34px;
-    font-size: 14px;
-    border-top: 1px solid #dcdfe6;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #f5f7fa;
+    &.logout-btn {
+      color: #f56c6c;
     }
   }
 }
