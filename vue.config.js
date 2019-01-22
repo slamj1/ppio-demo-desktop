@@ -65,10 +65,11 @@ module.exports = {
           ],
         },
         nsis: {
-          installerIcon: 'public/icons/nsis-icon.png',
+          installerIcon: 'public/icons/nsis-icon.ico',
           oneClick: false,
+          perMachine: true,
           allowToChangeInstallationDirectory: true,
-          allowElevation: true,
+          allowElevation: false,
         },
         linux: {
           target: ['deb'],
