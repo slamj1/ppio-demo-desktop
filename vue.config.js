@@ -1,8 +1,6 @@
-process.env.BASE_URL = ''
-
 module.exports = {
+  publicPath: process.env.NODE_ENV === 'production' ? '' : '/',
   filenameHashing: false,
-  publicPath: '',
   css: {
     loaderOptions: {
       sass: {
@@ -35,6 +33,12 @@ module.exports = {
         appId: 'com.ppio-demo.app',
         productName: process.env.IS_CPOOL === 'true' ? 'PPIO-demo_cpool' : 'PPIO-demo',
         copyright: 'Copyright © 2019 PPLabs.org',
+        protocols: [
+          {
+            name: 'PPIO-Demo',
+            schemes: ['ppio-demo', 'app'],
+          },
+        ],
         mac: {
           category: 'public.app-category.productivity',
           target: ['dmg'],
@@ -88,11 +92,7 @@ module.exports = {
             },
           ],
         },
-        asarUnpack: [
-          '**/src/background.js',
-          '**/src/background/ppiosdk.js',
-          'public/index.html',
-        ],
+        asarUnpack: ['**/src/background.js', '**/src/background/ppiosdk.js'],
       },
     },
   },

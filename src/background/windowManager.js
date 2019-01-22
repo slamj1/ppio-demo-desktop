@@ -1,5 +1,6 @@
 import { BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+import { APP_SCHEME } from '../constants/constants'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -43,6 +44,7 @@ export default {
         this.window.webContents.openDevTools()
       }
     } else {
+      createProtocol(APP_SCHEME)
       createProtocol('app')
       if (options.routerPath) {
         this.window.loadFile(`index.html#/${options.routerPath}`)
