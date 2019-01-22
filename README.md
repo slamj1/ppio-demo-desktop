@@ -24,16 +24,16 @@ yarn run build
 ```
 
 ## Stack
-- [Electron]()
-- [VueJS]()
-- [Vuex]()
-- [Element]()
-- [PPIO node.js SDK]()
+- [Electron](https://electronjs.org/)
+- [VueJS](https://vuejs.org/)
+- [Vuex](https://vuex.vuejs.org/)
+- [Element](https://element.eleme.io/#/)
+- [PPIO node.js SDK](https://github.com/ppio/ppio-sdk-js)
 
 ## Download
-- [Windows]()
-- [Mac]()
-- [Android](), [Github]() for Android
+- [Windows](https://github.com/PPIO/ppio-demo-desktop/releases)
+- [Mac](https://github.com/PPIO/ppio-demo-desktop/releases)
+- [Android](https://github.com/PPIO/ppio-demo-android/releases), [Github](https://github.com/PPIO/ppio-demo-android) for Android
 
 ## How to use the demo app
 Go to [here](https://www.pp.io/docs/how_to_use_ppio_demo.html)
