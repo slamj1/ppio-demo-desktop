@@ -65,7 +65,7 @@ module.exports = {
           ],
         },
         nsis: {
-          installerIcon: 'public/icons/icon.ico',
+          installerIcon: 'public/icons/nsis-icon.png',
           oneClick: false,
           allowToChangeInstallationDirectory: true,
           allowElevation: true,
