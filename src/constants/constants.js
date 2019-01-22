@@ -10,3 +10,5 @@ export const TASK_GET_PROGRESS_INTERVAL = 1000 // the time interval of updating 
 export const BG_TASK_GET_PROGRESS_INTERVAL = 5000 // the time interval of updating task progress in background
 
 export const minimalUnit = 'wei'
+
+export const APP_SCHEME = 'ppio-demo'

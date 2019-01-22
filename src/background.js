@@ -15,6 +15,7 @@ import TaskManager from './background/taskManager'
 import windowManager from './background/windowManager'
 import { HOW_TO_USE, DOWNLOAD_PAGE } from './constants/urls'
 import { version } from '../package.json'
+import { APP_SCHEME } from './constants/constants'
 
 const menuTemplate = [
   {
@@ -75,7 +76,7 @@ let tray = null
 // be closed automatically when the JavaScript object is garbage collected.
 
 // Standard scheme must be registered before the app is ready
-protocol.registerStandardSchemes([`ppio-demoV${version}`], { secure: true })
+protocol.registerStandardSchemes([APP_SCHEME], { secure: true })
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin' && process.platform !== 'win32') {
