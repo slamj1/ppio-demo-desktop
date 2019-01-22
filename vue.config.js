@@ -1,5 +1,8 @@
+process.env.BASE_URL = ''
+
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? `ppio-demo://` : '',
+  filenameHashing: false,
+  publicPath: '',
   css: {
     loaderOptions: {
       sass: {
@@ -85,7 +88,11 @@ module.exports = {
             },
           ],
         },
-        asarUnpack: ['**/src/background.js', '**/src/background/ppiosdk.js'],
+        asarUnpack: [
+          '**/src/background.js',
+          '**/src/background/ppiosdk.js',
+          'public/index.html',
+        ],
       },
     },
   },

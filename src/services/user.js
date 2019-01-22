@@ -6,6 +6,8 @@ import { queryAccount, getTransferRecords, getRecChiprice } from './indexerApi'
 
 const poss = remote.getGlobal('poss')
 
+export const login = () => {}
+
 // export const getAccount = (seedphrase, password) => {
 //   console.log('calling login method')
 //   console.log(seedphrase, password)

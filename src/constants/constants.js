@@ -11,4 +11,4 @@ export const BG_TASK_GET_PROGRESS_INTERVAL = 5000 // the time interval of updati
 
 export const minimalUnit = 'wei'
 
-export const APP_SCHEME = 'ppio-demo'
+export const APP_SCHEME = 'ppiodemo'

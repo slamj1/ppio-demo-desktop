@@ -98,26 +98,28 @@ app.on('ready', () => {
   console.log('app is ready')
   Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate))
 
-  const trayIconPath = isDevelopment
-    ? path.resolve('src/assets/tray-icon.png')
-    : path.resolve('extraResources/tray-icon.png')
-  const icon = nativeImage.createFromPath(trayIconPath)
-  console.log(trayIconPath)
-  tray = new Tray(icon)
-  tray.setToolTip('PPIO-Demo')
-  tray.setHighlightMode('always')
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: 'Quit',
-      click: () => {
-        app.quit()
+  if (process.platform === 'win32') {
+    const trayIconPath = isDevelopment
+      ? path.resolve('src/assets/tray-icon.png')
+      : path.resolve('extraResources/tray-icon.png')
+    const icon = nativeImage.createFromPath(trayIconPath)
+    console.log(trayIconPath)
+    tray = new Tray(icon)
+    tray.setToolTip('PPIO-Demo')
+    tray.setHighlightMode('always')
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: 'Quit',
+        click: () => {
+          app.quit()
+        },
       },
-    },
-  ])
-  tray.setContextMenu(contextMenu)
-  tray.on('click', () => {
-    windowManager.focusWindow()
-  })
+    ])
+    tray.setContextMenu(contextMenu)
+    tray.on('click', () => {
+      windowManager.focusWindow()
+    })
+  }
 
   globalShortcut.register('CommandOrControl+Alt+I', () => {
     console.log('open devtools')
