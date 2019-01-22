@@ -1071,11 +1071,9 @@ accessibility-developer-tools@^2.11.0:
   version "2.12.0"
   resolved "http://192.168.0.131:4000/accessibility-developer-tools/-/accessibility-developer-tools-2.12.0.tgz#3da0cce9d6ec6373964b84f35db7cfc3df7ab514"
 
-acorn-dynamic-import@^3.0.0:
-  version "3.0.0"
-  resolved "http://192.168.0.131:4000/acorn-dynamic-import/-/acorn-dynamic-import-3.0.0.tgz#901ceee4c7faaef7e07ad2a47e890675da50a278"
-  dependencies:
-    acorn "^5.0.0"
+acorn-dynamic-import@^4.0.0:
+  version "4.0.0"
+  resolved "http://192.168.0.131:4000/acorn-dynamic-import/-/acorn-dynamic-import-4.0.0.tgz#482210140582a36b83c3e342e1cfebcaa9240948"
 
 acorn-globals@^4.1.0:
   version "4.3.0"
@@ -1098,11 +1096,11 @@ acorn@^3.0.0, acorn@^3.0.4:
   version "3.3.0"
   resolved "http://192.168.0.131:4000/acorn/-/acorn-3.3.0.tgz#45e37fb39e8da3f25baee3ff5369e2bb5f22017a"
 
-acorn@^5.0.0, acorn@^5.5.0, acorn@^5.5.3, acorn@^5.6.2, acorn@^5.7.3:
+acorn@^5.5.0, acorn@^5.5.3, acorn@^5.7.3:
   version "5.7.3"
   resolved "http://192.168.0.131:4000/acorn/-/acorn-5.7.3.tgz#67aa231bf8812974b85235a96771eb6bd07ea279"
 
-acorn@^6.0.1, acorn@^6.0.4:
+acorn@^6.0.1, acorn@^6.0.4, acorn@^6.0.5:
   version "6.0.5"
   resolved "http://192.168.0.131:4000/acorn/-/acorn-6.0.5.tgz#81730c0815f3f3b34d8efa95cb7430965f4d887a"
 
@@ -3220,8 +3218,8 @@ dir-glob@2.0.0:
     path-type "^3.0.0"
 
 dir-glob@^2.0.0:
-  version "2.2.1"
-  resolved "http://192.168.0.131:4000/dir-glob/-/dir-glob-2.2.1.tgz#ce8413234ffe8452b76b7741c32f116cf2a7b1a7"
+  version "2.2.2"
+  resolved "http://192.168.0.131:4000/dir-glob/-/dir-glob-2.2.2.tgz#fa09f0694153c8918b18ba0deafae94769fc50c4"
   dependencies:
     path-type "^3.0.0"
 
@@ -5796,8 +5794,8 @@ joi@^14.3.0:
     topo "3.x.x"
 
 js-base64@^2.1.8:
-  version "2.5.0"
-  resolved "http://192.168.0.131:4000/js-base64/-/js-base64-2.5.0.tgz#42255ba183ab67ce59a0dee640afdc00ab5ae93e"
+  version "2.5.1"
+  resolved "http://192.168.0.131:4000/js-base64/-/js-base64-2.5.1.tgz#1efa39ef2c5f7980bb1784ade4a8af2de3291121"
 
 js-beautify@^1.6.12, js-beautify@^1.6.14:
   version "1.8.9"
@@ -10132,15 +10130,15 @@ webpack-target-electron-renderer@^0.4.0:
     webpack "^1.12.0"
 
 webpack@4, webpack@^4.18.0:
-  version "4.28.4"
-  resolved "http://192.168.0.131:4000/webpack/-/webpack-4.28.4.tgz#1ddae6c89887d7efb752adf0c3cd32b9b07eacd0"
+  version "4.29.0"
+  resolved "http://192.168.0.131:4000/webpack/-/webpack-4.29.0.tgz#f2cfef83f7ae404ba889ff5d43efd285ca26e750"
   dependencies:
     "@webassemblyjs/ast" "1.7.11"
     "@webassemblyjs/helper-module-context" "1.7.11"
     "@webassemblyjs/wasm-edit" "1.7.11"
     "@webassemblyjs/wasm-parser" "1.7.11"
-    acorn "^5.6.2"
-    acorn-dynamic-import "^3.0.0"
+    acorn "^6.0.5"
+    acorn-dynamic-import "^4.0.0"
     ajv "^6.1.0"
     ajv-keywords "^3.1.0"
     chrome-trace-event "^1.0.0"

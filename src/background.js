@@ -9,6 +9,7 @@ import {
   nativeImage,
   shell,
 } from 'electron'
+import path from 'path'
 import poss from './background/ppiosdk'
 import TaskManager from './background/taskManager'
 import windowManager from './background/windowManager'
@@ -96,12 +97,17 @@ app.on('ready', () => {
   console.log('app is ready')
   Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate))
 
-  const icon = nativeImage.createFromPath('./assets/tray-icon.png')
+  const trayIconPath = isDevelopment
+    ? path.resolve('src/assets/tray-icon.png')
+    : path.resolve('extraResources/tray-icon.png')
+  const icon = nativeImage.createFromPath(trayIconPath)
+  console.log(trayIconPath)
   tray = new Tray(icon)
   tray.setToolTip('PPIO-Demo')
+  tray.setHighlightMode('always')
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: '退出',
+      label: 'Quit',
       click: () => {
         app.quit()
       },

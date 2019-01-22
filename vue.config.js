@@ -64,6 +64,12 @@ module.exports = {
             },
           ],
         },
+        nsis: {
+          installerIcon: 'public/icons/icon.ico',
+          oneClick: false,
+          allowToChangeInstallationDirectory: true,
+          allowElevation: true,
+        },
         linux: {
           target: ['deb'],
           extraResources: [
