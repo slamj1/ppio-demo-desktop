@@ -33,7 +33,6 @@ yarn run build
 ## Download
 - [Windows](https://github.com/PPIO/ppio-demo-desktop/releases)
 - [Mac](https://github.com/PPIO/ppio-demo-desktop/releases)
-- [Android](https://github.com/PPIO/ppio-demo-android/releases), [Github](https://github.com/PPIO/ppio-demo-android) for Android
 
 ## How to use the demo app
 Go to [here](https://www.pp.io/docs/how_to_use_ppio_demo.html)
