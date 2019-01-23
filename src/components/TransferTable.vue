@@ -13,7 +13,10 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column prop="progress" label="Progress">
+    <el-table-column
+        prop="progress"
+        label="Progress"
+        class-name="table-column-progress">
       <template scope="scope">
         <el-progress
             class="transmit-progress"
@@ -107,6 +110,11 @@ export default {
       overflow: hidden;
     }
   }
+  .table-column-progress {
+    .cell {
+      white-space: nowrap;
+    }
+  }
   .transmit-file-icon {
     display: inline-block;
     vertical-align: middle;
@@ -119,7 +127,6 @@ export default {
   .transmit-progress {
     display: inline-block;
     width: 200px;
-    margin-right: 20px;
     vertical-align: middle;
   }
   .transfer-progress-text {
