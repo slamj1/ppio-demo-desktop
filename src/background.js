@@ -101,9 +101,9 @@ app.on('ready', () => {
   if (process.platform === 'win32') {
     const trayIconPath = isDevelopment
       ? path.resolve('src/assets/tray-icon.png')
-      : path.resolve('extraResources/tray-icon.png')
+      : path.join(path.dirname(__dirname), 'extraResources/tray-icon.png')
     const icon = nativeImage.createFromPath(trayIconPath)
-    console.log(trayIconPath)
+    console.log('tray icon path:', trayIconPath)
     tray = new Tray(icon)
     tray.setToolTip('PPIO-Demo')
     tray.setHighlightMode('always')

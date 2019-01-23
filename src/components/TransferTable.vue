@@ -1,5 +1,5 @@
 <template>
-  <el-table class="ppio-list-table transfer-table" :data="tableData" :row-key="getTaskKey" stripe style="width: 100%">
+  <el-table class="ppio-list-table transfer-table" :data="tableData" :row-key="getTaskKey" stripe height="100%" style="width: 100%">
     <p class="empty-text" slot="empty">No {{tableName}} task</p>
     <el-table-column
         prop="name"

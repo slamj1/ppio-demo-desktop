@@ -4,7 +4,7 @@
       <el-popover class="aside-profile" v-model="showProfile" @show="onProfileShow">
         <Profile @check-billing="f_goBilling" @check-update="f_checkUpdate" @logout="f_logout"></Profile>
         <div class="profile-wrapper" slot="reference">
-          <img class="profile-avatar" :src="userData.avatar" />
+          <img class="profile-avatar" src="/img/avatar.png" />
           <div class="profile-userinfo">
             <span class="profile-username">{{userData.address}}</span>
             <template v-if="$isCpoolPackage">
