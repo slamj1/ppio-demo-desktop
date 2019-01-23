@@ -37,7 +37,7 @@ class TaskManager {
         return Promise.resolve({ paused: true })
       }
       return poss
-        .getJobProgress({ taskId: task.id })
+        .callMethod('GetJobProgress', { task: task.id })
         .then(res => {
           console.log('task progress got')
           console.log(res)

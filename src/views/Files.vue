@@ -21,6 +21,7 @@
         </template>
       </div>
       <el-button class="refresh-btn" icon="el-icon-refresh" circle @click="f_refreshList"></el-button>
+      <a class="header-help-btn" @click="f_goTutorials">How to use?</a>
     </el-header>
     <el-main class="app-main" @dragover.native="f_onDragover" @drop.native="f_onDrop">
       <div v-if="fileList.length === 0 && !fetchingData" class="empty">
@@ -42,11 +43,12 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex'
-import { remote } from 'electron'
+import { remote, shell } from 'electron'
 import { APP_MODE_COINPOOL } from '../constants/constants'
 import { ACT_GET_FILE_LIST } from '../constants/store'
 import FileItem from '../components/FileItem'
 import * as FILE_STATUS from '../constants/file'
+import { HOW_TO_USE } from '../constants/urls'
 
 const { Menu, MenuItem, dialog, getCurrentWindow } = remote
 export default {
@@ -107,6 +109,9 @@ export default {
     ...mapActions({
       getFileList: ACT_GET_FILE_LIST,
     }),
+    f_goTutorials() {
+      shell.openExternal(HOW_TO_USE)
+    },
     f_onDragover(e) {
       e.preventDefault()
       e.stopPropagation()
@@ -368,6 +373,11 @@ export default {
     right: 10px;
     -webkit-app-region: no-drag;
     border: none;
+  }
+  .header-help-btn {
+    position: absolute;
+    right: 80px;
+    cursor: pointer;
   }
 }
 

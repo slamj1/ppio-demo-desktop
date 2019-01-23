@@ -38,12 +38,12 @@ export default taskType => {
     if (context.state.taskQueue.length === 5) {
       let action = ''
       if (taskType === TASK_TYPE_UPLOAD) {
-        action = 'download'
-      } else if (taskType === TASK_TYPE_DOWNLOAD) {
         action = 'upload'
+      } else if (taskType === TASK_TYPE_DOWNLOAD) {
+        action = 'download'
       }
       return Promise.reject(
-        new Error(`You can only ${action} up to  5 files simultaneously.`),
+        new Error(`You can only ${action} up to 5 files simultaneously.`),
       )
     }
     return startTask(payload)

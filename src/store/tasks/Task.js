@@ -111,9 +111,9 @@ export class Task {
       if (leftSeconds > 3600 * 6) {
         this.displayLeftTime = 'Over 6 hours'
       } else if (leftSeconds > 60) {
-        this.displayLeftTime = `${secondConverter(leftSeconds)} left`
+        this.displayLeftTime = `${secondConverter(leftSeconds)} remaining`
       } else {
-        this.displayLeftTime = `${leftSeconds} seconds left`
+        this.displayLeftTime = `${leftSeconds} seconds remaining`
       }
     } else {
       this.displayLeftTime = ''

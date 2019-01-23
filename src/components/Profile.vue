@@ -155,7 +155,7 @@ export default {
 @import '../assets/css/_var.scss';
 
 .user-profile-popover {
-  max-width: 370px;
+  max-width: 400px;
 
   &.cpool {
     max-width: 260px;
@@ -167,9 +167,11 @@ export default {
     p {
       padding: 10px 0;
       border-bottom: 1px solid #dcdfe6;
+      word-break: initial;
     }
 
     .address-copy-btn {
+      display: inline-block;
       cursor: pointer;
       font-weight: normal;
       text-decoration: underline;
