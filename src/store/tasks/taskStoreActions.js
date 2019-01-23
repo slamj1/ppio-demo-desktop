@@ -84,11 +84,20 @@ export default taskType => {
     if (!taskToPause) {
       return Promise.reject(new Error('task not exist!'))
     }
+    const oriStatus = taskToPause.status
     context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, { idx, status: TASK_STATUS_PAUSING })
-    return pauseTask(taskToPause.id).then(() => {
-      console.log('task paused ', taskToPause.id)
-      return context.commit(STORE_KEYS.MUT_PAUSE_TASK, idx)
-    })
+    return pauseTask(taskToPause.id)
+      .then(() => {
+        console.log('task paused ', taskToPause.id)
+        return context.commit(STORE_KEYS.MUT_PAUSE_TASK, idx)
+      })
+      .catch(err => {
+        context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, {
+          idx,
+          status: oriStatus,
+        })
+        return Promise.reject(err)
+      })
   }
   const a_resumeTask = (context, idx) => {
     console.log('resuming task')
@@ -96,11 +105,20 @@ export default taskType => {
     if (!taskToResume) {
       return Promise.reject(new Error('task not exist!'))
     }
+    const oriStatus = taskToResume.status
     context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, { idx, status: TASK_STATUS_RESUMING })
-    return resumeTask(taskToResume.id).then(() => {
-      console.log('task resumed ', taskToResume.id)
-      return context.commit(STORE_KEYS.MUT_RESUME_TASK, idx)
-    })
+    return resumeTask(taskToResume.id)
+      .then(() => {
+        console.log('task resumed ', taskToResume.id)
+        return context.commit(STORE_KEYS.MUT_RESUME_TASK, idx)
+      })
+      .catch(err => {
+        context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, {
+          idx,
+          status: oriStatus,
+        })
+        return Promise.reject(err)
+      })
   }
   const a_cancelTask = (context, idx) => {
     console.log('canceling task ', idx)
@@ -110,11 +128,12 @@ export default taskType => {
       return Promise.reject(new Error('task not exist!'))
     }
     let pauseFunc
-    if (context.state.taskQueue[idx].status === TASK_STATUS_PAUSED) {
+    if (taskToCancel.status === TASK_STATUS_PAUSED) {
       pauseFunc = () => Promise.resolve()
     } else {
       pauseFunc = () => pauseTask(taskToCancel.id)
     }
+    const oriStatus = taskToCancel.status
     context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, { idx, status: TASK_STATUS_DELETING })
     return pauseFunc()
       .then(() => deleteTask(taskToCancel.id))
@@ -132,6 +151,10 @@ export default taskType => {
         ) {
           return context.commit(STORE_KEYS.MUT_CANCEL_TASK, idx)
         }
+        context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, {
+          idx,
+          status: oriStatus,
+        })
         return Promise.reject(err)
       })
   }
@@ -142,6 +165,7 @@ export default taskType => {
     if (!taskToDelete) {
       return Promise.reject(new Error('task not exist!'))
     }
+    const oriStatus = taskToDelete.status
     context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, {
       idx,
       status: TASK_STATUS_DELETING,
@@ -161,6 +185,11 @@ export default taskType => {
         if (err.message.match('task not found')) {
           return context.commit(STORE_KEYS.MUT_REMOVE_TASK, idx)
         }
+        context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, {
+          idx,
+          status: oriStatus,
+          isFinished: true,
+        })
         return Promise.reject(err)
       })
   }
