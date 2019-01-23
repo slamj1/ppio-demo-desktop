@@ -43,7 +43,7 @@ export const getEstimateCost = params => {
  * @param {number} params.exportPath - path to export file
  * @param {string} [params.auth = ''] - auth information
  * @param {string} [params.owner = ''] - the file owner's id
- * @returns {Promise<{taskId: string} | never>}
+ * @returns {Promise<{taskId: string}>}
  */
 export const startDownload = async params => {
   console.log('start download service')
@@ -54,7 +54,7 @@ export const startDownload = async params => {
       key: params.objectKey,
       sharecode: params.shareCode,
       chiprice: params.chiPrice,
-      file: params.exportPath,
+      outfile: params.exportPath,
     })
     .then(taskId => {
       console.log('Download task created. Task id: ', taskId)

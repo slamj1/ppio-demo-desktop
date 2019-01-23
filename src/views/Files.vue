@@ -82,8 +82,6 @@ export default {
     this.$vueBus.$on(this.$events.GET_FILE_DONE, () => {
       console.log('Files page get file listener')
     })
-
-    console.log(this.$refs.filesContainer)
   },
 
   activated() {

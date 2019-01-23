@@ -19,16 +19,25 @@ import {
   ACT_SYNC_POSS_TASKS,
   UL_TASK,
   DL_TASK,
+  TASK_TYPE_UPLOAD,
+  TASK_TYPE_DOWNLOAD,
 } from '../constants/store'
 import {
+  APP_BUCKET_NAME,
   APP_MODE_COINPOOL,
   APP_MODE_NON_COINPOOL,
   USER_STATE_PERSIST_KEY,
 } from '../constants/constants'
 import { getChiPrice } from '../services/user'
 import { listTasks } from '../services/task'
-import { TASK_STATUS_SUCC, TASK_STATUS_PAUSED, TASK_STATUS_FAIL } from '../constants/task'
+import {
+  TASK_STATUS_SUCC,
+  TASK_STATUS_RUNNING,
+  TASK_STATUS_PAUSED,
+  TASK_STATUS_FAIL,
+} from '../constants/task'
 import { version } from '../../package.json'
+import { TaskFile } from './PPFile'
 
 Vue.use(Vuex)
 
@@ -109,12 +118,60 @@ export default new Vuex.Store({
     },
     [ACT_SYNC_POSS_TASKS]({ state, commit }) {
       console.log('syncing task list from poss')
+      const createTaskFromPoss = possTask => {
+        console.log('creating task from poss task:')
+        console.log(possTask)
+        const newTask = {
+          id: possTask.id,
+          transferredData: possTask.finished,
+          wholeDataLength: possTask.total,
+          file: new TaskFile({
+            key: possTask.to.split(`${APP_BUCKET_NAME}/`)[1],
+            bucket: APP_BUCKET_NAME,
+            filename: possTask.to.split('/').slice(-1)[0],
+            size: possTask.total,
+          }),
+        }
+        if (possTask.type === 'Put') {
+          newTask.type = TASK_TYPE_UPLOAD
+          newTask.localPath = possTask.from
+        } else if (possTask.type === 'Get') {
+          newTask.type = TASK_TYPE_DOWNLOAD
+          newTask.exportPath = possTask.to // TODO
+        }
+
+        if (possTask.state === 'Pending') {
+          newTask.status = TASK_STATUS_PAUSED
+        } else if (possTask.state === 'Error') {
+          newTask.failed = true
+          newTask.failMsg = possTask.error || 'task failed'
+          newTask.status = TASK_STATUS_FAIL
+        } else if (possTask.state === 'Finished') {
+          newTask.finished = true
+          newTask.status = TASK_STATUS_SUCC
+        } else if (possTask.state === 'Running') {
+          newTask.running = true
+          newTask.status = TASK_STATUS_RUNNING
+        } else if (possTask.state === 'Paused') {
+          newTask.paused = true
+          newTask.status = TASK_STATUS_PAUSED
+        }
+        console.log(newTask)
+        return newTask
+      }
       return listTasks().then(res => {
         console.log(res)
+
         res.filter(task => task.type === 'Put' || task.type === 'Get').map(task => {
           let taskQueue, finishedQueue
           let matchedLocalTask = null
           let matchedLocalTaskIdx = -1
+          let STORE_KEY
+          if (task.type === 'Put') {
+            STORE_KEY = UL_TASK
+          } else if (task.type === 'Get') {
+            STORE_KEY = DL_TASK
+          }
           if (task.type === 'Put') {
             taskQueue = state.uploadTask.taskQueue
             finishedQueue = state.uploadTask.finishedQueue
@@ -141,13 +198,11 @@ export default new Vuex.Store({
             console.log('syncing single task from poss ')
             console.log(task)
             console.log(matchedLocalTask)
-            let STORE_KEY
-            if (task.type === 'Put') {
-              STORE_KEY = UL_TASK
-            } else if (task.type === 'Get') {
-              STORE_KEY = DL_TASK
-            }
-            if (!matchedLocalTask.finished) {
+            if (
+              !matchedLocalTask.finished &&
+              task.state !== 'Error' &&
+              task.state !== 'Pending'
+            ) {
               commit(STORE_KEY.MUT_SET_PROGRESS, {
                 idx: matchedLocalTaskIdx,
                 transferredData: task.finished,
@@ -176,7 +231,21 @@ export default new Vuex.Store({
             ) {
               // TODO: not exactly. If recovered from background, maybe the task is really "pending".
               console.log('got error task')
-              commit(STORE_KEY.MUT_FAIL_TASK, { idx: matchedLocalTaskIdx })
+              console.log(matchedLocalTask)
+              if (
+                !matchedLocalTask.finished &&
+                !matchedLocalTask.status !== TASK_STATUS_FAIL
+              ) {
+                commit(STORE_KEY.MUT_FAIL_TASK, { idx: matchedLocalTaskIdx })
+              }
+            }
+          } else {
+            console.log('no local task for poss task:')
+            console.log(task)
+            if (task.state !== 'Finished' && task.state !== 'Error') {
+              commit(STORE_KEY.MUT_ADD_TASK, createTaskFromPoss(task))
+            } else {
+              commit(STORE_KEY.MUT_ADD_FINISHED_TASK, createTaskFromPoss(task))
             }
           }
         })

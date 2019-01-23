@@ -43,7 +43,7 @@
 
       <template slot="footer">
         <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini">Prev</el-button>
-        <el-button class="button" v-if="curStep < steps.length - 1" v-on:click="f_next" size="mini" type="primary">Next</el-button>
+        <el-button class="button" v-if="curStep < steps.length - 1" :loading="gettingFileInfo" v-on:click="f_next" size="mini" type="primary">Next</el-button>
         <el-button class="button" :loading="preparingDownload" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">Download</el-button>
       </template>
     </step-popup>
@@ -169,6 +169,7 @@ export default {
           const fileInfo = this.f_getFileInfo(this.shareCode)
           console.log('got file info by share code', fileInfo)
           if (fileInfo === null || !fileInfo.key || !fileInfo.size) {
+            this.gettingFileInfo = false
             return this.$message.error('invalid share code')
           }
           this.fileInfo = {

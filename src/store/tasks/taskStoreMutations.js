@@ -72,6 +72,16 @@ export default taskType => {
     state.taskQueue.unshift(newTask)
   }
 
+  const m_addFinishedTask = (state, data) => {
+    console.log('adding new finished task')
+    console.log(data)
+    const newTask =
+      taskType === TASK_TYPE_UPLOAD ? new UploadTask(data) : new DownloadTask(data)
+    console.log('new finished task created')
+    console.log(newTask)
+    state.finishedQueue.unshift(newTask)
+  }
+
   const m_setTaskStatus = (state, payload) => {
     console.log('setting task status ', payload.idx)
     if (payload.isFinished) {
@@ -158,6 +168,7 @@ export default taskType => {
     [MUT_REPLACE_STATE_HOOK]: replaceHook,
     [STORE_KEYS.MUT_RESTORE_BG_TASKS]: restoreTasks,
     [STORE_KEYS.MUT_ADD_TASK]: m_addTask,
+    [STORE_KEYS.MUT_ADD_FINISHED_TASK]: m_addFinishedTask,
     [STORE_KEYS.MUT_SET_PROGRESS]: m_setTaskProgress,
     [STORE_KEYS.MUT_START_TASK]: m_startTask,
     [STORE_KEYS.MUT_PAUSE_TASK]: m_pauseTask,

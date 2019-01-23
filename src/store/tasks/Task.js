@@ -53,10 +53,10 @@ export class Task {
     this.transferSpeed = 0 // transfer speed, bytes/s
     this.displayTransferSpeed = '0b/s' // transfer speed for display
     this.displayLeftTime = ''
-    this.finished = initData.finished || false
     this.status = initData.status || TASK_STATUS_STARTING
     this.failMsg = initData.failMsg || ''
     this.speedCheckerTick = 0
+    this.finished = this.status === TASK_STATUS_SUCC || this.status === TASK_STATUS_FAIL
     console.log(this.status)
   }
 

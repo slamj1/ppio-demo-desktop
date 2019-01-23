@@ -103,10 +103,10 @@ export default {
       return this.$store.state.recChiPrice.storage
     },
     totalCost: function() {
-      return chiToPPCoin(this.totalChi * this.chiPrice).toFixed(4)
+      return chiToPPCoin(this.totalChi * this.chiPrice).toFixed()
     },
     storageCost: function() {
-      return chiToPPCoin(this.storageChi * this.chiPrice).toFixed(4)
+      return chiToPPCoin(this.storageChi * this.chiPrice).toFixed()
     },
     fileSizeStr: function() {
       return filesize(this.file.size)

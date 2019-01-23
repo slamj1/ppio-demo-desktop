@@ -39,6 +39,7 @@ export const ACT_START_POLLING_TASK_PROGRESS = 'action_startPollingTaskProgress'
 export const DL_TASK = {
   MUT_RESTORE_BG_TASKS: 'mutation_restoreBackgroundDownloadTask',
   MUT_ADD_TASK: 'mutation_addDownloadTask',
+  MUT_ADD_FINISHED_TASK: 'mutation_addDownloadFinishedTask',
   ACT_CREATE_TASK: 'action_createDownloadTask',
   MUT_START_TASK: 'action_startDownloadTask',
   ACT_PAUSE_TASK: 'action_pauseDownloadTask',
@@ -61,6 +62,7 @@ export const DL_TASK = {
 export const UL_TASK = {
   MUT_RESTORE_BG_TASKS: 'mutation_restoreBackgroundUploadTask',
   MUT_ADD_TASK: 'mutation_addUploadTask',
+  MUT_ADD_FINISHED_TASK: 'mutation_addUploadFinishedTask',
   ACT_CREATE_TASK: 'action_createUploadTask',
   MUT_START_TASK: 'action_startUploadTask',
   ACT_PAUSE_TASK: 'action_pauseUploadTask',
