@@ -1,6 +1,14 @@
 module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? '' : '/',
   filenameHashing: false,
+  devServer: {
+    proxy: {
+      '/version': {
+        target: 'https://resource.testnet.pp.io/',
+        changeOrigin: true,
+      },
+    },
+  },
   css: {
     loaderOptions: {
       sass: {
@@ -55,7 +63,8 @@ module.exports = {
           ],
         },
         dmg: {
-          title: 'PPIO-demo installation',
+          background: 'public/installer-bg.png',
+          title: 'PPIO-Demo installation',
           icon: 'public/icons/icon.icns',
         },
         win: {
@@ -78,6 +87,7 @@ module.exports = {
           perMachine: true,
           allowToChangeInstallationDirectory: true,
           allowElevation: false,
+          installerSidebar: 'public/installer-bg_nsis.bmp',
         },
         linux: {
           target: ['deb'],

@@ -19,13 +19,13 @@
             class-name="profile-table-val">
           <template slot-scope="scope">
             <span>{{scope.row.val}}</span>
-            <i v-if="scope.row.key === 'record' || scope.row.key === 'checkupdate'" class="el-icon-arrow-right"></i>
+            <i v-if="scope.row.key === 'record'" class="el-icon-arrow-right"></i>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <div class="profile-menu-btn cpool-renew" @click="f_renew">{{isCpoolMode ? 'Renew service' : 'Recharge'}}</div>
-    <div class="profile-menu-btn help-btn" @click="f_goTutorials">How to use?</div>
+    <!--<div class="profile-menu-btn help-btn" @click="f_goTutorials">How to use?</div>-->
     <div class="profile-menu-btn logout-btn" @click="f_logout">Log out</div>
   </div>
 </template>

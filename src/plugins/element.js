@@ -33,6 +33,7 @@ import {
   Dialog,
   Tabs,
   TabPane,
+  MessageBox,
 } from 'element-ui'
 import '@/assets/css/element-theme.scss'
 import lang from 'element-ui/lib/locale/lang/en'
@@ -88,3 +89,4 @@ messageTypes.forEach(type => {
 Vue.prototype.$notify = Notification
 Vue.prototype.$message = GlobalMessage
 Vue.prototype.$loading = Loading.service
+Vue.prototype.$alert = MessageBox.alert

@@ -4,3 +4,4 @@ export const GITTER_URL =
 export const HOW_TO_GET_COIN = 'https://pp.io/docs/how_to_get_test_coin.html'
 export const WALLET = 'https://wallet.testnet.pp.io'
 export const DOWNLOAD_PAGE = 'https://www.pp.io/download.html'
+export const VERSION_CHECK = 'https://resource.testnet.pp.io/version.json'

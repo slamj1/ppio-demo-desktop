@@ -38,6 +38,7 @@ module.exports = {
     'import/no-unresolved': 'off',
     'import/no-extraneous-dependencies': 'off',
     'import/prefer-default-export': 'off',
+    'standard/no-callback-literal': 'off',
     'no-use-before-define': 'off',
     'no-multi-assign': 'off',
     'promise/param-names': 'error',

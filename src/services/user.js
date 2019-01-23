@@ -2,7 +2,9 @@ import { remote } from 'electron'
 import ppwallet from 'ppwallet'
 import bip39 from 'bip39'
 import safeBuffer from 'safe-buffer'
+import axios from 'axios'
 import { queryAccount, getTransferRecords, getRecChiprice } from './indexerApi'
+import { VERSION_CHECK } from '../constants/urls'
 
 const poss = remote.getGlobal('poss')
 
@@ -159,3 +161,11 @@ export const getChiPrice = () =>
     storage: parseInt(res.StorageChiPrice),
     download: parseInt(res.DownloadChiPrice),
   }))
+
+export const checkUpdate = () => {
+  console.log('checking update')
+  return axios({
+    url: VERSION_CHECK,
+    method: 'GET',
+  }).then(res => res.demo)
+}

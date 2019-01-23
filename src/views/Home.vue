@@ -54,6 +54,7 @@ import electron from 'electron'
 import filesize from 'filesize'
 import { mapState, mapGetters } from 'vuex'
 import { APP_MODE_COINPOOL } from '../constants/constants'
+import { checkUpdate } from '../services/user'
 import {
   DL_TASK,
   UL_TASK,
@@ -165,8 +166,31 @@ export default {
       this.$vueBus.$emit(this.$events.OPEN_BILLING_RECORDS)
     },
     f_checkUpdate() {
-      this.showProfile = false
-      electron.shell.openExternal(DOWNLOAD_PAGE)
+      // this.showProfile = false
+      checkUpdate()
+        .then(ver => {
+          if (ver !== this.$store.state.appVersion) {
+            this.$alert(
+              `A new version of PPIO-Demo (${ver}) is available, currently you have version ${
+                this.$store.state.appVersion
+              }`,
+              'Update available',
+              {
+                confirmButtonText: 'Go download',
+                cancelButtonText: 'Cancel',
+              },
+            )
+              .then(() => {
+                electron.shell.openExternal(DOWNLOAD_PAGE)
+                return true
+              })
+              .catch(() => {})
+          } else {
+            this.$message.success('You already have the latest version.')
+          }
+          return ver
+        })
+        .catch(err => console.error(err))
     },
     f_logout() {
       this.$store

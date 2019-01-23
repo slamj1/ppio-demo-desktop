@@ -56,6 +56,7 @@
 // import bip39 from 'bip39'
 import fs from 'fs'
 import path from 'path'
+import ppwallet from 'ppwallet'
 import { shell, remote } from 'electron'
 import { USER_STATE_PERSIST_KEY } from '../../constants/constants'
 import { MUT_REPLACE_STATE_HOOK } from '../../constants/store'
@@ -118,13 +119,23 @@ export default {
     },
     f_getKeystoreJson(filePath) {
       try {
+        const fileStats = fs.statSync(filePath)
+        if (fileStats.size > 1000) {
+          this.$message.error('Keystore file invalid')
+          return null
+        }
         const fileContent = fs.readFileSync(filePath)
         const keystoreJson = JSON.parse(fileContent)
+        if (!ppwallet.Account.isValidAddress(keystoreJson.address)) {
+          this.$message.error('Keystore file invalid')
+          return null
+        }
         this.keystoreJson = keystoreJson
         this.addressInKeystore = keystoreJson.address
         this.keystorePath = filePath
         return keystoreJson
       } catch (err) {
+        this.$message.error('Keystore file invalid')
         return null
       }
     },
