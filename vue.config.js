@@ -66,6 +66,10 @@ module.exports = {
           background: 'public/installer-bg.png',
           title: 'PPIO-Demo installation',
           icon: 'public/icons/icon.icns',
+          window: {
+            width: 540,
+            height: 380,
+          },
         },
         win: {
           target: ['nsis'],

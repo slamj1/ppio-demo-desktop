@@ -96,7 +96,6 @@ export default {
     },
     f_onDrop(e) {
       e.preventDefault()
-      console.log('drop')
       console.log(e.dataTransfer.files[0])
       this.f_getKeystoreJson(e.dataTransfer.files[0].path)
     },
