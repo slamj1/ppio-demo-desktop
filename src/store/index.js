@@ -36,14 +36,12 @@ import {
   TASK_STATUS_PAUSED,
   TASK_STATUS_FAIL,
 } from '../constants/task'
-import { version } from '../../package.json'
 import { TaskFile } from './PPFile'
 
 Vue.use(Vuex)
 
 const initialState = () => ({
   appMode: process.env.IS_CPOOL === 'true' ? APP_MODE_COINPOOL : APP_MODE_NON_COINPOOL,
-  appVersion: version,
   dataDir: '', // directory to store objects
   recChiPrice: { storage: 100, download: 100 },
 })

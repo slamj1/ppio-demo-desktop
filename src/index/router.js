@@ -7,8 +7,6 @@ import DownloadList from '../views/Download'
 import UploadList from '../views/Upload'
 import Start from '../views/account/Start'
 import ImportAccount from '../views/account/Import'
-import CreateAccount from '../views/account/Create'
-import ChooseDir from '../views/account/ChooseDir'
 
 Vue.use(Router)
 
@@ -54,16 +52,6 @@ export default new Router({
           path: 'import',
           name: 'account/import',
           component: ImportAccount,
-        },
-        {
-          path: 'create',
-          name: 'account/create',
-          component: CreateAccount,
-        },
-        {
-          path: 'choose-dir',
-          name: 'account/choose-dir',
-          component: ChooseDir,
         },
       ],
     },

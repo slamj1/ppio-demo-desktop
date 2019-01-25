@@ -51,13 +51,15 @@ export const startDaemon = params => {
     startParams['key-passphrase'] = params.passphrase
   }
   return getPorts()
-    .then(port => {
-      startParams.rpcport = port
+    .then(ports => {
+      startParams.rpcport = ports.rpcport
+      startParams.tcpport = ports.tcpport
+      startParams.udpport = ports.tcpport
       return poss.startDaemon(startParams)
     })
-    .then(port => {
-      poss.setRPCPort(port)
-      return port
+    .then(rpcport => {
+      poss.setRPCPort(rpcport)
+      return rpcport
     })
     .catch(err => {
       console.error('daemon start failed')
