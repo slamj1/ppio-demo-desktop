@@ -90,6 +90,8 @@ if (!gotTheLock) {
         windowManager.window.restore()
       }
       windowManager.window.focus()
+    } else if (process.platform === 'win32') {
+      windowManager.focusWindow()
     }
   })
 
