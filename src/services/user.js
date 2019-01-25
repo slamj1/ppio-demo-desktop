@@ -156,10 +156,11 @@ export const getChiPrice = () =>
 export const checkUpdate = () => {
   console.log('checking update')
   return axios({
-    url: VERSION_CHECK,
+    url: `${VERSION_CHECK}?t=${Date.now()}`,
     method: 'GET',
     headers: {
       Accept: 'application/json',
+      'Cache-Control': 'no-cache',
     },
   }).then(res => res.data.demo)
 }
