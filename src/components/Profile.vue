@@ -73,11 +73,6 @@ export default {
             val: '',
           },
           {
-            key: 'version',
-            label: 'Version',
-            val: `Demo(v${this.$appVer})`,
-          },
-          {
             key: 'checkupdate',
             label: `Check update`,
             val: `v${version}`,

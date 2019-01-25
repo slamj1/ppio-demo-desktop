@@ -13,7 +13,7 @@ console.log(possBinPath)
 
 const possIns = new Poss({
   possExecutablePath: possBinPath,
-  debug: true,
+  debug: false,
 })
 console.log('poss instance created')
 console.log('poss path: ', possIns.possPath)
