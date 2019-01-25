@@ -35,12 +35,10 @@ export const login = () => {}
 export const getAccountFromKeystore = (keyStoreJson, password) => {
   console.log('getting account from keystore')
   console.log(keyStoreJson)
-  console.log(password)
 
   try {
     const account = ppwallet.Account.fromAddress(keyStoreJson.address)
     account.fromKey(keyStoreJson, password)
-    console.log(account.getPrivateKeyString())
     console.log('address:', account.getAddressString())
     return account
   } catch (err) {
@@ -52,12 +50,10 @@ export const getAccountFromKeystore = (keyStoreJson, password) => {
 
 export const getAccountFromPrivatekey = privateKey => {
   console.log('calling loginWithKeystore method')
-  console.log(privateKey)
 
   try {
     const account = new ppwallet.Account(safeBuffer.Buffer.from(privateKey, 'hex'))
     console.log(account.getAddressString())
-    console.log(account.getPrivateKeyString())
     return account
   } catch (err) {
     console.error('get account failed')
@@ -68,19 +64,14 @@ export const getAccountFromPrivatekey = privateKey => {
 
 export const generateNewAccount = password => {
   console.log('calling generateSeedPhrase method')
-  console.log(password)
   const mnemonic = bip39.generateMnemonic()
-  console.log(mnemonic)
   const oriKey = bip39.mnemonicToSeedHex(mnemonic, password)
-  console.log(oriKey)
   const privKey = oriKey
     .split('')
     .filter((char, idx) => !!(idx % 2))
     .join('')
-  console.log(privKey)
 
   const account = new ppwallet.Account(safeBuffer.Buffer.from(privKey, 'hex'))
-  console.log(account.getPrivateKeyString())
   const address = account.getAddressString()
   console.log(address)
   account.mnemonic = mnemonic
@@ -167,5 +158,8 @@ export const checkUpdate = () => {
   return axios({
     url: VERSION_CHECK,
     method: 'GET',
-  }).then(res => res.demo)
+    headers: {
+      Accept: 'application/json',
+    },
+  }).then(res => res.data.demo)
 }

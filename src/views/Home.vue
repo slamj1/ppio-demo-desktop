@@ -169,10 +169,12 @@ export default {
       // this.showProfile = false
       checkUpdate()
         .then(ver => {
-          if (ver !== this.$store.state.appVersion) {
+          console.log('check update from ', ver)
+          console.log(this.$appVer)
+          if (ver !== this.$appVer) {
             this.$alert(
               `A new version of PPIO-Demo (${ver}) is available, currently you have version ${
-                this.$store.state.appVersion
+                this.$appVer
               }`,
               'Update available',
               {

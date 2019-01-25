@@ -3,8 +3,8 @@ module.exports = {
   filenameHashing: false,
   devServer: {
     proxy: {
-      '/version': {
-        target: 'https://resource.testnet.pp.io/',
+      '/version.json': {
+        target: 'https://resource.testnet.pp.io',
         changeOrigin: true,
       },
     },

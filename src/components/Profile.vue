@@ -73,11 +73,6 @@ export default {
             val: '',
           },
           {
-            key: 'version',
-            label: 'Version',
-            val: `Demo(v${this.$store.state.appVersion})`,
-          },
-          {
             key: 'checkupdate',
             label: `Check update`,
             val: `v${version}`,
@@ -103,7 +98,7 @@ export default {
           {
             key: 'version',
             label: 'Version',
-            val: `Demo(v${this.$store.state.appVersion})`,
+            val: `Demo(v${this.$appVer})`,
           },
           {
             key: 'checkupdate',

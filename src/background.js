@@ -17,6 +17,8 @@ import { HOW_TO_USE, DOWNLOAD_PAGE } from './constants/urls'
 import { version } from '../package.json'
 import { APP_SCHEME } from './constants/constants'
 
+const isDevelopment = process.env.NODE_ENV !== 'production'
+
 const menuTemplate = [
   {
     label: 'Application',
@@ -68,8 +70,6 @@ global.poss = poss
 global.uploadTaskManager = new TaskManager({ type: 'upload' })
 global.downloadTaskManager = new TaskManager({ type: 'download' })
 
-const isDevelopment = process.env.NODE_ENV !== 'production'
-
 let tray = null
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -78,56 +78,71 @@ let tray = null
 // Standard scheme must be registered before the app is ready
 protocol.registerStandardSchemes([APP_SCHEME, 'app'], { secure: true })
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin' && process.platform !== 'win32') {
-    app.quit()
-  }
-})
+const gotTheLock = app.requestSingleInstanceLock()
 
-app.on('activate', () => {
-  console.log('app is activated')
-  windowManager.createWindow()
-  global.uploadTaskManager.stopUpdating()
-  global.downloadTaskManager.stopUpdating()
-})
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', () => {
-  console.log('app is ready')
-  Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate))
-
-  if (process.platform === 'win32') {
-    const trayIconPath = isDevelopment
-      ? path.resolve('src/assets/tray-icon.png')
-      : path.join(path.dirname(__dirname), 'extraResources/tray-icon.png')
-    const icon = nativeImage.createFromPath(trayIconPath)
-    console.log('tray icon path:', trayIconPath)
-    tray = new Tray(icon)
-    tray.setToolTip('PPIO-Demo')
-    tray.setHighlightMode('always')
-    const contextMenu = Menu.buildFromTemplate([
-      {
-        label: 'Quit',
-        click: () => {
-          app.quit()
-        },
-      },
-    ])
-    tray.setContextMenu(contextMenu)
-    tray.on('click', () => {
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (windowManager.window) {
+      if (windowManager.window.isMinimized()) {
+        windowManager.window.restore()
+      }
+      windowManager.window.focus()
+    } else if (process.platform === 'win32') {
       windowManager.focusWindow()
-    })
-  }
-
-  globalShortcut.register('CommandOrControl+Alt+I', () => {
-    console.log('open devtools')
-    let focusWin = BrowserWindow.getFocusedWindow()
-    focusWin && focusWin.toggleDevTools()
+    }
   })
-  return windowManager.createWindow()
-})
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin' && process.platform !== 'win32') {
+      app.quit()
+    }
+  })
+
+  app.on('activate', () => {
+    console.log('app is activated')
+    windowManager.createWindow()
+    global.uploadTaskManager.stopUpdating()
+    global.downloadTaskManager.stopUpdating()
+  })
+
+  app.on('ready', () => {
+    console.log('app is ready')
+    Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate))
+
+    if (process.platform === 'win32') {
+      const trayIconPath = isDevelopment
+        ? path.resolve('src/assets/tray-icon.png')
+        : path.join(path.dirname(__dirname), 'extraResources/tray-icon.png')
+      const icon = nativeImage.createFromPath(trayIconPath)
+      console.log('tray icon path:', trayIconPath)
+      tray = new Tray(icon)
+      tray.setToolTip('PPIO-Demo')
+      tray.setHighlightMode('always')
+      const contextMenu = Menu.buildFromTemplate([
+        {
+          label: 'Quit',
+          click: () => {
+            app.quit()
+          },
+        },
+      ])
+      tray.setContextMenu(contextMenu)
+      tray.on('click', () => {
+        windowManager.focusWindow()
+      })
+    }
+
+    globalShortcut.register('CommandOrControl+Alt+I', () => {
+      console.log('open devtools')
+      let focusWin = BrowserWindow.getFocusedWindow()
+      focusWin && focusWin.toggleDevTools()
+    })
+    return windowManager.createWindow()
+  })
+}
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {

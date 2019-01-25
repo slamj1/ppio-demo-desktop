@@ -1,6 +1,7 @@
 // some util functions
 import { remote } from 'electron'
 import EVENTS from '../constants/events'
+import { version } from '../../package.json'
 
 export default {
   install: (Vue, options) => {
@@ -16,5 +17,7 @@ export default {
     Vue.prototype.$events = EVENTS
 
     Vue.prototype.$isCpoolPackage = process.env.IS_CPOOL === 'true'
+
+    Vue.prototype.$appVer = version
   },
 }
