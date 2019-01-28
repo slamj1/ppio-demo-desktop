@@ -135,7 +135,7 @@ export default new Vuex.Store({
           newTask.localPath = possTask.from
         } else if (possTask.type === 'Get') {
           newTask.type = TASK_TYPE_DOWNLOAD
-          newTask.exportPath = possTask.to // TODO
+          newTask.exportPath = possTask.to
         }
 
         if (possTask.state === 'Pending') {

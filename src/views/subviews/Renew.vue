@@ -57,15 +57,32 @@
         </div>
       </div>
 
+      <div class="step-content step-3" slot="step-3">
+        <div class="content" slot="content">
+          <span class="file-icon" :class="'file-icon_' + fileType"></span>
+          <p>Renewing file: {{file && file.filename}}</p>
+          <el-progress
+              class="renew-progress"
+              :width="300"
+              :stroke-width="4"
+              :percentage="renewProgress"
+              :status="renewStatus"></el-progress>
+          <p v-if="renewFailed" class="renew-fail-msg">{{failMsg}}</p>
+          <p v-if="renewFinished" class="renew-success-msg">Renew Finished</p>
+        </div>
+      </div>
+
       <template slot="footer">
-        <el-button class="button" v-if="curStep > 0" @click="f_prev" size="mini">Prev</el-button>
-        <el-button class="button" v-if="curStep < steps.length - 1" @click="f_next" size="mini" type="primary">Next</el-button>
-        <el-button class="button" v-if="curStep >= steps.length - 1" @click="f_confirm" size="mini" type="primary">Renew</el-button>
+        <el-button class="button" v-if="curStep > 0 && curStep < steps.length - 1" @click="f_prev" size="mini">Prev</el-button>
+        <el-button class="button" v-if="curStep < steps.length - 2" @click="f_next" size="mini" type="primary">Next</el-button>
+        <el-button class="button" v-if="curStep === steps.length - 2" @click="f_confirm" size="mini" type="primary">Renew</el-button>
+        <el-button class="button" v-if="curStep === steps.length - 1" @click="f_finishRenew" size="mini" type="primary">Ok</el-button>
       </template>
     </step-popup>
   </div>
 </template>
 <script>
+import { remote } from 'electron'
 import filesize from 'filesize'
 import StepPopup from '../../components/StepPopup'
 import PaymentTable from '../../components/PaymentTable'
@@ -73,11 +90,18 @@ import { renewFile } from '../../services/file'
 import { getEstimateCost } from '../../services/upload'
 import { chiToPPCoin } from '../../utils/units'
 import getFileType from '../../utils/getFileType'
+import { getTaskProgress } from '../../services/task'
+import { EVENT_RENEW_DONE, EVENT_RENEW_FAIL } from '../../constants/ga'
+import { ACT_GET_FILE_LIST_DETAILS } from '../../constants/store'
+
+const TIME_INTERVAL = 1000
+
+const visitor = remote.getGlobal('gaVisitor')
 
 export default {
   name: 'renew',
   data: () => ({
-    steps: ['PPFile', 'Storage Setting', 'Payment'],
+    steps: ['Confirm', 'Storage Setting', 'Payment', 'Renew'],
     curStep: 0,
     radio: 1,
     customStorageDays: '1',
@@ -86,6 +110,13 @@ export default {
     totalChi: 0,
     storageChi: 0,
     renewing: false,
+    preparingRenew: false,
+    renewTaskId: '',
+    renewTimer: null,
+    renewProgress: 0,
+    renewFinished: false,
+    renewFailed: false,
+    failMsg: '',
   }),
   props: ['file'],
   components: {
@@ -160,6 +191,15 @@ export default {
         chiPrice: parseInt(this.chiPrice),
       }
     },
+    renewStatus: function() {
+      if (this.renewFinished) {
+        return 'success'
+      }
+      if (this.renewFailed) {
+        return 'exception'
+      }
+      return 'text'
+    },
   },
   watch: {
     'taskOptions.copyCount': function() {
@@ -224,31 +264,75 @@ export default {
       }
     },
     f_close() {
-      if (this.renewing) {
-        return
-      }
+      clearTimeout(this.renewTimer)
       this.$vueBus.$emit(this.$events.CLOSE_RENEW_FILE)
     },
     f_confirm() {
       if (this.renewing) {
         return
       }
-      this.renewing = true
+      this.preparingRenew = true
       renewFile({
         objectKey: this.file.key,
         isSecure: true,
         ...this.taskOptions,
       })
-        .then(() => {
-          this.renewing = false
-          this.$message.success('renew succeeded')
-          return this.$vueBus.$emit(this.$events.RENEW_FILE_DONE)
+        .then(taskId => {
+          this.preparingRenew = false
+          console.log('renew task started')
+          this.renewing = true
+          this.curStep += 1
+          return this.f_getRenewProgress(taskId)
         })
         .catch(err => {
           console.error(err.toString())
+          visitor.event(EVENT_RENEW_FAIL).send()
           this.renewing = false
           this.$message.error(err.toString())
         })
+    },
+    f_getRenewProgress(taskId) {
+      getTaskProgress(taskId)
+        .then(res => {
+          console.log(res)
+          if (res.status === 'Finished') {
+            this.renewFinished = true
+            this.renewProgress = 100
+            this.renewing = false
+            visitor.event(EVENT_RENEW_DONE).send()
+            clearTimeout(this.renewTimer)
+            this.$store.dispatch(ACT_GET_FILE_LIST_DETAILS)
+          } else if (res.status === 'Error') {
+            this.renewFailed = true
+            this.failMsg = res.errMsg || 'deletion failed'
+            this.renewing = false
+            visitor.event(EVENT_RENEW_FAIL).send()
+            clearTimeout(this.renewTimer)
+          } else if (res.transferred && res.total) {
+            this.renewProgress = res.transferred / res.total
+            this.renewTimer = setTimeout(() => {
+              this.f_getRenewProgress(taskId)
+            }, TIME_INTERVAL)
+          } else {
+            this.renewProgress = 0
+            this.renewTimer = setTimeout(() => {
+              this.f_getRenewProgress(taskId)
+            }, TIME_INTERVAL)
+          }
+          return false
+        })
+        .catch(err => {
+          console.error('get task progress failed')
+          console.error(err)
+          this.renewing = false
+        })
+    },
+    f_finishRenew() {
+      if (this.renewing) {
+        return
+      }
+      clearTimeout(this.renewTimer)
+      return this.$vueBus.$emit(this.$events.RENEW_FILE_DONE)
     },
   },
 }
@@ -316,6 +400,31 @@ export default {
           color: green;
         }
       }
+    }
+  }
+
+  &.step-3 {
+    .file-icon {
+      height: 58px;
+      width: 48px;
+      margin-bottom: 10px;
+    }
+    .file-name {
+      height: 40px;
+      line-height: 40px;
+    }
+
+    .renew-progress {
+      width: 400px;
+      margin: 10px auto;
+    }
+
+    .renew-fail-msg {
+      color: $fail-color;
+    }
+
+    .renew-success-msg {
+      color: $succ-color;
     }
   }
 }

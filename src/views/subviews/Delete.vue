@@ -27,21 +27,24 @@
           <p v-if="deleteFinished" class="delete-success-msg">Finished</p>
         </div>
         <template slot="footer">
-          <el-button class="button" v-if="!deleting" @click="f_close" size="mini" type="primary">Ok</el-button>
+          <el-button class="button" v-if="!deleting" @click="f_finishDelete" size="mini" type="primary">Ok</el-button>
         </template>
       </template>
     </popup>
   </div>
 </template>
 <script>
+import { remote } from 'electron'
 import filesize from 'filesize'
 import Popup from '../../components/Popup'
 import PaymentTable from '../../components/PaymentTable'
 import getFileType from '../../utils/getFileType'
-// import { getEstimateRefund } from '../../services/upload'
 import { deleteFile } from '../../services/file'
 import { getTaskProgress } from '../../services/task'
 import { ACT_REMOVE_FILE } from '../../constants/store'
+import { EVENT_DELETE_DONE, EVENT_DELETE_FAIL } from '../../constants/ga'
+
+const visitor = remote.getGlobal('gaVisitor')
 
 const TIME_INTERVAL = 1000
 
@@ -171,6 +174,7 @@ export default {
             this.deleteFinished = true
             this.deleteProgress = 100
             this.deleting = false
+            visitor.event(EVENT_DELETE_DONE).send()
             clearTimeout(this.deleteTimer)
             this.$store.dispatch(ACT_REMOVE_FILE, {
               file: this.file,
@@ -180,6 +184,7 @@ export default {
             this.deleteFailed = true
             this.failMsg = res.errMsg || 'deletion failed'
             this.deleting = false
+            visitor.event(EVENT_DELETE_FAIL).send()
             clearTimeout(this.deleteTimer)
           } else if (res.transferred && res.total) {
             this.deleteProgress = res.transferred / res.total
@@ -199,6 +204,13 @@ export default {
           console.error(err)
           this.deleting = false
         })
+    },
+    f_finishDelete() {
+      if (this.deleting) {
+        return
+      }
+      clearTimeout(this.deleteTimer)
+      this.$vueBus.$emit(this.$events.DELETE_FILE_DONE)
     },
   },
 }

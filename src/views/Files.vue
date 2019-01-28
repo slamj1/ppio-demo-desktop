@@ -76,6 +76,13 @@ export default {
   components: {
     FileItem,
   },
+  watch: {
+    fileList: function(val) {
+      if (val.map(file => file.key).indexOf(this.selectedFileKey) === -1) {
+        this.selectedFileKey = ''
+      }
+    },
+  },
   mounted() {
     this.f_createContextMenu()
     console.log('files page mounted')

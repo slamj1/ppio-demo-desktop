@@ -1,5 +1,7 @@
+import Vue from 'vue'
 import {
   MUT_SET_FILE_LIST,
+  MUT_MODIFY_FILE,
   MUT_REMOVE_FILE,
   ACT_GET_FILE_LIST,
   ACT_GET_FILE_LIST_DETAILS,
@@ -34,6 +36,13 @@ const store = {
       console.log('setting file list to store')
       console.log(fileList)
       state.fileList = fileList.map(file => new HomeListFile(file))
+    },
+    [MUT_MODIFY_FILE](state, payload) {
+      console.log('modifying file ', payload.idx)
+      console.log(payload.file)
+      const newFile = new HomeListFile(payload.file)
+      console.log(newFile)
+      Vue.set(state.fileList, payload.idx, newFile)
     },
     [MUT_REMOVE_FILE](state, idx) {
       state.fileList.splice(idx, 1)
@@ -71,19 +80,23 @@ const store = {
     },
     [ACT_GET_FILE_LIST_DETAILS](context) {
       console.log('getting object details')
-      const getDetailsReqArr = context.state.fileList.map(file =>
+      const getDetailsReqArr = context.state.fileList.map((file, idx) =>
         getObjectStatus(file.key)
-          .then(res => Object.assign({}, file, { expireTime: res.expireTime }))
+          .then(res => {
+            const newFile = Object.assign({}, file, { expireTime: res.expireTime })
+            return context.commit(MUT_MODIFY_FILE, { idx, file: newFile })
+          })
           .catch(err => {
             console.log('get object details error')
             console.error(err)
             return Promise.resolve(file)
           }),
       )
-      return Promise.all(getDetailsReqArr).then(detailedFileList => {
-        console.log(detailedFileList)
-        return context.commit(MUT_SET_FILE_LIST, detailedFileList)
-      })
+      // return Promise.all(getDetailsReqArr).then(detailedFileList => {
+      //   console.log(detailedFileList)
+      //   return context.commit(MUT_SET_FILE_LIST, detailedFileList)
+      // })
+      return Promise.all(getDetailsReqArr)
     },
     /**
      * @deprecated Renaming a file has been deprecated for IndexData cannot be synced automatically

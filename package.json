@@ -48,6 +48,7 @@
     "ppwallet": "^0.0.1-alpha4",
     "safe-buffer": "^5.1.2",
     "sanitize.css": "^8.0.0",
+    "universal-analytics": "^0.4.20",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"

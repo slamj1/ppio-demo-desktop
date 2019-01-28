@@ -8,6 +8,7 @@ import {
   ACT_RESTORE_BG_TASKS,
   ACT_START_POLLING_TASK_PROGRESS,
 } from '../../constants/store'
+import * as GA_EVENTS from '../../constants/ga'
 import { startUpload } from '../../services/upload'
 import { startDownload } from '../../services/download'
 import { pauseTask, resumeTask, deleteTask, getTaskProgress } from '../../services/task'
@@ -23,6 +24,8 @@ import {
   TASK_STATUS_STARTING,
 } from '../../constants/task'
 import { TASK_GET_PROGRESS_INTERVAL } from '../../constants/constants'
+
+const visitor = remote.getGlobal('gaVisitor')
 
 export default taskType => {
   let STORE_KEYS
@@ -278,10 +281,20 @@ export default taskType => {
         if (status.finished) {
           // context.commit(STORE_KEYS.MUT_SET_PROGRESS, { idx, ...status })
           succNotif(context.state.taskQueue[idx])
+          if (taskType === TASK_TYPE_UPLOAD) {
+            visitor.event(GA_EVENTS.EVENT_UPLOAD_DONE).send()
+          } else if (taskType === TASK_TYPE_DOWNLOAD) {
+            visitor.event(GA_EVENTS.EVENT_DOWNLOAD_DONE).send()
+          }
           return context.commit(STORE_KEYS.MUT_FINISH_TASK, idx)
         }
         if (status.failed) {
           failNotif(context.state.taskQueue[idx])
+          if (taskType === TASK_TYPE_UPLOAD) {
+            visitor.event(GA_EVENTS.EVENT_UPLOAD_FAIL).send()
+          } else if (taskType === TASK_TYPE_DOWNLOAD) {
+            visitor.event(GA_EVENTS.EVENT_DOWNLOAD_FAIL).send()
+          }
           return context.commit(STORE_KEYS.MUT_FAIL_TASK, { idx, msg: status.failMsg })
         }
         if (status.running) {

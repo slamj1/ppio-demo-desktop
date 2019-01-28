@@ -1,21 +1,15 @@
 'use strict'
-import {
-  app,
-  protocol,
-  Menu,
-  globalShortcut,
-  BrowserWindow,
-  Tray,
-  nativeImage,
-  shell,
-} from 'electron'
+import { app, protocol, Menu, Tray, nativeImage, shell } from 'electron'
 import path from 'path'
+import ua from 'universal-analytics'
 import poss from './background/ppiosdk'
 import TaskManager from './background/taskManager'
 import windowManager from './background/windowManager'
 import { HOW_TO_USE, DOWNLOAD_PAGE } from './constants/urls'
 import { version } from '../package.json'
 import { APP_SCHEME } from './constants/constants'
+
+global.gaVisitor = ua('UA-128641089-5')
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -135,11 +129,11 @@ if (!gotTheLock) {
       })
     }
 
-    globalShortcut.register('CommandOrControl+Alt+I', () => {
-      console.log('open devtools')
-      let focusWin = BrowserWindow.getFocusedWindow()
-      focusWin && focusWin.toggleDevTools()
-    })
+    // globalShortcut.register('CommandOrControl+Alt+I', () => {
+    //   console.log('open devtools')
+    //   let focusWin = BrowserWindow.getFocusedWindow()
+    //   focusWin && focusWin.toggleDevTools()
+    // })
     return windowManager.createWindow()
   })
 }

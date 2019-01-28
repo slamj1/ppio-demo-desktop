@@ -21,6 +21,7 @@ export const USAGE_STORAGE_GETTER = 'getter_storageUsage'
 export const MUT_CLEAR_USER_DATA = 'mutation_clearUserData'
 
 export const MUT_SET_FILE_LIST = 'mutation_setFileList'
+export const MUT_MODIFY_FILE = 'mutation_modifyFile'
 export const ACT_GET_FILE_LIST = 'action_getFileList'
 export const ACT_GET_FILE_LIST_DETAILS = 'action_getFileListDetails'
 export const MUT_REMOVE_FILE = 'mutation_removeFile'

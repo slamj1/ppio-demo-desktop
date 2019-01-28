@@ -55,7 +55,7 @@ export default {
   data: () => ({
     curStep: 0,
     // steps: ['PPFile name', 'Gas Setting', 'Payment'],
-    steps: ['PPFile name'],
+    steps: ['File name'],
     filename: '',
     chiPrice: 100,
     totalChi: 0,

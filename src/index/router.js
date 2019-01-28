@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import { remote } from 'electron'
 import Splash from '../views/Splash'
 import Home from '../views/Home'
 import Files from '../views/Files'
@@ -10,7 +11,7 @@ import ImportAccount from '../views/account/Import'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/splash',
@@ -57,3 +58,15 @@ export default new Router({
     },
   ],
 })
+
+router.afterEach(to => {
+  if (to.name !== 'home' && to.name !== 'splash') {
+    console.log('sending pageview')
+    remote
+      .getGlobal('gaVisitor')
+      .pageview(to.name)
+      .send()
+  }
+})
+
+export default router

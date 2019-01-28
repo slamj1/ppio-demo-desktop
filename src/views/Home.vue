@@ -65,6 +65,7 @@ import {
   ACT_GET_USER_CPOOL,
 } from '../constants/store'
 import { DOWNLOAD_PAGE } from '../constants/urls'
+import * as GA_PAGEVIEWS from '../constants/ga'
 import Profile from '../components/Profile'
 import Download from './subviews/Download'
 import Get from './subviews/Get'
@@ -74,6 +75,10 @@ import Upload from './subviews/Upload'
 import Delete from './subviews/Delete'
 import BillingRecords from './BillingRecords'
 import Feedback from './Feedback'
+
+const visitor = electron.remote.getGlobal('gaVisitor')
+
+const sendPageview = name => visitor.pageview(name).send()
 
 export default {
   name: 'home',
@@ -206,6 +211,7 @@ export default {
       // open get file
       this.$vueBus.$on(this.$events.OPEN_GET_FILE, () => {
         console.log('open get file')
+        sendPageview(GA_PAGEVIEWS.PAGEVIEW_GET_FILE)
         this.showPopups.getFile = true
       })
       // close get file
@@ -224,6 +230,7 @@ export default {
       // open upload file
       this.$vueBus.$on(this.$events.OPEN_UPLOAD_FILE, filePath => {
         console.log('open upload file')
+        sendPageview(GA_PAGEVIEWS.PAGEVIEW_UPLOAD_FILE)
         this.uploadingFilePath = filePath
         this.showPopups.uploadFile = true
       })
@@ -245,6 +252,7 @@ export default {
       // open download file
       this.$vueBus.$on(this.$events.OPEN_DOWNLOAD_FILE, file => {
         console.log('open download file ', file)
+        sendPageview(GA_PAGEVIEWS.PAGEVIEW_DOWNLOAD_FILE)
         this.showPopups.downloadFile = true
         this.downloadingFile = file
       })
@@ -266,6 +274,7 @@ export default {
       // open share file
       this.$vueBus.$on(this.$events.OPEN_SHARE_FILE, payload => {
         console.log('open share file ', payload.file)
+        sendPageview(GA_PAGEVIEWS.PAGEVIEW_SHARE_FILE)
         this.showPopups.shareFile = true
         this.sharingFile = payload.file
         this.sharingFileIndex = payload.fileIndex
@@ -296,6 +305,7 @@ export default {
       // open renew file
       this.$vueBus.$on(this.$events.OPEN_RENEW_FILE, file => {
         console.log('open renew file ', file)
+        sendPageview(GA_PAGEVIEWS.PAGEVIEW_RENEW_FILE)
         this.showPopups.renewFile = true
         this.renewingFile = file
       })
@@ -315,6 +325,7 @@ export default {
       // open billing records
       this.$vueBus.$on(this.$events.OPEN_BILLING_RECORDS, () => {
         console.log('open billing records')
+        sendPageview(GA_PAGEVIEWS.PAGEVIEW_BILLING_RECORDS)
         this.showPopups.billingRecords = true
       })
       // close billing records
@@ -327,6 +338,7 @@ export default {
       // open delete file
       this.$vueBus.$on(this.$events.OPEN_DELETE_FILE, payload => {
         console.log('open delete file ', payload.file)
+        sendPageview(GA_PAGEVIEWS.PAGEVIEW_DELETE_FILE)
         this.showPopups.deleteFile = true
         this.deletingFile = payload.file
         this.deletingFileIndex = payload.fileIndex

@@ -146,7 +146,6 @@ export const getBillingRecords = walletId => {
     })
 }
 
-// TODO: what is the unit of chi price? kwei? gwei?
 export const getChiPrice = () =>
   getRecChiprice().then(res => ({
     storage: parseInt(res.StorageChiPrice),

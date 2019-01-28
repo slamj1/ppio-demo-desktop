@@ -39,7 +39,7 @@ export default {
         remote.getCurrentWindow(),
         {
           message: 'Choose the location to store your data direction',
-          properties: ['openDirectory', 'createDirectory', 'promptToCreate'], // TODO: use promptToCreate on windows
+          properties: ['openDirectory', 'createDirectory', 'promptToCreate'],
         },
         filePath => {
           console.log(filePath)
