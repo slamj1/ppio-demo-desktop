@@ -45,7 +45,7 @@ export const getEstimateCost = params => {
  * @param {string} [params.owner = ''] - the file owner's id
  * @returns {Promise<{taskId: string}>}
  */
-export const startDownload = async params => {
+export const startDownload = params => {
   console.log('start download service')
   console.log(params)
   return poss

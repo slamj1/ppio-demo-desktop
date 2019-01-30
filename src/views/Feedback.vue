@@ -2,19 +2,21 @@
   <popup class="feedback-popup" @close="f_close" width="500">
     <span slot="header">Feedback</span>
     <div class="content" slot="content">
-      <!--<h3>Please help us to improve!</h3>-->
-      <p class="feedback-hint">Please join our gitter to report your problems, or discuss about our products!</p>
-      <!--<el-input type="textarea" class="msg-input" placeholder="Your suggestion..." v-model="feedbackContent" :rows="4" resize="none"></el-input>-->
-      <!--<el-checkbox class="upload-checkbox" v-model="uploadLog"><p class="hint">Upload log file. (If checked, your log file will be uploaded.)</p></el-checkbox>-->
-      <!--<p class="hint"></p>-->
-      <el-button class="submit-btn" @click="f_goGitter" type="primary">Join!</el-button>
+      <h3>Please help us to improve!</h3>
+      <!--<p class="feedback-hint">Please join our gitter to report your problems, or discuss about our products!</p>-->
+      <!--<p class="feedback-hint">We'll upload your log file to our server. There may contain </p>-->
+      <el-input type="textarea" class="msg-input" placeholder="Your suggestion..." v-model="feedbackContent" :rows="4" resize="none"></el-input>
+      <el-checkbox class="upload-checkbox" v-model="uploadLog"><p class="hint">Upload log file. (If checked, some of your log files will be uploaded.)</p></el-checkbox>
+      <p class="hint"></p>
+      <!--<el-button class="submit-btn" @click="f_goGitter" type="primary">Join!</el-button>-->
+      <el-button class="submit-btn" @click="f_submit" type="primary">Submit</el-button>
     </div>
   </popup>
 </template>
 <script>
 import { shell } from 'electron'
 import Popup from '../components/Popup'
-import feedback from '../services/feedback'
+import { feedback } from '../services/feedback'
 import { GITTER_URL } from '../constants/urls'
 
 export default {
@@ -39,7 +41,13 @@ export default {
       }
       console.log('submit feedback')
       this.submitting = true
-      feedback(this.feedbackContent, this.uploadLog ? this.$store.state.dataDir : null)
+
+      const descObj = {
+        desc: this.feedbackContent,
+        demoVersion: this.$appVer,
+      }
+
+      feedback(descObj, this.uploadLog ? this.$store.state.dataDir : null)
         .then(() => {
           this.submitting = false
           this.$message.success('We have received your feedback, thanks!')

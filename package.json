@@ -1,6 +1,6 @@
 {
   "name": "ppio_demo",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -13,7 +13,11 @@
     "electron:build": "cross-env IS_CPOOL=false vue-cli-service electron:build",
     "electron:serve": "cross-env IS_CPOOL=false vue-cli-service electron:serve",
     "electron:build:cpool": "cross-env IS_CPOOL=true vue-cli-service electron:build",
-    "electron:serve:cpool": "cross-env IS_CPOOL=true vue-cli-service electron:serve"
+    "electron:serve:cpool": "cross-env IS_CPOOL=true vue-cli-service electron:serve",
+    "electron:build:devposs": "cross-env DEV_POSS=true IS_CPOOL=false vue-cli-service electron:build",
+    "electron:serve:devposs": "cross-env DEV_POSS=true IS_CPOOL=false vue-cli-service electron:serve",
+    "electron:build:cpool:devposs": "cross-env DEV_POSS=true IS_CPOOL=true vue-cli-service electron:build",
+    "electron:serve:cpool:devposs": "cross-env DEV_POSS=true IS_CPOOL=true vue-cli-service electron:serve"
   },
   "main": "background.js",
   "gitHooks": {
@@ -30,6 +34,7 @@
     ]
   },
   "dependencies": {
+    "archiver": "^3.0.0",
     "axios": "^0.18.0",
     "bignumber.js": "^8.0.1",
     "bip39": "^2.5.0",

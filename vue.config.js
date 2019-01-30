@@ -1,3 +1,5 @@
+const isDevPoss = process.env.DEV_POSS === 'true'
+
 module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? '' : '/',
   filenameHashing: false,
@@ -53,8 +55,8 @@ module.exports = {
           icon: 'public/icons/icon.icns',
           extraResources: [
             {
-              from: 'src/poss-bin/poss_mac',
-              to: 'extraResources/poss_mac',
+              from: `src/poss-bin/${isDevPoss ? 'poss_mac_dev' : 'poss_mac'}`,
+              to: `extraResources/${isDevPoss ? 'poss_mac_dev' : 'poss_mac'}`,
             },
             {
               from: 'src/assets/tray-icon.png',
@@ -76,8 +78,8 @@ module.exports = {
           icon: 'public/icons/icon.ico',
           extraResources: [
             {
-              from: 'src/poss-bin/poss_win.exe',
-              to: 'extraResources/poss_win.exe',
+              from: `src/poss-bin/${isDevPoss ? 'poss_win_dev.exe' : 'poss_win.exe'}`,
+              to: `extraResources/${isDevPoss ? 'poss_win_dev.exe' : 'poss_win.exe'}`,
             },
             {
               from: 'src/assets/tray-icon.png',
@@ -97,8 +99,8 @@ module.exports = {
           target: ['deb'],
           extraResources: [
             {
-              from: 'src/poss-bin/poss_linux',
-              to: 'extraResources/poss_linux',
+              from: `src/poss-bin/${isDevPoss ? 'poss_linux_dev' : 'poss_linux'}`,
+              to: `extraResources/${isDevPoss ? 'poss_linux_dev' : 'poss_linux'}`,
             },
             {
               from: 'src/assets/tray-icon.png',

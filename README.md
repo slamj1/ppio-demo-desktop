@@ -6,22 +6,10 @@
 - [x] drag & drop file upload
 - [x] share file
 - [x] get file by share code
-- [ ] folder
-- [ ] file manage
-- [ ] file view switching
+- [ ] directory structure
+- [ ] file management
+- [ ] view mode switching
 - [ ] ...
-
-## Project setup
-```
-# install dependencies
-yarn install
-
-# Compiles and hot-reloads for development
-yarn run serve
-
-# Compiles and minifies for production
-yarn run build
-```
 
 ## Stack
 - [Electron](https://electronjs.org/)

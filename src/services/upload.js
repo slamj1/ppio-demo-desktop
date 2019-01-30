@@ -55,7 +55,7 @@ export const getEstimateCost = params => {
  * @param {number} params.isSecure - whether to encrypt the file, enforced to be true in demo
  * @returns {Promise<{taskId: string} | never>}
  */
-export const startUpload = async params => {
+export const startUpload = params => {
   console.log('start upload service')
   console.log(params)
   return poss
