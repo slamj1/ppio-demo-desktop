@@ -1,4 +1,6 @@
 const isDevPoss = process.env.DEV_POSS === 'true'
+console.log(process.env.DEV_POSS)
+console.log(process.env.IS_CPOOL)
 
 module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? '' : '/',
@@ -24,11 +26,10 @@ module.exports = {
   chainWebpack: config => {
     config.plugin('define').tap(args => [
       {
-        'process.env': {
-          NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-          BASE_URL: args[0]['process.env'].BASE_URL,
-          IS_CPOOL: JSON.stringify(process.env.IS_CPOOL),
-        },
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+        'process.env.BASE_URL': args[0]['process.env'].BASE_URL,
+        'process.env.IS_CPOOL': JSON.stringify(process.env.IS_CPOOL),
+        'process.env.DEV_POSS': JSON.stringify(process.env.DEV_POSS),
       },
     ])
   },

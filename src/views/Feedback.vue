@@ -9,7 +9,7 @@
       <el-checkbox class="upload-checkbox" v-model="uploadLog"><p class="hint">Upload log file. (If checked, some of your log files will be uploaded.)</p></el-checkbox>
       <p class="hint"></p>
       <!--<el-button class="submit-btn" @click="f_goGitter" type="primary">Join!</el-button>-->
-      <el-button class="submit-btn" @click="f_submit" type="primary">Submit</el-button>
+      <el-button class="submit-btn" :loading="submitting" @click="f_submit" type="primary">Submit</el-button>
     </div>
   </popup>
 </template>
@@ -47,7 +47,11 @@ export default {
         demoVersion: this.$appVer,
       }
 
-      feedback(descObj, this.uploadLog ? this.$store.state.dataDir : null)
+      feedback(
+        descObj,
+        this.$store.state.user.address,
+        this.uploadLog ? this.$store.state.dataDir : null,
+      )
         .then(() => {
           this.submitting = false
           this.$message.success('We have received your feedback, thanks!')

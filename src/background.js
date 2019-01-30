@@ -9,6 +9,9 @@ import { HOW_TO_USE, DOWNLOAD_PAGE } from './constants/urls'
 import { version } from '../package.json'
 import { APP_SCHEME } from './constants/constants'
 
+console.log('checking process env')
+console.log(process.env.NODE_ENV)
+
 global.gaVisitor = ua('UA-128641089-5')
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -57,13 +60,13 @@ const menuTemplate = [
   },
 ]
 
-if (isDevelopment) {
-  menuTemplate[0].submenu.push({
-    label: 'Devtools',
-    accelerator: 'CmdOrCtrl+Alt+I',
-    role: 'toggledevtools',
-  })
-}
+// if (isDevelopment) {
+menuTemplate[0].submenu.push({
+  label: 'Devtools',
+  accelerator: 'CmdOrCtrl+Alt+I',
+  role: 'toggledevtools',
+})
+// }
 
 global.poss = poss
 

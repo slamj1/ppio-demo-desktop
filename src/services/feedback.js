@@ -7,7 +7,52 @@ import archiver from 'archiver'
 
 const poss = remote.getGlobal('poss')
 
-export const feedback = (descObj, userDir) => {
+const genZip = (fileArr, zipPath) => {
+  const output = fs.createWriteStream(zipPath)
+  return new Promise((resolve, reject) => {
+    console.log('waiting for open')
+    output.on('open', () => {
+      console.log('write stream open')
+
+      const archive = archiver('zip', {
+        zlib: { level: 9 },
+      })
+      output.on('close', () => {
+        console.log(`${archive.pointer()} total bytes`)
+        console.log(
+          'archiver has been finalized and the output file descriptor has closed.',
+        )
+        resolve(zipPath)
+      })
+      output.on('end', () => {
+        console.log('Data has been drained')
+      })
+      archive.on('warning', err => {
+        if (err.code === 'ENOENT') {
+          console.warn(err)
+        } else {
+          // throw error
+          throw err
+        }
+      })
+      archive.on('error', err => {
+        throw err
+      })
+      archive.pipe(output)
+
+      fileArr.forEach(file => {
+        if (typeof file === 'string') {
+          archive.append(fs.createReadStream(file), { name: path.basename(file) })
+        } else if (typeof file === 'object') {
+          archive.append(JSON.stringify(file, null, 2), { name: 'desc.json' })
+        }
+      })
+      archive.finalize()
+    })
+  })
+}
+
+export const feedback = (descObj, userAddress, userDir) => {
   const timestamp = Date.now()
   const logFileName = path.basename(poss.possPath, path.extname(poss.possPath))
   const curLogFile = path.join(userDir, `./${logFileName}.log`)
@@ -30,62 +75,26 @@ export const feedback = (descObj, userDir) => {
 
   const logFileList = [curLogFile]
   if (logFileSize < 50 * 1024 * 1024) {
-    const olderLogFile = path.join(userDir, `./${logFileName}1.log`)
+    const olderLogFile = path.join(userDir, `./${logFileName}.1.log`)
     if (fs.existsSync(olderLogFile)) {
       logFileList.push(olderLogFile)
     }
   }
   console.log(logFileList)
   console.log(descFileObj)
-
-  const zipPath = path.join(os.homedir(), `./log-test/log-report-${timestamp}.zip`)
-  const output = fs.createWriteStream(zipPath)
-
-  return new Promise((resolve, reject) => {
-    console.log('waiting for open')
-    output.on('open', () => {
-      console.log('write stream open')
-      console.log(fs.existsSync(zipPath))
-
-      const archive = archiver('zip', {
-        zlib: { level: 9 },
-      })
-      output.on('close', () => {
-        console.log(`${archive.pointer()} total bytes`)
-        console.log(
-          'archiver has been finalized and the output file descriptor has closed.',
-        )
-        resolve()
-      })
-      output.on('end', () => {
-        console.log('Data has been drained')
-      })
-      archive.on('warning', err => {
-        if (err.code === 'ENOENT') {
-          console.warn(err)
-        } else {
-          // throw error
-          throw err
-        }
-      })
-      archive.on('error', err => {
-        throw err
-      })
-      archive.pipe(output)
-
-      logFileList.forEach(filePath => {
-        archive.append(fs.createReadStream(filePath), { name: path.basename(filePath) })
-      })
-      archive.append(JSON.stringify(descFileObj, null, 2), { name: 'desc.json' })
-
-      archive.finalize()
+  const zipPath = path.join(userDir, `./log-report-${timestamp}.zip`)
+  return genZip(logFileList.concat([descFileObj]), zipPath)
+    .then(filePath => uploadFile(filePath, userAddress, timestamp))
+    .catch(err => {
+      console.error('feedback failed')
+      console.error(err)
+      return Promise.reject(err)
     })
-  })
 }
 
 export const uploadFile = (filePath, address, timestamp) => {
   console.log('uploading log file from ', filePath)
-  const filename = path.basePath(filePath)
+  const filename = path.basename(filePath)
   return getPutUrl(filename, address, timestamp)
     .then(url => {
       console.log('put url got: ', url)

@@ -3,6 +3,9 @@ import { remote } from 'electron'
 import EVENTS from '../constants/events'
 import { version } from '../../package.json'
 
+console.log('checking env from vue plugin')
+console.log(process.env.IS_CPOOL)
+
 export default {
   install: (Vue, options) => {
     Vue.testGlobalMethod = () => 'testGlobalMethod'

@@ -43,6 +43,7 @@ export const startDaemon = params => {
   console.log(params)
   const startParams = {
     datadir: params.datadir,
+    'log-file-level': 'DEBUG',
   }
   if (params.keystorePath) {
     startParams.keystore = params.keystorePath
