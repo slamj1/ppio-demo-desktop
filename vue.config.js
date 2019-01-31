@@ -1,6 +1,4 @@
 const isDevPoss = process.env.DEV_POSS === 'true'
-console.log(process.env.DEV_POSS)
-console.log(process.env.IS_CPOOL)
 
 module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? '' : '/',

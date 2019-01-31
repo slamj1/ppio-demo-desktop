@@ -69,6 +69,7 @@ export const feedback = (descObj, userAddress, userDir) => {
     systemInfo: {
       arch: os.arch(),
       platform: os.platform(),
+      version: os.release(),
     },
     ...descObj,
   }
@@ -80,11 +81,27 @@ export const feedback = (descObj, userAddress, userDir) => {
       logFileList.push(olderLogFile)
     }
   }
-  console.log(logFileList)
-  console.log(descFileObj)
   const zipPath = path.join(userDir, `./log-report-${timestamp}.zip`)
   return genZip(logFileList.concat([descFileObj]), zipPath)
-    .then(filePath => uploadFile(filePath, userAddress, timestamp))
+    .then(filePath => {
+      uploadFile(filePath, userAddress)
+        .then(() => {
+          console.log('upload finished, unlinking file')
+          fs.unlinkSync(filePath, err => {
+            if (err) {
+              console.error('unlink failed ', filePath)
+            } else {
+              console.log('unlink success')
+            }
+          })
+          return true
+        })
+        .catch(err => {
+          console.error('upload log failed!')
+          console.error(err)
+        })
+      return filePath
+    })
     .catch(err => {
       console.error('feedback failed')
       console.error(err)
@@ -92,12 +109,13 @@ export const feedback = (descObj, userAddress, userDir) => {
     })
 }
 
-export const uploadFile = (filePath, address, timestamp) => {
+export const uploadFile = (filePath, address) => {
   console.log('uploading log file from ', filePath)
   const filename = path.basename(filePath)
-  return getPutUrl(filename, address, timestamp)
-    .then(url => {
-      console.log('put url got: ', url)
+  return getPutUrl(filename, address)
+    .then(postData => {
+      console.log('post data got: ')
+      console.log(postData)
       const logFileBuffer = fs.readFileSync(filePath)
       console.log(logFileBuffer)
       console.log(Uint8Array.from(logFileBuffer).buffer)
@@ -105,7 +123,7 @@ export const uploadFile = (filePath, address, timestamp) => {
       const logFile = new File([arrayBuffer], 'poss.log')
       console.log('log file generated')
       console.log(logFile.size)
-      return uploadToS3(logFile, url)
+      return uploadToS3(logFile, postData)
     })
     .catch(err => {
       console.error('upload file failed')
@@ -114,7 +132,7 @@ export const uploadFile = (filePath, address, timestamp) => {
     })
 }
 
-export const getPutUrl = (filename, address, timestamp) => {
+export const getPutUrl = (filename, address) => {
   console.log('getting s3 pre-signed url')
   return axios({
     url: 'https://0nxk8m91ka.execute-api.us-west-2.amazonaws.com/dev/api/getreporturl',
@@ -122,21 +140,46 @@ export const getPutUrl = (filename, address, timestamp) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: {
+    data: {
       address,
-      timestamp,
       filename,
     },
   }).then(res => {
     if (res.data.code === 0) {
-      return res.data.data.url
+      return res.data.data
     }
     return Promise.reject(res.data)
   })
 }
 
-export const uploadToS3 = (file, url) => {
+export const uploadToS3 = (file, postData) => {
   console.log('uploading file to s3')
   console.log(file.size)
-  console.log(url)
+  console.log(postData)
+  // return axios({
+  //   url,
+  //   method: 'PUT',
+  //   headers: {
+  //     'Content-Type': 'binary/octet-stream',
+  //   },
+  //   data: file,
+  // })
+  const postForm = new FormData()
+  postForm.append('key', postData.key)
+  postForm.append('acl', 'authenticated-read')
+  postForm.append('x-amz-server-side-encryption', 'AES256')
+  postForm.append('X-Amz-Credential', postData.amzCredential)
+  postForm.append('X-Amz-Algorithm', 'AWS4-HMAC-SHA256')
+  postForm.append('X-Amz-Date', postData.amzDate)
+  postForm.append('Policy', postData.policy)
+  postForm.append('X-Amz-Signature', postData.signature)
+  postForm.append('file', file)
+  return axios({
+    url: `http://${postData.bucket}.s3.amazonaws.com/`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    data: postForm,
+  })
 }

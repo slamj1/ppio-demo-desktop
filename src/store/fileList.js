@@ -68,6 +68,23 @@ const store = {
         .then(fileList => {
           console.log('get file list done')
           console.log(fileList)
+
+          // remove file if it's uploading
+          const uploadQueue = context.rootState.uploadTask.taskQueue
+          const uploadingFileIdx = []
+          fileList.forEach((file, idx) => {
+            for (let i = 0; i < uploadQueue.length; i++) {
+              if (uploadQueue[i].file.key === file.key) {
+                uploadingFileIdx.push(idx)
+                break
+              }
+            }
+          })
+          console.log('uploading files: ', uploadingFileIdx)
+          uploadingFileIdx.sort((a, b) => b - a)
+          for (let i = 0; i < uploadingFileIdx.length; i++) {
+            fileList.splice(uploadingFileIdx[i], 1)
+          }
           context.commit(MUT_SET_FILE_LIST, fileList)
           context.dispatch(ACT_GET_FILE_LIST_DETAILS)
           return fileList

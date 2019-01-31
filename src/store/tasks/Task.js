@@ -40,7 +40,7 @@ export class Task {
     this.type = initData.type
     this.id = initData.id
     this.file = initData.file || null
-    this.lastTransferredData = initData.transferredData || 0 // used to calculate transfer speed
+    // this.lastTransferredData = initData.transferredData || 0 // used to calculate transfer speed
     this.transferredData = initData.transferredData || 0 // transferred bytes
     this.wholeDataLength = initData.wholeDataLength || 0 // whole file size
     if (this.wholeDataLength === 0) {
@@ -50,12 +50,13 @@ export class Task {
       const progress = (this.transferredData * 100) / this.wholeDataLength
       this.transferProgress = progress > 100 ? 100 : progress
     }
+    this.progressQueue = [this.transferProgress]
     this.transferSpeed = 0 // transfer speed, bytes/s
     this.displayTransferSpeed = '0b/s' // transfer speed for display
     this.displayLeftTime = ''
     this.status = initData.status || TASK_STATUS_STARTING
     this.failMsg = initData.failMsg || ''
-    this.speedCheckerTick = 0
+    // this.speedCheckerTick = 0
     this.finished = this.status === TASK_STATUS_SUCC || this.status === TASK_STATUS_FAIL
     console.log(this.status)
   }
@@ -63,25 +64,25 @@ export class Task {
   setTransferredData(length) {
     console.log(
       'setting transferred data: ',
-      this.lastTransferredData,
+      this.progressQueue.slice(-1)[0],
       this.transferredData,
       length,
     )
-    console.log('speed checker tick: ', this.speedCheckerTick)
+    console.log(this.progressQueue)
     if (length > this.wholeDataLength) {
       console.error('transferred data more than whole length')
     }
-    this.speedCheckerTick += 1
     this.transferredData = length
+    this.progressQueue.push(length)
+    if (this.progressQueue.length > 5) {
+      this.progressQueue.splice(0, 1)
+    }
+
     const speed = Math.round(
-      (length - this.lastTransferredData) /
-        ((TASK_GET_PROGRESS_INTERVAL * this.speedCheckerTick) / 1000),
+      (this.progressQueue.slice(-1)[0] - this.progressQueue[0]) /
+        ((TASK_GET_PROGRESS_INTERVAL * this.progressQueue.length - 1) / 1000),
     )
     this.setTransferSpeed(speed)
-    if (this.speedCheckerTick === 5) {
-      this.lastTransferredData = length
-      this.speedCheckerTick = 0
-    }
     if (length < this.transferredData) {
       console.log('transfer backed')
       if (length < this.transferredData - 16 * 1024 * 1024) {
@@ -124,9 +125,9 @@ export class Task {
 
   setStatus(status) {
     console.log('status set', status)
-    if (this.status !== status) {
-      this.speedCheckerTick = 0
-    }
+    // if (this.status !== status) {
+    //   this.speedCheckerTick = 0
+    // }
     if (status === TASK_STATUS_SUCC || status === TASK_STATUS_FAIL) {
       this.finished = true
       this.setTransferSpeed(0)

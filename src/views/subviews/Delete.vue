@@ -64,7 +64,7 @@ export default {
       storageRefund: 0,
     }
   },
-  props: ['file', 'fileIndex'], // file is a /store/PPFile.js object
+  props: ['file', 'fileIndex'],
   components: {
     Popup,
     PaymentTable,
@@ -188,6 +188,7 @@ export default {
             clearTimeout(this.deleteTimer)
           } else if (res.transferred && res.total) {
             this.deleteProgress = res.transferred / res.total
+            console.log(this.deleteProgress)
             this.deleteTimer = setTimeout(() => {
               this.f_getDeleteProgress(taskId)
             }, TIME_INTERVAL)
