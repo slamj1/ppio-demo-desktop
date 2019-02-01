@@ -54,14 +54,14 @@ export default {
       feedback(descObj, this.$store.state.user.address, this.$store.state.dataDir)
         .then(() => {
           this.submitting = false
-          this.$message.success('Your feedback is sending, thanks for your support!')
+          this.$message.success('Your feedback has been sent, thanks for your support!')
           return true
         })
         .catch(err => {
           console.error(err)
           this.submitting = false
           this.$message.error(
-            'There are some problems sending your feedback. Try again later.',
+            'There are some problems sending your feedback. You can try again later.',
           )
         })
     },

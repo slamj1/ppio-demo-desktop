@@ -6,6 +6,8 @@ import { remote } from 'electron'
 import archiver from 'archiver'
 
 const poss = remote.getGlobal('poss')
+const GET_AUTH_URL =
+  'https://tly4r5lqmi.execute-api.us-west-2.amazonaws.com/production/gets3postauth'
 
 const genZip = (fileArr, zipPath) => {
   const output = fs.createWriteStream(zipPath)
@@ -84,23 +86,38 @@ export const feedback = (descObj, userAddress, userDir) => {
   const zipPath = path.join(userDir, `./log-report-${timestamp}.zip`)
   return genZip(logFileList.concat([descFileObj]), zipPath)
     .then(filePath => {
-      uploadFile(filePath, userAddress)
-        .then(() => {
-          console.log('upload finished, unlinking file')
-          fs.unlinkSync(filePath, err => {
-            if (err) {
-              console.error('unlink failed ', filePath)
-            } else {
-              console.log('unlink success')
-            }
-          })
-          return true
+      console.log('uploading file from ', filePath)
+      const filename = path.basename(filePath)
+      return getPostAuth(filename, userAddress)
+        .then(postData => {
+          const logFileBuffer = fs.readFileSync(filePath)
+          const arrayBuffer = Uint8Array.from(logFileBuffer).buffer
+          const logFile = new File([arrayBuffer], 'poss.log')
+          console.log('log file generated')
+          console.log(logFile.size)
+          uploadToS3(logFile, postData)
+            .then(() => {
+              console.log('upload finished, unlinking file')
+              fs.unlinkSync(filePath, err => {
+                if (err) {
+                  console.error('unlink failed ', filePath)
+                } else {
+                  console.log('unlink success')
+                }
+              })
+              return true
+            })
+            .catch(err => {
+              console.error('upload log failed!')
+              console.error(err)
+            })
+          return filePath
         })
         .catch(err => {
-          console.error('upload log failed!')
+          console.error('upload file failed')
           console.error(err)
+          return Promise.reject(err)
         })
-      return filePath
     })
     .catch(err => {
       console.error('feedback failed')
@@ -109,33 +126,10 @@ export const feedback = (descObj, userAddress, userDir) => {
     })
 }
 
-export const uploadFile = (filePath, address) => {
-  console.log('uploading log file from ', filePath)
-  const filename = path.basename(filePath)
-  return getPutUrl(filename, address)
-    .then(postData => {
-      console.log('post data got: ')
-      console.log(postData)
-      const logFileBuffer = fs.readFileSync(filePath)
-      console.log(logFileBuffer)
-      console.log(Uint8Array.from(logFileBuffer).buffer)
-      const arrayBuffer = Uint8Array.from(logFileBuffer).buffer
-      const logFile = new File([arrayBuffer], 'poss.log')
-      console.log('log file generated')
-      console.log(logFile.size)
-      return uploadToS3(logFile, postData)
-    })
-    .catch(err => {
-      console.error('upload file failed')
-      console.error(err)
-      return Promise.reject(err)
-    })
-}
-
-export const getPutUrl = (filename, address) => {
-  console.log('getting s3 pre-signed url')
+export const getPostAuth = (filename, address) => {
+  console.log('getting s3 post auth')
   return axios({
-    url: 'https://0nxk8m91ka.execute-api.us-west-2.amazonaws.com/dev/api/getreporturl',
+    url: GET_AUTH_URL,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -155,7 +149,6 @@ export const getPutUrl = (filename, address) => {
 export const uploadToS3 = (file, postData) => {
   console.log('uploading file to s3')
   console.log(file.size)
-  console.log(postData)
   // return axios({
   //   url,
   //   method: 'PUT',
@@ -175,11 +168,14 @@ export const uploadToS3 = (file, postData) => {
   postForm.append('X-Amz-Signature', postData.signature)
   postForm.append('file', file)
   return axios({
-    url: `http://${postData.bucket}.s3.amazonaws.com/`,
+    url: `https://${postData.bucket}.s3.amazonaws.com/`,
     method: 'POST',
     headers: {
       'Content-Type': 'multipart/form-data',
     },
     data: postForm,
+  }).catch(err => {
+    console.error('upload to s3 failed')
+    return Promise.reject(err)
   })
 }
