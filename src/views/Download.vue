@@ -4,10 +4,14 @@
       tableName="download"
       :tableData="taskList">
     <template slot="operations" slot-scope="operationProps">
+      <span class="task-operate-btn loading"
+            v-if="operationProps.task.status === TASK_STATUS_PAUSING
+                  || operationProps.task.status === TASK_STATUS_RESUMING
+                  || operationProps.task.status === TASK_STATUS_DELETING"><i class="el-icon el-icon-loading"></i></span>
       <span class="task-operate-btn pause-btn" v-if="operationProps.task.status === TASK_STATUS_RUNNING" @click="f_pause(operationProps.index)"><i class="app-icon icon-pause"></i></span>
       <span class="task-operate-btn pause-btn" v-if="operationProps.task.status === TASK_STATUS_PAUSED" @click="f_resume(operationProps.index)"><i class="app-icon icon-play"></i></span>
+      <!--<span class="task-operate-btn open-btn" v-if="operationProps.task.status === TASK_STATUS_FAIL" @click="f_recover(operationProps.index)"><i class="el-icon el-icon-refresh"></i></span>-->
       <span class="task-operate-btn cancel-btn" v-if="operationProps.task.status === TASK_STATUS_RUNNING || operationProps.task.status === TASK_STATUS_PAUSED" @click="f_cancel(operationProps.index)"><i class="el-icon el-icon-close"></i></span>
-      <!-- <span class="task-operate-btn open-btn" v-if="operationProps.task.status === TASK_STATUS_FAIL" @click="f_resume(operationProps.index)"><i class="el-icon el-icon-refresh"></i></span> -->
       <span class="task-operate-btn open-btn" v-if="operationProps.task.status === TASK_STATUS_SUCC" @click="f_open(operationProps.index)"><i class="app-icon icon-open"></i></span>
       <span class="task-operate-btn delete-btn" v-if="operationProps.task.finished" @click="f_delete(operationProps.index)"><i class="el-icon el-icon-delete"></i></span>
     </template>
@@ -50,6 +54,12 @@ export default {
     },
     f_resume(index) {
       this.$store.dispatch(DL_TASK.ACT_RESUME_TASK, index).catch(err => {
+        this.$message.error(err.message)
+      })
+    },
+    f_recover(index) {
+      const recoverIdx = index - this.$store.state.downloadTask.taskQueue.length
+      this.$store.dispatch(DL_TASK.ACT_RECOVER_TASK, recoverIdx).catch(err => {
         this.$message.error(err.message)
       })
     },
@@ -104,6 +114,10 @@ export default {
     .el-icon {
       margin-right: 10px;
       vertical-align: middle;
+    }
+
+    &.loading {
+      cursor: default;
     }
   }
 }

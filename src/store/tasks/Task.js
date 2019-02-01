@@ -50,7 +50,7 @@ export class Task {
       const progress = (this.transferredData * 100) / this.wholeDataLength
       this.transferProgress = progress > 100 ? 100 : progress
     }
-    this.progressQueue = [this.transferProgress]
+    this.progressQueue = [this.transferredData]
     this.transferSpeed = 0 // transfer speed, bytes/s
     this.displayTransferSpeed = '0b/s' // transfer speed for display
     this.displayLeftTime = ''
@@ -78,6 +78,7 @@ export class Task {
       this.progressQueue.splice(0, 1)
     }
 
+    console.log(this.progressQueue.slice(-1)[0] - this.progressQueue[0])
     const speed = Math.round(
       (this.progressQueue.slice(-1)[0] - this.progressQueue[0]) /
         ((TASK_GET_PROGRESS_INTERVAL * this.progressQueue.length - 1) / 1000),

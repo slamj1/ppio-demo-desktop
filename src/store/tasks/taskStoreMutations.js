@@ -115,6 +115,14 @@ export default taskType => {
     state.taskQueue[idx].resume()
   }
 
+  const m_recoverTask = (state, idx) => {
+    console.log('recovering task', idx)
+    const taskToRecover = state.finishedQueue[idx]
+    taskToRecover.resume()
+    state.taskQueue.unshift(taskToRecover)
+    state.finishedQueue.splice(idx, 1)
+  }
+
   const m_failTask = (state, payload) => {
     const taskToFail = state.taskQueue[payload.idx]
     console.log('failing task ', payload.idx)
@@ -175,6 +183,7 @@ export default taskType => {
     [STORE_KEYS.MUT_FINISH_TASK]: m_finishTask,
     [STORE_KEYS.MUT_FAIL_TASK]: m_failTask,
     [STORE_KEYS.MUT_RESUME_TASK]: m_resumeTask,
+    [STORE_KEYS.MUT_RECOVER_TASK]: m_recoverTask,
     [STORE_KEYS.MUT_REMOVE_TASK]: m_removeTask,
     [STORE_KEYS.MUT_CANCEL_TASK]: m_cancelTask,
     [STORE_KEYS.MUT_SET_TASK_STATUS]: m_setTaskStatus,

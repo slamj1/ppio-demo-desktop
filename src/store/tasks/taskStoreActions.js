@@ -123,6 +123,32 @@ export default taskType => {
         return Promise.reject(err)
       })
   }
+  const a_recoverTask = (context, idx) => {
+    console.log('recovering task')
+    const taskToRecover = context.state.finishedQueue[idx]
+    if (!taskToRecover) {
+      return Promise.reject(new Error('task not exist!'))
+    }
+    const oriStatus = taskToRecover.status
+    context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, {
+      idx,
+      status: TASK_STATUS_RESUMING,
+      isFinished: true,
+    })
+    return resumeTask(taskToRecover.id)
+      .then(() => {
+        console.log('task resumed ', taskToRecover.id)
+        return context.commit(STORE_KEYS.MUT_RECOVER_TASK, idx)
+      })
+      .catch(err => {
+        context.commit(STORE_KEYS.MUT_SET_TASK_STATUS, {
+          idx,
+          status: oriStatus,
+          isFinished: true,
+        })
+        return Promise.reject(err)
+      })
+  }
   const a_cancelTask = (context, idx) => {
     console.log('canceling task ', idx)
     console.log(context.state.taskQueue[idx])
@@ -361,6 +387,7 @@ export default taskType => {
     [STORE_KEYS.ACT_CREATE_TASK]: a_createTask,
     [STORE_KEYS.ACT_PAUSE_TASK]: a_pauseTask,
     [STORE_KEYS.ACT_RESUME_TASK]: a_resumeTask,
+    [STORE_KEYS.ACT_RECOVER_TASK]: a_recoverTask,
     [STORE_KEYS.ACT_CANCEL_TASK]: a_cancelTask,
     [STORE_KEYS.ACT_DELETE_TASK]: a_deleteTask,
     [STORE_KEYS.ACT_GET_PROGRESS]: a_getTaskProgress,

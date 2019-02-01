@@ -187,7 +187,7 @@ export default {
             visitor.event(EVENT_DELETE_FAIL).send()
             clearTimeout(this.deleteTimer)
           } else if (res.transferred && res.total) {
-            this.deleteProgress = res.transferred / res.total
+            this.deleteProgress = (res.transferred / res.total) * 100
             console.log(this.deleteProgress)
             this.deleteTimer = setTimeout(() => {
               this.f_getDeleteProgress(taskId)
