@@ -62,7 +62,6 @@ menuTemplate[0].submenu.push({
   label: 'Devtools',
   accelerator: 'CmdOrCtrl+Alt+I',
   role: 'toggledevtools',
-  visible: !isDevelopment,
 })
 // }
 
