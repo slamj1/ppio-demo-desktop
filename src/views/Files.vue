@@ -3,39 +3,55 @@
     <el-header class="app-header" @click.native.stop="">
       <div class="header-btn-group">
         <template v-if="selectedFileKey !== ''">
-          <el-button size="small" type="primary" @click="f_download"><i class="app-icon icon-download"></i> Download</el-button>
-          <el-button size="small" type="primary" plain @click="f_share"><i class="app-icon icon-share"></i> Share</el-button>
+          <el-button size="small" type="primary" @click="f_download"
+            ><i class="app-icon icon-download"></i> Download</el-button
+          >
+          <el-button size="small" type="primary" plain @click="f_share"
+            ><i class="app-icon icon-share"></i> Share</el-button
+          >
           <el-dropdown class="header-dropdown-menu" size="small" trigger="click">
-              <span class="el-dropdown-link">
-                More<i class="el-icon-arrow-down el-icon--right"></i>
-              </span>
+            <span class="el-dropdown-link">
+              More<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item v-if="!isCpoolMode" @click.native="f_renew">Renew</el-dropdown-item>
+              <el-dropdown-item v-if="!isCpoolMode" @click.native="f_renew"
+                >Renew</el-dropdown-item
+              >
               <el-dropdown-item @click.native="f_delete">Delete</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
         <template v-else>
-          <el-button size="small" type="primary" @click="f_chooseUploadFile"><i class="app-icon icon-upload"></i> Upload</el-button>
-          <el-button size="small" type="primary" plain @click="f_get"><i class="app-icon icon-get"></i> Get</el-button>
+          <el-button size="small" type="primary" @click="f_chooseUploadFile"
+            ><i class="app-icon icon-upload"></i> Upload</el-button
+          >
+          <el-button size="small" type="primary" plain @click="f_get"
+            ><i class="app-icon icon-get"></i> Get</el-button
+          >
         </template>
       </div>
-      <el-button class="refresh-btn" icon="el-icon-refresh" circle @click="f_refreshList"></el-button>
+      <el-button
+        class="refresh-btn"
+        icon="el-icon-refresh"
+        circle
+        @click="f_refreshList"
+      ></el-button>
       <a class="header-help-btn" @click="f_goTutorials">How to use?</a>
     </el-header>
     <el-main class="app-main" @dragover.native="f_onDragover" @drop.native="f_onDrop">
       <div v-if="fileList.length === 0 && !fetchingData" class="empty">
-        <img src="../assets/img/files-empty.png" alt="empty">
+        <img src="../assets/img/files-empty.png" alt="empty" />
         <p>You haven't uploaded any file yet.</p>
       </div>
       <div v-else class="file-container" v-loading="refreshingData">
         <FileItem
-            v-for="(file, idx) in fileList"
-            :selected="selectedFileKey === file.key"
-            :key="file.key"
-            :file="file"
-            @click.native.right.prevent.stop="f_rightClickFile(idx)"
-            @click.native.stop="f_selectFile(idx)"></FileItem>
+          v-for="(file, idx) in fileList"
+          :selected="selectedFileKey === file.key"
+          :key="file.key"
+          :file="file"
+          @click.native.right.prevent.stop="f_rightClickFile(idx)"
+          @click.native.stop="f_selectFile(idx)"
+        ></FileItem>
       </div>
     </el-main>
     <router-view :file="operatingFile" @click.native.stop=""></router-view>

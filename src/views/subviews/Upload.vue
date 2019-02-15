@@ -9,15 +9,23 @@
         </div>
       </div>
       <template slot="footer">
-        <el-button class="button" :loading="preparingUpload" @click="f_confirm" size="mini" type="primary">Upload</el-button>
+        <el-button
+          class="button"
+          :loading="preparingUpload"
+          @click="f_confirm"
+          size="mini"
+          type="primary"
+          >Upload</el-button
+        >
       </template>
     </popup>
     <step-popup
-        v-else
-        :steps="steps"
-        :cur-step="curStep"
-        @close="f_close"
-        class="popup-wrap">
+      v-else
+      :steps="steps"
+      :cur-step="curStep"
+      @close="f_close"
+      class="popup-wrap"
+    >
       <span slot="header">Upload File</span>
       <div class="step-content step-0" slot="step-0">
         <div class="file-container">
@@ -31,36 +39,55 @@
           <div class="line-wrap">
             <label class="line-label">Storage Time:</label>
             <el-radio-group class="radio-group" v-model="radio">
-              <el-radio :label="1">1 Year(365 days)</el-radio> <br>
-              <el-radio :label="2">1 Month(30 days)</el-radio> <br>
+              <el-radio :label="1">1 Year(365 days)</el-radio> <br />
+              <el-radio :label="2">1 Month(30 days)</el-radio> <br />
               <el-radio :label="3" @change="$refs.customStorageDaysInput.focus()">
                 <el-input
-                    class="storage-day-input"
-                    ref="customStorageDaysInput"
-                    type="number"
-                    size="mini"
-                    v-model="customStorageDays"
-                    @focus="radio = 3"></el-input>
-                <span>{{parseInt(customStorageDays) > 1 ? "Days" : "Day" }}</span>
+                  class="storage-day-input"
+                  ref="customStorageDaysInput"
+                  type="number"
+                  size="mini"
+                  v-model="customStorageDays"
+                  @focus="radio = 3"
+                ></el-input>
+                <span>{{ parseInt(customStorageDays) > 1 ? 'Days' : 'Day' }}</span>
               </el-radio>
             </el-radio-group>
           </div>
           <div class="line-wrap">
             <label class="line-label">Number of copies:</label>
-            <el-input class="copy-input" type="number" v-model="copyCount" size="mini"></el-input>
+            <el-input
+              class="copy-input"
+              type="number"
+              v-model="copyCount"
+              size="mini"
+            ></el-input>
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
-            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input><span> {{$minimalUnit}}</span>
-            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}}</span>
+            <el-input
+              class="price-input"
+              type="number"
+              size="mini"
+              v-model="chiPrice"
+            ></el-input
+            ><span> {{ $minimalUnit }}</span>
+            <span
+              class="recommend-chiprice"
+              :class="{
+                'too-low': chiPrice < recChiPrice,
+                safe: chiPrice >= recChiPrice,
+              }"
+              >Recommended: {{ recChiPrice }}</span
+            >
           </div>
           <div class="line-wrap">
             <label class="line-label">Total Chi:</label>
-            <span>{{totalChi}}</span>
+            <span>{{ totalChi }}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Expected Cost:</label>
-            <span>{{totalCost}} PPCoin</span>
+            <span>{{ totalCost }} PPCoin</span>
           </div>
         </div>
       </div>
@@ -72,9 +99,26 @@
       </div>
 
       <template slot="footer">
-        <el-button class="button" v-if="curStep > 0" @click="f_prev" size="mini">Prev</el-button>
-        <el-button class="button" v-if="curStep < steps.length - 1" @click="f_next" size="mini" type="primary">Next</el-button>
-        <el-button class="button" :loading="preparingUpload" v-if="curStep >= steps.length - 1" @click="f_confirm" size="mini" type="primary">Upload</el-button>
+        <el-button class="button" v-if="curStep > 0" @click="f_prev" size="mini"
+          >Prev</el-button
+        >
+        <el-button
+          class="button"
+          v-if="curStep < steps.length - 1"
+          @click="f_next"
+          size="mini"
+          type="primary"
+          >Next</el-button
+        >
+        <el-button
+          class="button"
+          :loading="preparingUpload"
+          v-if="curStep >= steps.length - 1"
+          @click="f_confirm"
+          size="mini"
+          type="primary"
+          >Upload</el-button
+        >
       </template>
     </step-popup>
   </div>

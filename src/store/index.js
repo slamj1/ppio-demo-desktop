@@ -119,12 +119,19 @@ export default new Vuex.Store({
       const createTaskFromPoss = possTask => {
         console.log('creating task from poss task:')
         console.log(possTask)
+
+        let fileKey = ''
+        if (possTask.type === 'Put') {
+          fileKey = possTask.to.split(`${APP_BUCKET_NAME}/`)[1]
+        } else if (possTask.type === 'Get') {
+          fileKey = possTask.from.split(`${APP_BUCKET_NAME}/`)[1]
+        }
         const newTask = {
           id: possTask.id,
           transferredData: possTask.finished,
           wholeDataLength: possTask.total,
           file: new TaskFile({
-            key: possTask.to.split(`${APP_BUCKET_NAME}/`)[1],
+            key: fileKey,
             bucket: APP_BUCKET_NAME,
             filename: possTask.to.split('/').slice(-1)[0],
             size: possTask.total,
@@ -160,93 +167,95 @@ export default new Vuex.Store({
       return listTasks().then(res => {
         console.log(res)
 
-        res.filter(task => task.type === 'Put' || task.type === 'Get').map(task => {
-          let taskQueue, finishedQueue
-          let matchedLocalTask = null
-          let matchedLocalTaskIdx = -1
-          let STORE_KEY
-          if (task.type === 'Put') {
-            STORE_KEY = UL_TASK
-          } else if (task.type === 'Get') {
-            STORE_KEY = DL_TASK
-          }
-          if (task.type === 'Put') {
-            taskQueue = state.uploadTask.taskQueue
-            finishedQueue = state.uploadTask.finishedQueue
-          }
-          if (task.type === 'Get') {
-            taskQueue = state.downloadTask.taskQueue
-            finishedQueue = state.downloadTask.finishedQueue
-          }
-          for (let i = 0; i < taskQueue.length; i++) {
-            if (taskQueue[i].id === task.id) {
-              matchedLocalTaskIdx = i
-              matchedLocalTask = taskQueue[i]
+        res
+          .filter(task => task.type === 'Put' || task.type === 'Get')
+          .map(task => {
+            let taskQueue, finishedQueue
+            let matchedLocalTask = null
+            let matchedLocalTaskIdx = -1
+            let STORE_KEY
+            if (task.type === 'Put') {
+              STORE_KEY = UL_TASK
+            } else if (task.type === 'Get') {
+              STORE_KEY = DL_TASK
             }
-          }
-          if (!matchedLocalTask) {
-            for (let i = 0; i < finishedQueue.length; i++) {
-              if (finishedQueue[i].id === task.id) {
+            if (task.type === 'Put') {
+              taskQueue = state.uploadTask.taskQueue
+              finishedQueue = state.uploadTask.finishedQueue
+            }
+            if (task.type === 'Get') {
+              taskQueue = state.downloadTask.taskQueue
+              finishedQueue = state.downloadTask.finishedQueue
+            }
+            for (let i = 0; i < taskQueue.length; i++) {
+              if (taskQueue[i].id === task.id) {
                 matchedLocalTaskIdx = i
-                matchedLocalTask = finishedQueue[i]
+                matchedLocalTask = taskQueue[i]
               }
             }
-          }
-          if (matchedLocalTaskIdx > -1) {
-            console.log('syncing single task from poss ')
-            console.log(task)
-            console.log(matchedLocalTask)
-            if (
-              !matchedLocalTask.finished &&
-              task.state !== 'Error' &&
-              task.state !== 'Pending'
-            ) {
-              commit(STORE_KEY.MUT_SET_PROGRESS, {
-                idx: matchedLocalTaskIdx,
-                transferredData: task.finished,
-                wholeDataLength: task.total,
-              })
+            if (!matchedLocalTask) {
+              for (let i = 0; i < finishedQueue.length; i++) {
+                if (finishedQueue[i].id === task.id) {
+                  matchedLocalTaskIdx = i
+                  matchedLocalTask = finishedQueue[i]
+                }
+              }
             }
-
-            if (
-              task.state === 'Running' &&
-              matchedLocalTask.status === TASK_STATUS_PAUSED
-            ) {
-              commit(STORE_KEY.MUT_RESUME_TASK, matchedLocalTaskIdx)
-            } else if (
-              task.state === 'Paused' &&
-              matchedLocalTask.status !== TASK_STATUS_PAUSED
-            ) {
-              commit(STORE_KEY.MUT_PAUSE_TASK, matchedLocalTaskIdx)
-            } else if (
-              task.state === 'Finished' &&
-              matchedLocalTask.status !== TASK_STATUS_SUCC
-            ) {
-              commit(STORE_KEY.MUT_FINISH_TASK, matchedLocalTaskIdx)
-            } else if (
-              (task.state === 'Error' || task.state === 'Pending') &&
-              matchedLocalTask.status !== TASK_STATUS_FAIL
-            ) {
-              // TODO: not exactly. If recovered from background, maybe the task is really "pending".
-              console.log('got error task')
+            if (matchedLocalTaskIdx > -1) {
+              console.log('syncing single task from poss ')
+              console.log(task)
               console.log(matchedLocalTask)
               if (
                 !matchedLocalTask.finished &&
-                !matchedLocalTask.status !== TASK_STATUS_FAIL
+                task.state !== 'Error' &&
+                task.state !== 'Pending'
               ) {
-                commit(STORE_KEY.MUT_FAIL_TASK, { idx: matchedLocalTaskIdx })
+                commit(STORE_KEY.MUT_SET_PROGRESS, {
+                  idx: matchedLocalTaskIdx,
+                  transferredData: task.finished,
+                  wholeDataLength: task.total,
+                })
+              }
+
+              if (
+                task.state === 'Running' &&
+                matchedLocalTask.status === TASK_STATUS_PAUSED
+              ) {
+                commit(STORE_KEY.MUT_RESUME_TASK, matchedLocalTaskIdx)
+              } else if (
+                task.state === 'Paused' &&
+                matchedLocalTask.status !== TASK_STATUS_PAUSED
+              ) {
+                commit(STORE_KEY.MUT_PAUSE_TASK, matchedLocalTaskIdx)
+              } else if (
+                task.state === 'Finished' &&
+                matchedLocalTask.status !== TASK_STATUS_SUCC
+              ) {
+                commit(STORE_KEY.MUT_FINISH_TASK, matchedLocalTaskIdx)
+              } else if (
+                (task.state === 'Error' || task.state === 'Pending') &&
+                matchedLocalTask.status !== TASK_STATUS_FAIL
+              ) {
+                // TODO: not exactly. If recovered from background, maybe the task is really "pending".
+                console.log('got error task')
+                console.log(matchedLocalTask)
+                if (
+                  !matchedLocalTask.finished &&
+                  !matchedLocalTask.status !== TASK_STATUS_FAIL
+                ) {
+                  commit(STORE_KEY.MUT_FAIL_TASK, { idx: matchedLocalTaskIdx })
+                }
+              }
+            } else {
+              console.log('no local task for poss task:')
+              console.log(task)
+              if (task.state !== 'Finished' && task.state !== 'Error') {
+                commit(STORE_KEY.MUT_ADD_TASK, createTaskFromPoss(task))
+              } else {
+                commit(STORE_KEY.MUT_ADD_FINISHED_TASK, createTaskFromPoss(task))
               }
             }
-          } else {
-            console.log('no local task for poss task:')
-            console.log(task)
-            if (task.state !== 'Finished' && task.state !== 'Error') {
-              commit(STORE_KEY.MUT_ADD_TASK, createTaskFromPoss(task))
-            } else {
-              commit(STORE_KEY.MUT_ADD_FINISHED_TASK, createTaskFromPoss(task))
-            }
-          }
-        })
+          })
         return res
       })
     },

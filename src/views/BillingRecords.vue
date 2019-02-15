@@ -2,29 +2,22 @@
   <SlidePopup @close="f_close">
     <h2 slot="header">Billing Records</h2>
     <el-table
-        slot="content"
-        max-height="500"
-        class="ppio-list-table billing-table"
-        :data="recordsData"
-        stripe
-        style="width: 100%">
-      <el-table-column
-          label="time"
-          width="200"
-          class-name="table-column-time">
+      slot="content"
+      max-height="500"
+      class="ppio-list-table billing-table"
+      :data="recordsData"
+      stripe
+      style="width: 100%"
+    >
+      <el-table-column label="time" width="200" class-name="table-column-time">
         <template slot-scope="scope">
-          <p class="billing-time">{{f_getTime(scope.row.time)}}</p>
+          <p class="billing-time">{{ f_getTime(scope.row.time) }}</p>
         </template>
       </el-table-column>
-      <el-table-column
-          prop="comment"
-          label="Item">
-      </el-table-column>
-      <el-table-column
-          label="Cost"
-          width="240">
+      <el-table-column prop="comment" label="Item"> </el-table-column>
+      <el-table-column label="Cost" width="240">
         <template slot-scope="scope">
-          <p class="billing-amount">{{f_getPPCoinAmount(scope.row.amount)}}</p>
+          <p class="billing-amount">{{ f_getPPCoinAmount(scope.row.amount) }}</p>
         </template>
       </el-table-column>
     </el-table>

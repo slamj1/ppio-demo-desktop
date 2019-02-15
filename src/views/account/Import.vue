@@ -1,17 +1,30 @@
 <template>
   <div class="account">
     <div class="tip-wrap">
-      <p class="title">Import<a class="tutorial-link" @click="f_goTutorials">(How to use?)</a></p>
+      <p class="title">
+        Import<a class="tutorial-link" @click="f_goTutorials">(How to use?)</a>
+      </p>
     </div>
     <el-alert type="warning" :closable="false">
-      <p>Alert: this is a demo net-disk app, our service is not stable at the moment. Meaning that your files uploaded might be lost. So DO NOT upload anything important.</p>
+      <p>
+        Alert: this is a demo net-disk app, our service is not stable at the moment.
+        Meaning that your files uploaded might be lost. So DO NOT upload anything
+        important.
+      </p>
     </el-alert>
     <div class="form-wrap">
       <el-tabs v-model="curTab">
         <el-tab-pane label="Import from keystore" name="keystore">
           <p class="title">Provide your keystore file and passphrase</p>
-          <div class="keystore-drag-area" @click="f_uploadKeystore" @dragover="f_onDragover" @drop="f_onDrop">
-            <p class="keystore-file-name" v-if="addressInKeystore.length > 0">{{addressInKeystore}}</p>
+          <div
+            class="keystore-drag-area"
+            @click="f_uploadKeystore"
+            @dragover="f_onDragover"
+            @drop="f_onDrop"
+          >
+            <p class="keystore-file-name" v-if="addressInKeystore.length > 0">
+              {{ addressInKeystore }}
+            </p>
             <template v-else>
               <i class="el-icon-plus"></i>
               <p class="keystore-file-hint">Drop your keystore file here</p>
@@ -19,36 +32,51 @@
           </div>
           <!--<el-button class="keystore-button" type="primary" >Upload keystore file</el-button>-->
           <el-input
-              type="password"
-              placeholder="Enter your passphrase"
-              required
-              v-model="keystorePassphrase"
-              class="password-input"
-              @keyup.native.enter="f_importFromKeystore"></el-input>
-          <el-alert v-show="errorMsg !== ''" :title="errorMsg" type="error" :closable="false"></el-alert>
-          <el-button :loading="importing || startingApp" class="login-button" type="primary" @click="f_importFromKeystore">Confirm</el-button>
+            type="password"
+            placeholder="Enter your passphrase"
+            required
+            v-model="keystorePassphrase"
+            class="password-input"
+            @keyup.native.enter="f_importFromKeystore"
+          ></el-input>
+          <el-alert
+            v-show="errorMsg !== ''"
+            :title="errorMsg"
+            type="error"
+            :closable="false"
+          ></el-alert>
+          <el-button
+            :loading="importing || startingApp"
+            class="login-button"
+            type="primary"
+            @click="f_importFromKeystore"
+            >Confirm</el-button
+          >
         </el-tab-pane>
         <!--<el-tab-pane label="Import from private key" name="privatekey">-->
-          <!--<p class="title">Provide your private key</p>-->
-          <!--<el-input-->
-              <!--type="textarea"-->
-              <!--placeholder="Enter your private key"-->
-              <!--required-->
-              <!--v-model="privateKey"-->
-              <!--class="privatekey-input"-->
-              <!--@keyup.native.enter="f_importFromPrivatekey"></el-input>-->
-          <!--<el-input-->
-              <!--type="password"-->
-              <!--placeholder="Enter your passphrase"-->
-              <!--required-->
-              <!--v-model="password"-->
-              <!--class="password-input"-->
-              <!--@keyup.native.enter="f_importFromPrivatekey"></el-input>-->
-          <!--<el-alert v-show="errorMsg !== ''" :title="errorMsg" type="error" :closable="false"></el-alert>-->
-          <!--<el-button :loading="importing || startingApp" class="login-button" type="primary" @click="f_importFromPrivatekey">Confirm</el-button>-->
+        <!--<p class="title">Provide your private key</p>-->
+        <!--<el-input-->
+        <!--type="textarea"-->
+        <!--placeholder="Enter your private key"-->
+        <!--required-->
+        <!--v-model="privateKey"-->
+        <!--class="privatekey-input"-->
+        <!--@keyup.native.enter="f_importFromPrivatekey"></el-input>-->
+        <!--<el-input-->
+        <!--type="password"-->
+        <!--placeholder="Enter your passphrase"-->
+        <!--required-->
+        <!--v-model="password"-->
+        <!--class="password-input"-->
+        <!--@keyup.native.enter="f_importFromPrivatekey"></el-input>-->
+        <!--<el-alert v-show="errorMsg !== ''" :title="errorMsg" type="error" :closable="false"></el-alert>-->
+        <!--<el-button :loading="importing || startingApp" class="login-button" type="primary" @click="f_importFromPrivatekey">Confirm</el-button>-->
         <!--</el-tab-pane>-->
       </el-tabs>
-      <p>Don't have an account? <a class="wallet-link" @click="f_gotoWallet">Generate one</a></p>
+      <p>
+        Don't have an account?
+        <a class="wallet-link" @click="f_gotoWallet">Generate one</a>
+      </p>
     </div>
   </div>
 </template>

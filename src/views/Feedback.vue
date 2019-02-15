@@ -4,12 +4,23 @@
     <div class="content" slot="content">
       <h3>Help us to improve!</h3>
       <!--<p class="feedback-hint">Please join our gitter to report your problems, or discuss about our products!</p>-->
-      <p class="feedback-hint">We'll collect some usage statistics which can help us to fix bugs.</p>
-      <el-input type="textarea" class="msg-input" placeholder="Problems you've met or your suggestions" v-model="feedbackContent" :rows="4" resize="none"></el-input>
+      <p class="feedback-hint">
+        We'll collect some usage statistics which can help us to fix bugs.
+      </p>
+      <el-input
+        type="textarea"
+        class="msg-input"
+        placeholder="Problems you've met or your suggestions"
+        v-model="feedbackContent"
+        :rows="4"
+        resize="none"
+      ></el-input>
       <!--<el-checkbox class="upload-checkbox" v-model="uploadLog"><p class="hint">Upload log file. (If checked, some log files of this app will be uploaded. This can help us to find out bugs greatly)</p></el-checkbox>-->
 
-      <el-button class="submit-btn" :loading="submitting" @click="f_submit" type="primary">Submit</el-button>
-      <p class="feedback-hint">Have questions? Join our discord channel: </p>
+      <el-button class="submit-btn" :loading="submitting" @click="f_submit" type="primary"
+        >Submit</el-button
+      >
+      <p class="feedback-hint">Have questions? Join our discord channel:</p>
       <el-button class="submit-btn" @click="f_goDiscord" type="primary">Join!</el-button>
     </div>
   </popup>

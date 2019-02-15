@@ -1,5 +1,5 @@
 import path from 'path'
-import Poss from 'poss-sdk'
+import Poss from 'ppio'
 import getPossBinFilename from '../utils/getPossBinFilename'
 
 const possBinPath = path.join(
@@ -10,10 +10,10 @@ const possBinPath = path.join(
 console.log(possBinPath)
 
 const possIns = new Poss({
-  possExecutablePath: possBinPath,
-  debug: false,
+  ppioExecutablePath: possBinPath,
+  debug: !!process.argv.debug,
 })
 console.log('poss instance created')
-console.log('poss path: ', possIns.possPath)
+console.log('poss path: ', possIns.ppioPath)
 
 export default possIns

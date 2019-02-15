@@ -2,17 +2,27 @@
   <el-container class="app-page home">
     <el-aside class="app-aside" mode="vertical" width="200px">
       <el-popover class="aside-profile" v-model="showProfile" @show="onProfileShow">
-        <Profile @check-billing="f_goBilling" @check-update="f_checkUpdate" @logout="f_logout"></Profile>
+        <Profile
+          @check-billing="f_goBilling"
+          @check-update="f_checkUpdate"
+          @logout="f_logout"
+        ></Profile>
         <div class="profile-wrapper" slot="reference">
           <img class="profile-avatar" src="/img/avatar.png" />
           <div class="profile-userinfo">
-            <span class="profile-username">{{userData.address}}</span>
+            <span class="profile-username">{{ userData.address }}</span>
             <template v-if="$isCpoolPackage">
-              <el-progress class="usage-progress" :percentage="usagePercent" :show-text="false"></el-progress>
-              <span class="usage-number with-progress">{{usedStorageStr}} / {{capacityStr}}</span>
+              <el-progress
+                class="usage-progress"
+                :percentage="usagePercent"
+                :show-text="false"
+              ></el-progress>
+              <span class="usage-number with-progress"
+                >{{ usedStorageStr }} / {{ capacityStr }}</span
+              >
             </template>
             <template v-else>
-              <span class="usage-number">Used: {{usedStorageStr}}</span>
+              <span class="usage-number">Used: {{ usedStorageStr }}</span>
             </template>
           </div>
         </div>
@@ -25,26 +35,55 @@
         <p class="nav-group-title">Transmission list</p>
         <el-menu-item index="download-list">
           <i class="app-icon icon-nav-download"></i>
-          <span slot="title">Downloading <el-badge class="task-count-badge" v-show="downloadCount > 0" :value="downloadCount" /></span>
+          <span slot="title"
+            >Downloading
+            <el-badge
+              class="task-count-badge"
+              v-show="downloadCount > 0"
+              :value="downloadCount"
+          /></span>
         </el-menu-item>
         <el-menu-item index="upload-list">
           <i class="app-icon icon-nav-upload"></i>
-          <span slot="title">Uploading <el-badge class="task-count-badge" v-show="uploadCount > 0" :value="uploadCount" /></span>
+          <span slot="title"
+            >Uploading
+            <el-badge
+              class="task-count-badge"
+              v-show="uploadCount > 0"
+              :value="uploadCount"
+          /></span>
         </el-menu-item>
       </el-menu>
-      <el-button type="text" class="feedback-btn" @click="showFeedback = true" icon="el-icon-edit-outline">Feedback</el-button>
+      <el-button
+        type="text"
+        class="feedback-btn"
+        @click="showFeedback = true"
+        icon="el-icon-edit-outline"
+        >Feedback</el-button
+      >
     </el-aside>
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
 
-    <BillingRecords v-if="showPopups.billingRecords" :recordsData="userData.billingRecords"></BillingRecords>
+    <BillingRecords
+      v-if="showPopups.billingRecords"
+      :recordsData="userData.billingRecords"
+    ></BillingRecords>
     <Upload v-if="showPopups.uploadFile" :filePath="uploadingFilePath"></Upload>
     <Download v-if="showPopups.downloadFile" :file="downloadingFile"></Download>
     <Get v-if="showPopups.getFile"></Get>
     <Renew v-if="showPopups.renewFile" :file="renewingFile"></Renew>
-    <Share v-if="showPopups.shareFile" :file="sharingFile" :fileIndex="sharingFileIndex"></Share>
-    <Delete v-if="showPopups.deleteFile" :file="deletingFile" :fileIndex="deletingFileIndex"></Delete>
+    <Share
+      v-if="showPopups.shareFile"
+      :file="sharingFile"
+      :fileIndex="sharingFileIndex"
+    ></Share>
+    <Delete
+      v-if="showPopups.deleteFile"
+      :file="deletingFile"
+      :fileIndex="deletingFileIndex"
+    ></Delete>
     <Feedback v-if="showFeedback" @close="showFeedback = false"></Feedback>
   </el-container>
 </template>

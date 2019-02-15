@@ -4,15 +4,20 @@
       <span slot="header">Share File</span>
       <div class="content" slot="content">
         <span class="file-icon" :class="'file-icon_' + fileType"></span>
-        <p class="file-name">{{file && file.filename}}</p>
-        <p class="share-hint">Anyone who gets the share code can access it. The only way to stop sharing is to delete the file.</p>
+        <p class="file-name">{{ file && file.filename }}</p>
+        <p class="share-hint">
+          Anyone who gets the share code can access it. The only way to stop sharing is to
+          delete the file.
+        </p>
         <div class="code-wrap" v-if="shareCode">
           <label class="share-code-label">Share Code:</label>
-          <p class="share-code-container">{{shareCode}}</p>
+          <p class="share-code-container">{{ shareCode }}</p>
         </div>
       </div>
       <template slot="footer">
-        <el-button class="button" @click="f_copy" size="mini" type="primary">Copy Code</el-button>
+        <el-button class="button" @click="f_copy" size="mini" type="primary"
+          >Copy Code</el-button
+        >
       </template>
     </popup>
   </div>

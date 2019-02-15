@@ -1,18 +1,43 @@
 <template>
-  <TransferTable
-      class="upload-task-manager"
-      tableName="upload"
-      :tableData="taskList">
+  <TransferTable class="upload-task-manager" tableName="upload" :tableData="taskList">
     <template slot="operations" slot-scope="operationProps">
-      <span class="task-operate-btn loading"
-            v-if="operationProps.task.status === TASK_STATUS_PAUSING
-                  || operationProps.task.status === TASK_STATUS_RESUMING
-                  || operationProps.task.status === TASK_STATUS_DELETING"><i class="el-icon el-icon-loading"></i></span>
-      <span class="task-operate-btn pause-btn" v-if="operationProps.task.status === TASK_STATUS_RUNNING" @click="f_pause(operationProps.index)"><i class="app-icon icon-pause"></i></span>
-      <span class="task-operate-btn pause-btn" v-if="operationProps.task.status === TASK_STATUS_PAUSED" @click="f_resume(operationProps.index)"><i class="app-icon icon-play"></i></span>
+      <span
+        class="task-operate-btn loading"
+        v-if="
+          operationProps.task.status === TASK_STATUS_PAUSING ||
+            operationProps.task.status === TASK_STATUS_RESUMING ||
+            operationProps.task.status === TASK_STATUS_DELETING
+        "
+        ><i class="el-icon el-icon-loading"></i
+      ></span>
+      <span
+        class="task-operate-btn pause-btn"
+        v-if="operationProps.task.status === TASK_STATUS_RUNNING"
+        @click="f_pause(operationProps.index)"
+        ><i class="app-icon icon-pause"></i
+      ></span>
+      <span
+        class="task-operate-btn pause-btn"
+        v-if="operationProps.task.status === TASK_STATUS_PAUSED"
+        @click="f_resume(operationProps.index)"
+        ><i class="app-icon icon-play"></i
+      ></span>
       <!--<span class="task-operate-btn open-btn" v-if="operationProps.task.status === TASK_STATUS_FAIL" @click="f_recover(operationProps.index)"><i class="el-icon el-icon-refresh"></i></span>-->
-      <span class="task-operate-btn cancel-btn" v-if="operationProps.task.status === TASK_STATUS_RUNNING || operationProps.task.status === TASK_STATUS_PAUSED" @click="f_cancel(operationProps.index)"><i class="app-icon icon-close"></i></span>
-      <span class="task-operate-btn delete-btn" v-if="operationProps.task.finished" @click="f_delete(operationProps.index)"><i class="el-icon el-icon-delete"></i></span>
+      <span
+        class="task-operate-btn cancel-btn"
+        v-if="
+          operationProps.task.status === TASK_STATUS_RUNNING ||
+            operationProps.task.status === TASK_STATUS_PAUSED
+        "
+        @click="f_cancel(operationProps.index)"
+        ><i class="app-icon icon-close"></i
+      ></span>
+      <span
+        class="task-operate-btn delete-btn"
+        v-if="operationProps.task.finished"
+        @click="f_delete(operationProps.index)"
+        ><i class="el-icon el-icon-delete"></i
+      ></span>
     </template>
   </TransferTable>
 </template>

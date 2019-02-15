@@ -1,19 +1,37 @@
 <template>
   <div id="app" @dragover="f_onDragover">
     <el-dialog
-        class="passphrase-dialog"
-        title="Need passphrase"
-        :visible.sync="needPassphrase"
-        width="50%"
-        :show-close="false"
-        :close-on-click-modal="false"
-        :close-on-press-escape="false"
-        :before-close="handlePassphraseClose">
-      <el-input class="passphrase-input" type="password" v-model="passphrase" @keyup.native.enter="f_startAppWithPassphrase"></el-input>
-      <el-alert class="passphrase-alert" v-show="passphraseErrMsg.length > 0" type="error" :closable="false">{{passphraseErrMsg}}</el-alert>
+      class="passphrase-dialog"
+      title="Need passphrase"
+      :visible.sync="needPassphrase"
+      width="50%"
+      :show-close="false"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :before-close="handlePassphraseClose"
+    >
+      <el-input
+        class="passphrase-input"
+        type="password"
+        v-model="passphrase"
+        @keyup.native.enter="f_startAppWithPassphrase"
+      ></el-input>
+      <el-alert
+        class="passphrase-alert"
+        v-show="passphraseErrMsg.length > 0"
+        type="error"
+        :closable="false"
+        >{{ passphraseErrMsg }}</el-alert
+      >
       <span slot="footer" class="dialog-footer">
         <el-button :disabled="initializing" @click="f_goImport">Re-import</el-button>
-        <el-button :disabled="initializing" type="primary" @click="f_startAppWithPassphrase" :loading="initializing">OK</el-button>
+        <el-button
+          :disabled="initializing"
+          type="primary"
+          @click="f_startAppWithPassphrase"
+          :loading="initializing"
+          >OK</el-button
+        >
       </span>
     </el-dialog>
     <router-view @startApp="f_startApp" :startingApp="initializing"></router-view>

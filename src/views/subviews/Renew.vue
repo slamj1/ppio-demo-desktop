@@ -1,14 +1,10 @@
 <template>
   <div class="renew-page">
-    <step-popup
-        :cur-step="curStep"
-        :steps="steps"
-        @close="f_close"
-        class="popup-wrap">
+    <step-popup :cur-step="curStep" :steps="steps" @close="f_close" class="popup-wrap">
       <span slot="header">Renew File</span>
       <div class="step-content step-0" slot="step-0">
         <span class="file-icon" :class="'file-icon_' + fileType"></span>
-        <p class="file-name">{{file.filename}}</p>
+        <p class="file-name">{{ file.filename }}</p>
       </div>
 
       <div class="step-content step-1" slot="step-1">
@@ -16,37 +12,58 @@
           <div class="line-wrap">
             <label class="line-label">Renew Storage Time:</label>
             <el-radio-group class="radio-group" v-model="radio">
-              <el-radio :label="1">1 Year(365 days)</el-radio> <br>
-              <el-radio :label="2">1 Month(30 days)</el-radio> <br>
+              <el-radio :label="1">1 Year(365 days)</el-radio> <br />
+              <el-radio :label="2">1 Month(30 days)</el-radio> <br />
               <el-radio :label="3" @change="$refs.customStorageDaysInput.focus()">
                 <el-input
-                    class="storage-day-input"
-                    ref="customStorageDaysInput"
-                    type="number"
-                    size="mini"
-                    v-model="customStorageDays"
-                    @focus="radio = 3"></el-input>
-                <span>{{parseInt(customStorageDays) > 1 ? "Days" : "Day" }}</span>
+                  class="storage-day-input"
+                  ref="customStorageDaysInput"
+                  type="number"
+                  size="mini"
+                  v-model="customStorageDays"
+                  @focus="radio = 3"
+                ></el-input>
+                <span>{{ parseInt(customStorageDays) > 1 ? 'Days' : 'Day' }}</span>
               </el-radio>
             </el-radio-group>
-            <p class="storage-time-hint">The storage time will be added to your current storage duration</p>
+            <p class="storage-time-hint">
+              The storage time will be added to your current storage duration
+            </p>
           </div>
           <div class="line-wrap">
             <label class="line-label">Number of copies:</label>
-            <el-input class="copy-input" type="number" v-model="copyCount" size="mini"></el-input>
+            <el-input
+              class="copy-input"
+              type="number"
+              v-model="copyCount"
+              size="mini"
+            ></el-input>
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
-            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input> <span> {{$minimalUnit}}</span>
-            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}}</span>
+            <el-input
+              class="price-input"
+              type="number"
+              size="mini"
+              v-model="chiPrice"
+            ></el-input>
+            <span> {{ $minimalUnit }}</span>
+            <span
+              class="recommend-chiprice"
+              :class="{
+                'too-low': chiPrice < recChiPrice,
+                safe: chiPrice >= recChiPrice,
+              }"
+              >Recommended: {{ recChiPrice }}</span
+            >
           </div>
           <div class="line-wrap">
             <label class="line-label">Total Chi:</label>
-            <span>{{totalChi}}</span>
+            <span>{{ totalChi }}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Expected Cost:</label>
-            <span>{{totalCost}} PPCoin</span>
+            <span>{{ totalCost }} PPCoin</span>
           </div>
         </div>
       </div>
@@ -60,23 +77,51 @@
       <div class="step-content step-3" slot="step-3">
         <div class="content" slot="content">
           <span class="file-icon" :class="'file-icon_' + fileType"></span>
-          <p>Renewing file: {{file && file.filename}}</p>
+          <p>Renewing file: {{ file && file.filename }}</p>
           <el-progress
-              class="renew-progress"
-              :width="300"
-              :stroke-width="4"
-              :percentage="renewProgress"
-              :status="renewStatus"></el-progress>
-          <p v-if="renewFailed" class="renew-fail-msg">{{failMsg}}</p>
+            class="renew-progress"
+            :width="300"
+            :stroke-width="4"
+            :percentage="renewProgress"
+            :status="renewStatus"
+          ></el-progress>
+          <p v-if="renewFailed" class="renew-fail-msg">{{ failMsg }}</p>
           <p v-if="renewFinished" class="renew-success-msg">Renew Finished</p>
         </div>
       </div>
 
       <template slot="footer">
-        <el-button class="button" v-if="curStep > 0 && curStep < steps.length - 1" @click="f_prev" size="mini">Prev</el-button>
-        <el-button class="button" v-if="curStep < steps.length - 2" @click="f_next" size="mini" type="primary">Next</el-button>
-        <el-button class="button" v-if="curStep === steps.length - 2" @click="f_confirm" size="mini" type="primary">Renew</el-button>
-        <el-button class="button" v-if="curStep === steps.length - 1" @click="f_finishRenew" size="mini" type="primary">Ok</el-button>
+        <el-button
+          class="button"
+          v-if="curStep > 0 && curStep < steps.length - 1"
+          @click="f_prev"
+          size="mini"
+          >Prev</el-button
+        >
+        <el-button
+          class="button"
+          v-if="curStep < steps.length - 2"
+          @click="f_next"
+          size="mini"
+          type="primary"
+          >Next</el-button
+        >
+        <el-button
+          class="button"
+          v-if="curStep === steps.length - 2"
+          @click="f_confirm"
+          size="mini"
+          type="primary"
+          >Renew</el-button
+        >
+        <el-button
+          class="button"
+          v-if="curStep === steps.length - 1"
+          @click="f_finishRenew"
+          size="mini"
+          type="primary"
+          >Ok</el-button
+        >
       </template>
     </step-popup>
   </div>

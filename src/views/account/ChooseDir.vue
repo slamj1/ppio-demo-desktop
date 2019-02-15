@@ -2,18 +2,36 @@
   <div class="account">
     <div class="tip-wrap">
       <p class="title">Choose your data directory</p>
-      <p>This is your first time importing this account on this computer. Please choose a directory to store your data:</p>
+      <p>
+        This is your first time importing this account on this computer. Please choose a
+        directory to store your data:
+      </p>
       <div class="attention-wrap">
         <!-- <p class="attention-title">Attention:</p> -->
-        <p>DO NOT modify your data directory manually. DO NOT drag your file into your data directory.</p>
+        <p>
+          DO NOT modify your data directory manually. DO NOT drag your file into your data
+          directory.
+        </p>
       </div>
     </div>
     <div class="dir-wrap">
-      <el-button class="choose-btn" type="primary" @click="f_chooseDataDir">Choose</el-button>
-      <p v-show="dataDir.length > 0" class="dir"><b>Your directory: </b>{{dataDir}}</p>
+      <el-button class="choose-btn" type="primary" @click="f_chooseDataDir"
+        >Choose</el-button
+      >
+      <p v-show="dataDir.length > 0" class="dir"><b>Your directory: </b>{{ dataDir }}</p>
       <div class="btn-group">
-        <el-button class="back-button" icon="el-icon-arrow-left" @click="f_back"></el-button>
-        <el-button :loading="subStartingApp || startingApp" class="start-button" type="primary" @click="f_start">Start</el-button>
+        <el-button
+          class="back-button"
+          icon="el-icon-arrow-left"
+          @click="f_back"
+        ></el-button>
+        <el-button
+          :loading="subStartingApp || startingApp"
+          class="start-button"
+          type="primary"
+          @click="f_start"
+          >Start</el-button
+        >
       </div>
     </div>
   </div>

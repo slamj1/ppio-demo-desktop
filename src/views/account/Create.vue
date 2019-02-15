@@ -3,33 +3,77 @@
     <div class="tip-wrap">
       <p class="title">Sign up</p>
       <div class="attention-wrap">
-        <p>Your seed phrase and password are VERY IMPORTANT. Once lost, all your data will be in danger. Please keep them carefully!</p>
+        <p>
+          Your seed phrase and password are VERY IMPORTANT. Once lost, all your data will
+          be in danger. Please keep them carefully!
+        </p>
       </div>
     </div>
     <div class="form-wrap">
       <template v-if="step === 1">
         <p class="title">Step1. Generate new account</p>
-        <el-input class="password-input" type="password" placeholder="Enter your password" required v-model="password" ></el-input>
-        <code class="mnemonic-container">{{mnemonic}}</code>
+        <el-input
+          class="password-input"
+          type="password"
+          placeholder="Enter your password"
+          required
+          v-model="password"
+        ></el-input>
+        <code class="mnemonic-container">{{ mnemonic }}</code>
         <div class="button-wrap">
           <el-button-group class="button-group">
-            <el-button size="mini" @click="f_generateAccount">{{mnemonic.length > 0 ? 'Regenerate' : 'Generate'}}</el-button>
+            <el-button size="mini" @click="f_generateAccount">{{
+              mnemonic.length > 0 ? 'Regenerate' : 'Generate'
+            }}</el-button>
             <el-button size="mini" @click="f_copy">Copy</el-button>
           </el-button-group>
-          <el-button type="primary" class="button confirm-button" @click="f_goStep(2)">I have written my seed phrase!</el-button>
+          <el-button type="primary" class="button confirm-button" @click="f_goStep(2)"
+            >I have written my seed phrase!</el-button
+          >
         </div>
       </template>
       <template v-else>
         <p class="title">Step2.Repeat your seed phrase and password</p>
-        <el-input class="password-input" type="password" placeholder="Enter your password" required v-model="repeatPassword" ></el-input>
-        <el-input type="textarea" :autofocus="true" :rows="4" resize="none" placeholder="enter your seed phrase" v-model="repeatMnemonic" class="seed-phrase-input"> </el-input>
-        <el-alert v-show="errorMsg !== ''" :title="errorMsg" type="error" :closable="false"></el-alert>
+        <el-input
+          class="password-input"
+          type="password"
+          placeholder="Enter your password"
+          required
+          v-model="repeatPassword"
+        ></el-input>
+        <el-input
+          type="textarea"
+          :autofocus="true"
+          :rows="4"
+          resize="none"
+          placeholder="enter your seed phrase"
+          v-model="repeatMnemonic"
+          class="seed-phrase-input"
+        >
+        </el-input>
+        <el-alert
+          v-show="errorMsg !== ''"
+          :title="errorMsg"
+          type="error"
+          :closable="false"
+        ></el-alert>
         <div class="button-wrap" style="text-align: left;">
-          <el-button type="primary" class="back-button" plain @click="f_goStep(1)">Back</el-button>
-          <el-button :loading="confirmLoading || startingApp" type="primary" class="repeat-button" @click="f_confirm">Confirm</el-button>
+          <el-button type="primary" class="back-button" plain @click="f_goStep(1)"
+            >Back</el-button
+          >
+          <el-button
+            :loading="confirmLoading || startingApp"
+            type="primary"
+            class="repeat-button"
+            @click="f_confirm"
+            >Confirm</el-button
+          >
         </div>
       </template>
-      <p>Already have an account? <router-link :to="{ name: 'account/import' }">Log in</router-link></p>
+      <p>
+        Already have an account?
+        <router-link :to="{ name: 'account/import' }">Log in</router-link>
+      </p>
     </div>
   </div>
 </template>

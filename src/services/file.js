@@ -35,14 +35,16 @@ export const getObjectList = () =>
     console.log('get file list')
     console.log(res)
     if (res) {
-      const objectList = res.filter(object => object.isdir === false).map(object => ({
-        key: object.key,
-        bucket: object.bucket || APP_BUCKET_NAME,
-        status: getFileStatus(object.status),
-        startTime: Math.round(new Date(object.created).getTime() / 1000), // in seconds
-        filename: object.key.split('/').slice(-1)[0],
-        size: object.length,
-      }))
+      const objectList = res
+        .filter(object => object.isdir === false)
+        .map(object => ({
+          key: object.key,
+          bucket: object.bucket || APP_BUCKET_NAME,
+          status: getFileStatus(object.status),
+          startTime: Math.round(new Date(object.created).getTime() / 1000), // in seconds
+          filename: object.key.split('/').slice(-1)[0],
+          size: object.length,
+        }))
       return objectList.filter(res => !!res).sort((a, b) => a.startTime - b.startTime)
     }
     return []

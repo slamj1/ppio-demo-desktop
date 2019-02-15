@@ -1,15 +1,18 @@
 <!-- @deprecated -->
 <template>
   <div class="get-page">
-    <step-popup
-        :cur-step="curStep"
-        :steps="steps"
-        @close="f_close"
-        class="popup-wrap">
+    <step-popup :cur-step="curStep" :steps="steps" @close="f_close" class="popup-wrap">
       <span slot="header">Download file by share code</span>
       <div class="step-content step-0" slot="step-0">
         <div class="inner-wrap">
-          <el-input type="textarea" resize="none" :rows="4" v-model="shareCode" class="share-code-input" placeholder="Enter the share code start with poss://"></el-input>
+          <el-input
+            type="textarea"
+            resize="none"
+            :rows="4"
+            v-model="shareCode"
+            class="share-code-input"
+            placeholder="Enter the share code start with poss://"
+          ></el-input>
         </div>
       </div>
 
@@ -17,20 +20,28 @@
         <div class="inner-wrap">
           <div class="fileinfo-wrap">
             <span class="file-icon" :class="'file-icon_' + fileInfo.fileType"></span>
-            <p class="file-name">{{fileInfo && fileInfo.filename}}</p>
+            <p class="file-name">{{ fileInfo && fileInfo.filename }}</p>
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
-            <el-input class="price-input" v-model="chiPrice" size="mini"></el-input> <span>{{$minimalUnit}}</span>
-            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}} {{$minimalUnit}}</span>
+            <el-input class="price-input" v-model="chiPrice" size="mini"></el-input>
+            <span>{{ $minimalUnit }}</span>
+            <span
+              class="recommend-chiprice"
+              :class="{
+                'too-low': chiPrice < recChiPrice,
+                safe: chiPrice >= recChiPrice,
+              }"
+              >Recommended: {{ recChiPrice }} {{ $minimalUnit }}</span
+            >
           </div>
           <div class="line-wrap">
             <label class="line-label">Total Chi:</label>
-            <span>{{totalChi}}</span>
+            <span>{{ totalChi }}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Expected Cost:</label>
-            <span>{{totalCost}} PPCoin</span>
+            <span>{{ totalCost }} PPCoin</span>
           </div>
         </div>
       </div>
@@ -42,9 +53,27 @@
       </div>
 
       <template slot="footer">
-        <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini">Prev</el-button>
-        <el-button class="button" v-if="curStep < steps.length - 1" :loading="gettingFileInfo" v-on:click="f_next" size="mini" type="primary">Next</el-button>
-        <el-button class="button" :loading="preparingDownload" v-if="curStep >= steps.length - 1" v-on:click="f_confirm" size="mini" type="primary">Download</el-button>
+        <el-button class="button" v-if="curStep > 0" v-on:click="f_prev" size="mini"
+          >Prev</el-button
+        >
+        <el-button
+          class="button"
+          v-if="curStep < steps.length - 1"
+          :loading="gettingFileInfo"
+          v-on:click="f_next"
+          size="mini"
+          type="primary"
+          >Next</el-button
+        >
+        <el-button
+          class="button"
+          :loading="preparingDownload"
+          v-if="curStep >= steps.length - 1"
+          v-on:click="f_confirm"
+          size="mini"
+          type="primary"
+          >Download</el-button
+        >
       </template>
     </step-popup>
   </div>

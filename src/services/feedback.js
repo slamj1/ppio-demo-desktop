@@ -56,7 +56,7 @@ const genZip = (fileArr, zipPath) => {
 
 export const feedback = (descObj, userAddress, userDir) => {
   const timestamp = Date.now()
-  const logFileName = path.basename(poss.possPath)
+  const logFileName = path.basename(poss.ppioPath)
   const curLogFile = path.join(userDir, `./${logFileName}.log`)
   let logFileSize
   try {

@@ -1,37 +1,67 @@
 <template>
-  <el-table class="ppio-list-table transfer-table" :data="tableData" :row-key="getTaskKey" stripe height="100%" style="width: 100%">
-    <p class="empty-text" slot="empty">No {{tableName}} task</p>
+  <el-table
+    class="ppio-list-table transfer-table"
+    :data="tableData"
+    :row-key="getTaskKey"
+    stripe
+    height="100%"
+    style="width: 100%"
+  >
+    <p class="empty-text" slot="empty">No {{ tableName }} task</p>
     <el-table-column
-        prop="name"
-        label="File"
-        width="240"
-        class-name="table-column-filename">
+      prop="name"
+      label="File"
+      width="240"
+      class-name="table-column-filename"
+    >
       <template scope="scope">
         <div class="file-name-wrap">
           <span class="transmit-file-icon"></span>
-          <span class="transmit-filename" :show-text="false">{{scope.row.file.filename}}</span>
+          <span class="transmit-filename" :show-text="false">{{
+            scope.row.file.filename
+          }}</span>
         </div>
       </template>
     </el-table-column>
-    <el-table-column
-        prop="progress"
-        label="Progress"
-        class-name="table-column-progress">
+    <el-table-column prop="progress" label="Progress" class-name="table-column-progress">
       <template scope="scope">
         <el-progress
-            class="transmit-progress"
-            v-if="!scope.row.finished"
-            :width="180"
-            :stroke-width="4"
-            :percentage="scope.row.transferProgress"
-            :show-text="true"
-            :status="getProgressStatus(scope.row)"></el-progress>
-        <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_SUCC">finished</span>
-        <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_STARTING">creating task...</span>
-        <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_DELETING">deleting task...</span>
-        <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_RUNNING">{{scope.row.displayTransferSpeed}}</span>
-        <span class="transfer-progress-text left-time" v-if="scope.row.status === TASK_STATUS_RUNNING">{{scope.row.displayLeftTime}}</span>
-        <span class="transfer-progress-text failed" v-if="scope.row.status === TASK_STATUS_FAIL">{{scope.row.failMsg}}</span>
+          class="transmit-progress"
+          v-if="!scope.row.finished"
+          :width="180"
+          :stroke-width="4"
+          :percentage="scope.row.transferProgress"
+          :show-text="true"
+          :status="getProgressStatus(scope.row)"
+        ></el-progress>
+        <span class="transfer-progress-text" v-if="scope.row.status === TASK_STATUS_SUCC"
+          >finished</span
+        >
+        <span
+          class="transfer-progress-text"
+          v-if="scope.row.status === TASK_STATUS_STARTING"
+          >creating task...</span
+        >
+        <span
+          class="transfer-progress-text"
+          v-if="scope.row.status === TASK_STATUS_DELETING"
+          >deleting task...</span
+        >
+        <span
+          class="transfer-progress-text"
+          v-if="scope.row.status === TASK_STATUS_RUNNING"
+          >{{ scope.row.displayTransferSpeed }}</span
+        >
+        <span
+          class="transfer-progress-text left-time"
+          v-if="scope.row.status === TASK_STATUS_RUNNING"
+          >{{ scope.row.displayLeftTime }}</span
+        >
+        <span
+          class="transfer-progress-text failed"
+          v-if="scope.row.status === TASK_STATUS_FAIL"
+          >{{ scope.row.failMsg }}</span
+        >
       </template>
     </el-table-column>
     <el-table-column width="120">

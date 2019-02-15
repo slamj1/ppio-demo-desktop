@@ -1,19 +1,25 @@
 <template>
   <div class="start">
-    <choose-coin-pool v-if="showChooseCpool" :account="curAccount" @bindCpool="f_bindCpool" @close="f_cancelCpool"></choose-coin-pool>
+    <choose-coin-pool
+      v-if="showChooseCpool"
+      :account="curAccount"
+      @bindCpool="f_bindCpool"
+      @close="f_cancelCpool"
+    ></choose-coin-pool>
     <div class="left-content">
-      <img src="@/assets/img/back.png" class="logo-img" alt="logo">
+      <img src="@/assets/img/back.png" class="logo-img" alt="logo" />
       <p class="name">PPIO-Demo</p>
     </div>
     <div class="right-content">
       <router-view
-          @startApp="f_startApp"
-          @setAccount="f_setAccount"
-          @setDatadir="f_setDatadir"
-          @setKeystorePath="f_setKeystorePath"
-          @setPassphrase="f_setPassphrase"
-          :starting-app="startingApp || initializing"
-          :cur-account="curAccount"></router-view>
+        @startApp="f_startApp"
+        @setAccount="f_setAccount"
+        @setDatadir="f_setDatadir"
+        @setKeystorePath="f_setKeystorePath"
+        @setPassphrase="f_setPassphrase"
+        :starting-app="startingApp || initializing"
+        :cur-account="curAccount"
+      ></router-view>
     </div>
   </div>
 </template>

@@ -1,30 +1,35 @@
 <template>
-  <div class="user-profile-popover" :class="{'cpool': isCpoolMode}">
+  <div class="user-profile-popover" :class="{ cpool: isCpoolMode }">
     <div class="profile-username">
-      <p>{{userData.address}}&nbsp;&nbsp;<span @click="f_copyAddress" class="address-copy-btn">copy</span></p>
+      <p>
+        {{ userData.address }}&nbsp;&nbsp;<span
+          @click="f_copyAddress"
+          class="address-copy-btn"
+          >copy</span
+        >
+      </p>
     </div>
     <div class="profile-data">
       <el-table
-          class="ppio-plain-table profile-table"
-          :data="profileData"
-          :show-header="false"
-          :row-class-name="getRowClassName"
-          @row-click="handleClick">
-        <el-table-column
-            prop="label"
-            :width="140"
-            class-name="profile-table-key">
+        class="ppio-plain-table profile-table"
+        :data="profileData"
+        :show-header="false"
+        :row-class-name="getRowClassName"
+        @row-click="handleClick"
+      >
+        <el-table-column prop="label" :width="140" class-name="profile-table-key">
         </el-table-column>
-        <el-table-column
-            class-name="profile-table-val">
+        <el-table-column class-name="profile-table-val">
           <template slot-scope="scope">
-            <span>{{scope.row.val}}</span>
+            <span>{{ scope.row.val }}</span>
             <i v-if="scope.row.key === 'record'" class="el-icon-arrow-right"></i>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <div class="profile-menu-btn cpool-renew" @click="f_renew">{{isCpoolMode ? 'Renew service' : 'Recharge'}}</div>
+    <div class="profile-menu-btn cpool-renew" @click="f_renew">
+      {{ isCpoolMode ? 'Renew service' : 'Recharge' }}
+    </div>
     <!--<div class="profile-menu-btn help-btn" @click="f_goTutorials">How to use?</div>-->
     <div class="profile-menu-btn logout-btn" @click="f_logout">Log out</div>
   </div>

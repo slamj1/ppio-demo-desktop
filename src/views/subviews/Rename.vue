@@ -1,10 +1,6 @@
 <template>
   <div class="rename-page">
-    <step-popup
-        :cur-step="curStep"
-        :steps="steps"
-        @close="f_close"
-        class="popup-wrap">
+    <step-popup :cur-step="curStep" :steps="steps" @close="f_close" class="popup-wrap">
       <span slot="header">Rename File</span>
       <div class="step-content step-0" slot="step-0">
         <span class="file-icon" :class="'file-icon_' + fileType"></span>
@@ -15,16 +11,21 @@
         <div class="inner-wrap">
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
-            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input>
-            <span>{{$minimalUnit}}</span>
+            <el-input
+              class="price-input"
+              type="number"
+              size="mini"
+              v-model="chiPrice"
+            ></el-input>
+            <span>{{ $minimalUnit }}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Limit:</label>
-            <span>{{totalChi}}</span>
+            <span>{{ totalChi }}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Expected Cost:</label>
-            <span>{{totalCost}} PPCoin</span>
+            <span>{{ totalCost }} PPCoin</span>
           </div>
         </div>
       </div>
@@ -35,9 +36,25 @@
         </div>
       </div>
       <template slot="footer">
-        <el-button class="button" v-if="curStep > 0" @click="f_prev" size="mini">Prev</el-button>
-        <el-button class="button" v-if="curStep < steps.length - 1" @click="f_next" size="mini" type="primary">Next</el-button>
-        <el-button class="button" v-if="curStep >= steps.length - 1" @click="f_confirm" size="mini" type="primary">Rename</el-button>
+        <el-button class="button" v-if="curStep > 0" @click="f_prev" size="mini"
+          >Prev</el-button
+        >
+        <el-button
+          class="button"
+          v-if="curStep < steps.length - 1"
+          @click="f_next"
+          size="mini"
+          type="primary"
+          >Next</el-button
+        >
+        <el-button
+          class="button"
+          v-if="curStep >= steps.length - 1"
+          @click="f_confirm"
+          size="mini"
+          type="primary"
+          >Rename</el-button
+        >
       </template>
     </step-popup>
   </div>

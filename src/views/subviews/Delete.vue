@@ -6,28 +6,43 @@
         <div class="content" slot="content">
           <p class="delete-hint">Are you sure to delete this file?</p>
           <span class="file-icon" :class="'file-icon_' + fileType"></span>
-          <p class="file-name">{{file && file.filename}}</p>
+          <p class="file-name">{{ file && file.filename }}</p>
           <!--<PaymentTable :payment-data="paymentData"></PaymentTable>-->
         </div>
         <template slot="footer">
-          <el-button class="button" :loading="preparingDelete" @click="f_confirm" size="mini" type="primary">Yes</el-button>
+          <el-button
+            class="button"
+            :loading="preparingDelete"
+            @click="f_confirm"
+            size="mini"
+            type="primary"
+            >Yes</el-button
+          >
         </template>
       </template>
       <template v-else>
         <div class="content" slot="content">
           <span class="file-icon" :class="'file-icon_' + fileType"></span>
-          <p>Deleting file: {{file && file.filename}}</p>
+          <p>Deleting file: {{ file && file.filename }}</p>
           <el-progress
-              class="delete-progress"
-              :width="300"
-              :stroke-width="4"
-              :percentage="deleteProgress"
-              :status="deleteStatus"></el-progress>
-          <p v-if="deleteFailed" class="delete-fail-msg">{{failMsg}}</p>
+            class="delete-progress"
+            :width="300"
+            :stroke-width="4"
+            :percentage="deleteProgress"
+            :status="deleteStatus"
+          ></el-progress>
+          <p v-if="deleteFailed" class="delete-fail-msg">{{ failMsg }}</p>
           <p v-if="deleteFinished" class="delete-success-msg">Finished</p>
         </div>
         <template slot="footer">
-          <el-button class="button" v-if="!deleting" @click="f_finishDelete" size="mini" type="primary">Ok</el-button>
+          <el-button
+            class="button"
+            v-if="!deleting"
+            @click="f_finishDelete"
+            size="mini"
+            type="primary"
+            >Ok</el-button
+          >
         </template>
       </template>
     </popup>

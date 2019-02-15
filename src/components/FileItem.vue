@@ -1,16 +1,21 @@
 <template>
-  <div class="file-item"
-       :title="file.filename"
-       :class="{'end': file.status === FILE_STATUS_END,
-                'broken': file.status === FILE_STATUS_BROKEN,
-                'selected': selected}">
+  <div
+    class="file-item"
+    :title="file.filename"
+    :class="{
+      end: file.status === FILE_STATUS_END,
+      broken: file.status === FILE_STATUS_BROKEN,
+      selected: selected,
+    }"
+  >
     <div class="file-icon-wrap">
-      <span class="file-icon" :class="'file-icon_' + fileType"></span><span class="file-icon-status"></span>
+      <span class="file-icon" :class="'file-icon_' + fileType"></span
+      ><span class="file-icon-status"></span>
     </div>
     <p class="filename">
-      {{file.filename}}
+      {{ file.filename }}
     </p>
-    <p v-if="!isCpoolMode" class="days-left">{{daysLeftStr}}</p>
+    <p v-if="!isCpoolMode" class="days-left">{{ daysLeftStr }}</p>
   </div>
 </template>
 <script>

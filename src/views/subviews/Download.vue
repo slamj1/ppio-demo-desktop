@@ -5,38 +5,59 @@
       <div v-if="!!file" class="content" slot="content">
         <div class="line-wrap file-container">
           <span class="file-icon" :class="'file-icon_' + fileType"></span>
-          <p class="file-name">{{file.filename}}</p>
+          <p class="file-name">{{ file.filename }}</p>
         </div>
       </div>
       <template slot="footer">
-        <el-button class="button" :loading="preparingDownload" @click="f_confirm" size="mini" type="primary">Download</el-button>
+        <el-button
+          class="button"
+          :loading="preparingDownload"
+          @click="f_confirm"
+          size="mini"
+          type="primary"
+          >Download</el-button
+        >
       </template>
     </popup>
     <step-popup
-        v-else
-        :cur-step="curStep"
-        :steps="steps"
-        @close="f_close"
-        class="popup-wrap">
+      v-else
+      :cur-step="curStep"
+      :steps="steps"
+      @close="f_close"
+      class="popup-wrap"
+    >
       <span slot="header">Download File</span>
       <div class="step-content step-0" slot="step-0">
         <div class="inner-wrap">
           <div v-if="!!file" class="line-wrap file-container">
             <span class="file-icon" :class="'file-icon_' + fileType"></span>
-            <p class="file-name">{{file.filename}}</p>
+            <p class="file-name">{{ file.filename }}</p>
           </div>
           <div class="line-wrap">
             <label class="line-label">Chi Price:</label>
-            <el-input class="price-input" type="number" size="mini" v-model="chiPrice"></el-input><span> {{$minimalUnit}}</span>
-            <span class="recommend-chiprice" :class="{ 'too-low': chiPrice < recChiPrice, 'safe': chiPrice >= recChiPrice }">Recommended: {{recChiPrice}} {{$minimalUnit}}</span>
+            <el-input
+              class="price-input"
+              type="number"
+              size="mini"
+              v-model="chiPrice"
+            ></el-input
+            ><span> {{ $minimalUnit }}</span>
+            <span
+              class="recommend-chiprice"
+              :class="{
+                'too-low': chiPrice < recChiPrice,
+                safe: chiPrice >= recChiPrice,
+              }"
+              >Recommended: {{ recChiPrice }} {{ $minimalUnit }}</span
+            >
           </div>
           <div class="line-wrap">
             <label class="line-label">Total Chi:</label>
-            <span>{{totalChi}}</span>
+            <span>{{ totalChi }}</span>
           </div>
           <div class="line-wrap">
             <label class="line-label">Expected Cost:</label>
-            <span>{{totalCost}} PPCoin</span>
+            <span>{{ totalCost }} PPCoin</span>
           </div>
         </div>
       </div>
@@ -47,9 +68,26 @@
       </div>
 
       <template slot="footer">
-        <el-button class="button" v-if="curStep > 0" @click="f_prev" size="mini">Prev</el-button>
-        <el-button class="button" v-if="curStep < steps.length - 1" @click="f_next" size="mini" type="primary">Next</el-button>
-        <el-button class="button" :loading="preparingDownload" v-if="curStep >= steps.length - 1" @click="f_confirm" size="mini" type="primary">Download</el-button>
+        <el-button class="button" v-if="curStep > 0" @click="f_prev" size="mini"
+          >Prev</el-button
+        >
+        <el-button
+          class="button"
+          v-if="curStep < steps.length - 1"
+          @click="f_next"
+          size="mini"
+          type="primary"
+          >Next</el-button
+        >
+        <el-button
+          class="button"
+          :loading="preparingDownload"
+          v-if="curStep >= steps.length - 1"
+          @click="f_confirm"
+          size="mini"
+          type="primary"
+          >Download</el-button
+        >
       </template>
     </step-popup>
   </div>

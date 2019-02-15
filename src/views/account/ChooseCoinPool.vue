@@ -3,26 +3,47 @@
     <span class="" slot="header">Select service</span>
     <div class="cpool-container" slot="content">
       <h3>Link to a coin pool</h3>
-      <p class="address">Your address: {{curAddress}} <span @click="f_copy">copy</span></p>
+      <p class="address">
+        Your address: {{ curAddress }} <span @click="f_copy">copy</span>
+      </p>
       <div class="coin-pool-select-wrapper">
         <el-select
           class="coin-pool-selector"
           v-model="selectedCpoolHost"
           :disabled="notUseCpool"
-          placeholder="Please select a coin pool host">
+          placeholder="Please select a coin pool host"
+        >
           <el-option
             v-for="(item, index) in cpoolHostList"
             :key="index"
             :label="item"
-            :value="item">
+            :value="item"
+          >
           </el-option>
         </el-select>
-        <el-button class="go-coin-pool-page" :disabled="notUseCpool" type="primary" @click="f_goSubscribe">Go subscribe!</el-button>
+        <el-button
+          class="go-coin-pool-page"
+          :disabled="notUseCpool"
+          type="primary"
+          @click="f_goSubscribe"
+          >Go subscribe!</el-button
+        >
       </div>
       <p class="bind-coin-pool-hint"></p>
-      <el-button v-if="subscribing" :loading="checking" id="payment-confirm-button" type="primary" @click="f_confirmSubscription" size="large">I've subscribed a plan</el-button>
+      <el-button
+        v-if="subscribing"
+        :loading="checking"
+        id="payment-confirm-button"
+        type="primary"
+        @click="f_confirmSubscription"
+        size="large"
+        >I've subscribed a plan</el-button
+      >
       <p class="coin-pool-intro">
-        Coin Pool is an individual business entity is responsible for its own profits and losses.	Users purchase services provided by the Coin Pool,the Coin Pool will handle all payments on behalf of the user.We provide you a test coin pool which you can find at
+        Coin Pool is an individual business entity is responsible for its own profits and
+        losses. Users purchase services provided by the Coin Pool,the Coin Pool will
+        handle all payments on behalf of the user.We provide you a test coin pool which
+        you can find at
         <a @click="f_goCpool">here</a>
       </p>
       <!-- <h3>Do not use a coin pool</h3>
