@@ -76,7 +76,7 @@ let tray = null
 // be closed automatically when the JavaScript object is garbage collected.
 
 // Standard scheme must be registered before the app is ready
-protocol.registerStandardSchemes([APP_SCHEME, 'app'], { secure: true })
+protocol.registerStandardSchemes([APP_SCHEME], { secure: true })
 
 const gotTheLock = app.requestSingleInstanceLock()
 

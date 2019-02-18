@@ -158,7 +158,7 @@ export default {
   max-width: 400px;
 
   &.cpool {
-    max-width: 260px;
+    max-width: 320px;
   }
   .profile-username {
     font-weight: bold;
@@ -177,6 +177,10 @@ export default {
       text-decoration: underline;
       color: $primary-color;
     }
+  }
+
+  &.cpool .profile-username p {
+    word-break: break-all;
   }
 
   .profile-data {

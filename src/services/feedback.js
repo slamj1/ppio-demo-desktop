@@ -92,7 +92,7 @@ export const feedback = (descObj, userAddress, userDir) => {
         .then(postData => {
           const logFileBuffer = fs.readFileSync(filePath)
           const arrayBuffer = Uint8Array.from(logFileBuffer).buffer
-          const logFile = new File([arrayBuffer], 'poss.log')
+          const logFile = new File([arrayBuffer], 'PPIO-Demo-log.zip')
           console.log('log file generated')
           console.log(logFile.size)
           uploadToS3(logFile, postData)
@@ -149,14 +149,6 @@ export const getPostAuth = (filename, address) => {
 export const uploadToS3 = (file, postData) => {
   console.log('uploading file to s3')
   console.log(file.size)
-  // return axios({
-  //   url,
-  //   method: 'PUT',
-  //   headers: {
-  //     'Content-Type': 'binary/octet-stream',
-  //   },
-  //   data: file,
-  // })
   const postForm = new FormData()
   postForm.append('key', postData.key)
   postForm.append('acl', 'authenticated-read')

@@ -9,9 +9,36 @@ const possBinPath = path.join(
 )
 console.log(possBinPath)
 
+let isDebug = false
+// const args = {}
+
+for (let i = 0; i < process.argv.length; i++) {
+  const arg = process.argv[i]
+  if (arg.split('=')[0] === '--debug') {
+    let value = arg.split('=')[1]
+    if (value === undefined || value === 'true') {
+      isDebug = true
+    }
+    break
+  }
+}
+if (isDebug) {
+  console.log('run in debug mode')
+} else {
+  console.log('run in normal mode')
+}
+// process.argv.forEach(arg => {
+//   const key = arg.split('=')[0]
+//   let value = arg.split('=')[1]
+//   if (value === undefined || value === 'true') {
+//     value = true
+//   }
+//   args[key] = value
+// })
+
 const possIns = new Poss({
   ppioExecutablePath: possBinPath,
-  debug: !!process.argv.debug,
+  debug: isDebug,
 })
 console.log('poss instance created')
 console.log('poss path: ', possIns.ppioPath)

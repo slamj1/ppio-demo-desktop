@@ -21,16 +21,16 @@ module.exports = {
   pages: {
     index: 'src/index/main.js',
   },
-  chainWebpack: config => {
-    config.plugin('define').tap(args => [
-      {
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-        'process.env.BASE_URL': args[0]['process.env'].BASE_URL,
-        'process.env.IS_CPOOL': JSON.stringify(process.env.IS_CPOOL),
-        'process.env.DEV_POSS': JSON.stringify(process.env.DEV_POSS),
-      },
-    ])
-  },
+  // chainWebpack: config => {
+  //   config.plugin('define').tap(args => [
+  //     {
+  //       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+  //       'process.env.BASE_URL': JSON.stringify(process.env.BASE_URL),
+  //       'process.env.IS_CPOOL': JSON.stringify(process.env.IS_CPOOL),
+  //       'process.env.DEV_POSS': JSON.stringify(process.env.DEV_POSS),
+  //     },
+  //   ])
+  // },
   configureWebpack: {
     resolve: {
       symlinks: false,
@@ -38,6 +38,27 @@ module.exports = {
   },
   pluginOptions: {
     electronBuilder: {
+      chainWebpackMainProcess: config => {
+        config.plugin('define').tap(args => [
+          {
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+            'process.env.BASE_URL': JSON.stringify(process.env.BASE_URL),
+            'process.env.IS_CPOOL': JSON.stringify(process.env.IS_CPOOL),
+            'process.env.DEV_POSS': JSON.stringify(process.env.DEV_POSS),
+          },
+        ])
+      },
+      chainWebpackRendererProcess: config => {
+        config.plugin('define').tap(args => [
+          {
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+            'process.env.BASE_URL': JSON.stringify(process.env.BASE_URL),
+            'process.env.IS_CPOOL': JSON.stringify(process.env.IS_CPOOL),
+            'process.env.DEV_POSS': JSON.stringify(process.env.DEV_POSS),
+          },
+        ])
+      },
+      customFileProtocol: 'ppio-demo://./',
       builderOptions: {
         appId: 'com.ppio-demo.app',
         productName: process.env.IS_CPOOL === 'true' ? 'PPIO-demo_cpool' : 'PPIO-demo',
@@ -45,7 +66,7 @@ module.exports = {
         protocols: [
           {
             name: 'PPIO-Demo',
-            schemes: ['ppio-demo', 'app'],
+            schemes: ['ppio-demo'],
           },
         ],
         mac: {

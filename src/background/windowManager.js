@@ -45,7 +45,6 @@ export default {
       }
     } else {
       createProtocol(APP_SCHEME)
-      createProtocol('app')
       if (options.routerPath) {
         this.window.loadFile(`index.html#/${options.routerPath}`)
       } else if (this.navigateCache) {
