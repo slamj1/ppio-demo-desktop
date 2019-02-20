@@ -215,7 +215,13 @@ export default {
         .then(ver => {
           console.log('check update from ', ver)
           console.log(this.$appVer)
-          if (ver !== this.$appVer) {
+          const localVerArr = this.$appVer.split('.').map(num => parseInt(num))
+          const curVerArr = ver.split('.').map(num => parseInt(num))
+          if (
+            curVerArr[0] > localVerArr[0] ||
+            curVerArr[1] > localVerArr[1] ||
+            curVerArr[2] > localVerArr[2]
+          ) {
             this.$alert(
               `A new version of PPIO-Demo (${ver}) is available, currently you have version ${
                 this.$appVer
