@@ -78,6 +78,16 @@ let tray = null
 // Standard scheme must be registered before the app is ready
 protocol.registerStandardSchemes([APP_SCHEME], { secure: true })
 
+app.removeAsDefaultProtocolClient(APP_SCHEME)
+if (process.platform === 'win32') {
+  console.log(process.argv)
+  app.setAsDefaultProtocolClient(APP_SCHEME, process.execPath, [
+    path.resolve(process.argv[1]),
+  ])
+} else {
+  app.setAsDefaultProtocolClient(APP_SCHEME)
+}
+
 const gotTheLock = app.requestSingleInstanceLock()
 
 if (!gotTheLock) {
@@ -103,6 +113,13 @@ if (!gotTheLock) {
 
   app.on('activate', () => {
     console.log('app is activated')
+    windowManager.createWindow()
+    global.uploadTaskManager.stopUpdating()
+    global.downloadTaskManager.stopUpdating()
+  })
+
+  app.on('browser-window-focus', () => {
+    console.log('app browser window focused')
     windowManager.createWindow()
     global.uploadTaskManager.stopUpdating()
     global.downloadTaskManager.stopUpdating()
@@ -134,6 +151,25 @@ if (!gotTheLock) {
         windowManager.focusWindow()
       })
     }
+
+    app.on('open-url', (e, url) => {
+      console.log('open-url fired')
+      console.log(e)
+      console.log(url)
+      if (url.match('open-page')) {
+        const routePath = url.split(`${APP_SCHEME}://open-page?`)[1].split('=')[1]
+        // windowManager.createWindow().webContents.send('jump-to-route', routePath)
+
+        if (isDevelopment) {
+          windowManager.window.loadURL(
+            `${process.env.WEBPACK_DEV_SERVER_URL}#/${routePath}`,
+          )
+        } else {
+          windowManager.window.loadFile('index.html', { hash: `#${routePath}` })
+        }
+      }
+    })
+
     return windowManager.createWindow()
   })
 }

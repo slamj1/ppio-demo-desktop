@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import { ipcRenderer } from 'electron'
 import App from '../views/App.vue'
 import router from './router'
 import store from '../store/'
@@ -13,8 +14,13 @@ Vue.use(FilterPlugin)
 Vue.use(UtilPlugin)
 Vue.prototype.$minimalUnit = minimalUnit
 
-new Vue({
+const appIns = new Vue({
   router,
   store,
   render: h => h(App),
 }).$mount('#app')
+
+ipcRenderer.on('jump-to-route', (e, path) => {
+  console.log(path)
+  appIns.$router.push(path)
+})
