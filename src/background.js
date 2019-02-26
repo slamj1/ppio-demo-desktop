@@ -78,20 +78,42 @@ let tray = null
 // Standard scheme must be registered before the app is ready
 protocol.registerStandardSchemes([APP_SCHEME], { secure: true })
 
+app.removeAsDefaultProtocolClient(APP_SCHEME)
+if (process.defaultApp) {
+  console.log('process argvs')
+  console.log(process.argv)
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient(APP_SCHEME, process.execPath, [
+      path.resolve(process.argv[1]),
+    ])
+  }
+} else {
+  app.setAsDefaultProtocolClient(APP_SCHEME)
+}
+
 const gotTheLock = app.requestSingleInstanceLock()
 
 if (!gotTheLock) {
   app.quit()
 } else {
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
+  app.on('second-instance', (event, argv, workingDirectory) => {
     // Someone tried to run a second instance, we should focus our window.
+    console.log('second-instance fired')
+    console.log(argv)
     if (windowManager.window) {
       if (windowManager.window.isMinimized()) {
         windowManager.window.restore()
       }
       windowManager.window.focus()
+      if (argv[1] && argv[1].match('open-page')) {
+        jumpToPage(argv[1])
+      }
     } else if (process.platform === 'win32') {
-      windowManager.focusWindow()
+      if (argv[1] && argv[1].match('open-page')) {
+        jumpToPage(argv[1])
+      } else {
+        windowManager.focusWindow()
+      }
     }
   })
 
@@ -104,6 +126,13 @@ if (!gotTheLock) {
   app.on('activate', () => {
     console.log('app is activated')
     windowManager.createWindow()
+    global.uploadTaskManager.stopUpdating()
+    global.downloadTaskManager.stopUpdating()
+  })
+
+  app.on('browser-window-focus', () => {
+    console.log('app browser window focused')
+    // windowManager.createWindow()
     global.uploadTaskManager.stopUpdating()
     global.downloadTaskManager.stopUpdating()
   })
@@ -134,8 +163,40 @@ if (!gotTheLock) {
         windowManager.focusWindow()
       })
     }
+
+    app.on('open-url', (e, url) => {
+      console.log('open-url fired')
+      console.log(url)
+      if (url.match('open-page')) {
+        console.log('calling jumpToPage ', url)
+        jumpToPage(url)
+      }
+    })
+
     return windowManager.createWindow()
   })
+}
+
+function jumpToPage(url) {
+  console.log('jumping to page', url)
+  // "/" will be automatically added after "open-page" on windows
+  const routePath = url.split(`${APP_SCHEME}://open-page`)[1].split('=')[1]
+  console.log('sending jump to page to renderer, ', routePath)
+  if (!windowManager.window) {
+    windowManager.createWindow()
+    windowManager.window.webContents.once('did-finish-load', () => {
+      windowManager.window.webContents.send('jump-to-route', routePath)
+    })
+  } else {
+    windowManager.window.webContents.send('jump-to-route', routePath)
+  }
+  windowManager.focusWindow()
+
+  // if (isDevelopment) {
+  //   windowManager.window.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}#/${routePath}`)
+  // } else {
+  //   windowManager.window.loadFile('index.html', { hash: `#${routePath}` })
+  // }
 }
 
 // Exit cleanly on request from parent process in development mode.

@@ -161,5 +161,14 @@ export const checkUpdate = () => {
       Accept: 'application/json',
       'Cache-Control': 'no-cache',
     },
-  }).then(res => res.data.demo)
+  }).then(res => {
+    if (process.platform === 'darwin') {
+      return res.data.ppio_demo.mac
+    } else if (process.platform === 'win32') {
+      return res.data.ppio_demo.windows
+    } else if (process.platform === 'linux') {
+      return res.data.ppio_demo.linux
+    }
+    return res.data.demo
+  })
 }
