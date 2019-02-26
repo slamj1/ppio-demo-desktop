@@ -105,12 +105,14 @@ if (!gotTheLock) {
         windowManager.window.restore()
       }
       windowManager.window.focus()
-    } else if (process.platform === 'win32') {
-      windowManager.focusWindow()
-    }
-    if (process.platform === 'win32' && argv[1]) {
-      if (argv[1].match('open-page')) {
+      if (argv[1] && argv[1].match('open-page')) {
         jumpToPage(argv[1])
+      }
+    } else if (process.platform === 'win32') {
+      if (argv[1] && argv[1].match('open-page')) {
+        jumpToPage(argv[1])
+      } else {
+        windowManager.focusWindow()
       }
     }
   })
@@ -130,7 +132,7 @@ if (!gotTheLock) {
 
   app.on('browser-window-focus', () => {
     console.log('app browser window focused')
-    windowManager.createWindow()
+    // windowManager.createWindow()
     global.uploadTaskManager.stopUpdating()
     global.downloadTaskManager.stopUpdating()
   })
@@ -164,9 +166,9 @@ if (!gotTheLock) {
 
     app.on('open-url', (e, url) => {
       console.log('open-url fired')
-      console.log(e)
       console.log(url)
       if (url.match('open-page')) {
+        console.log('calling jumpToPage ', url)
         jumpToPage(url)
       }
     })
@@ -177,9 +179,19 @@ if (!gotTheLock) {
 
 function jumpToPage(url) {
   console.log('jumping to page', url)
+  // "/" will be automatically added after "open-page" on windows
   const routePath = url.split(`${APP_SCHEME}://open-page`)[1].split('=')[1]
   console.log('sending jump to page to renderer, ', routePath)
-  windowManager.createWindow().webContents.send('jump-to-route', routePath)
+  if (!windowManager.window) {
+    windowManager.createWindow()
+    windowManager.window.webContents.once('did-finish-load', () => {
+      windowManager.window.webContents.send('jump-to-route', routePath)
+    })
+  } else {
+    windowManager.window.webContents.send('jump-to-route', routePath)
+  }
+  windowManager.focusWindow()
+
   // if (isDevelopment) {
   //   windowManager.window.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}#/${routePath}`)
   // } else {
