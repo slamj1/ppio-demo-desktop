@@ -79,11 +79,14 @@ let tray = null
 protocol.registerStandardSchemes([APP_SCHEME], { secure: true })
 
 app.removeAsDefaultProtocolClient(APP_SCHEME)
-if (process.platform === 'win32') {
+if (process.defaultApp) {
+  console.log('process argvs')
   console.log(process.argv)
-  app.setAsDefaultProtocolClient(APP_SCHEME, process.execPath, [
-    path.resolve(process.argv[1]),
-  ])
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient(APP_SCHEME, process.execPath, [
+      path.resolve(process.argv[1]),
+    ])
+  }
 } else {
   app.setAsDefaultProtocolClient(APP_SCHEME)
 }
@@ -93,8 +96,10 @@ const gotTheLock = app.requestSingleInstanceLock()
 if (!gotTheLock) {
   app.quit()
 } else {
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
+  app.on('second-instance', (event, argv, workingDirectory) => {
     // Someone tried to run a second instance, we should focus our window.
+    console.log('second-instance fired')
+    console.log(argv)
     if (windowManager.window) {
       if (windowManager.window.isMinimized()) {
         windowManager.window.restore()
@@ -102,6 +107,11 @@ if (!gotTheLock) {
       windowManager.window.focus()
     } else if (process.platform === 'win32') {
       windowManager.focusWindow()
+    }
+    if (process.platform === 'win32' && argv[1]) {
+      if (argv[1].match('open-page')) {
+        jumpToPage(argv[1])
+      }
     }
   })
 
@@ -157,21 +167,24 @@ if (!gotTheLock) {
       console.log(e)
       console.log(url)
       if (url.match('open-page')) {
-        const routePath = url.split(`${APP_SCHEME}://open-page?`)[1].split('=')[1]
-        // windowManager.createWindow().webContents.send('jump-to-route', routePath)
-
-        if (isDevelopment) {
-          windowManager.window.loadURL(
-            `${process.env.WEBPACK_DEV_SERVER_URL}#/${routePath}`,
-          )
-        } else {
-          windowManager.window.loadFile('index.html', { hash: `#${routePath}` })
-        }
+        jumpToPage(url)
       }
     })
 
     return windowManager.createWindow()
   })
+}
+
+function jumpToPage(url) {
+  console.log('jumping to page', url)
+  const routePath = url.split(`${APP_SCHEME}://open-page`)[1].split('=')[1]
+  console.log('sending jump to page to renderer, ', routePath)
+  windowManager.createWindow().webContents.send('jump-to-route', routePath)
+  // if (isDevelopment) {
+  //   windowManager.window.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}#/${routePath}`)
+  // } else {
+  //   windowManager.window.loadFile('index.html', { hash: `#${routePath}` })
+  // }
 }
 
 // Exit cleanly on request from parent process in development mode.
