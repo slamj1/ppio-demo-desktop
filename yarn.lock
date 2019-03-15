@@ -937,9 +937,9 @@
     jest-transform-stub "^1.0.0"
     vue-jest "^3.0.2"
 
-"@vue/cli-service@^3.0.1":
+"@vue/cli-service@3.4.0":
   version "3.4.0"
-  resolved "http://47.110.88.167:4873/@vue%2fcli-service/-/cli-service-3.4.0.tgz#d2160ee4cf9de8dc4e9d780ccd61cc15862f2950"
+  resolved "https://registry.npmjs.org/@vue/cli-service/-/cli-service-3.4.0.tgz#d2160ee4cf9de8dc4e9d780ccd61cc15862f2950"
   integrity sha512-AtLiin5Jlw0ULKXJtBhUaykz0VzDgYq2RCf7nxfB7Vsi5fTbJyOVeWYe9KsnsM6VTRBWRUI8NzPPMYxV2uxtQA==
   dependencies:
     "@intervolga/optimize-cssnano-plugin" "^1.0.5"
